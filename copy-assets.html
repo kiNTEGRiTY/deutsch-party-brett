@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head><title>Asset Copier</title></head>
+<body>
+<h2>Asset Copier — Kopiere durch Klicken</h2>
+<p>Speichere jedes Bild mit Rechtsklick → "Bild speichern unter" in den Ordner:<br>
+<code>deutsch-party-brett/assets/img/</code></p>
+<div id="images" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px;"></div>
+<script>
+const images = [
+  { file: 'char_fox_1775355844836.png', save: 'fox.png' },
+  { file: 'char_penguin_1775355859738.png', save: 'penguin.png' },
+  { file: 'char_bunny_1775355871659.png', save: 'bunny.png' },
+  { file: 'char_bear_1775355921294.png', save: 'bear.png' },
+  { file: 'char_deer_1775355933484.png', save: 'deer.png' },
+];
+
+// Try multiple methods to load images
+const container = document.getElementById('images');
+
+images.forEach(img => {
+  const div = document.createElement('div');
+  div.style.textAlign = 'center';
+  
+  const imgEl = document.createElement('img');
+  imgEl.style.width = '200px';
+  imgEl.style.height = '200px';
+  imgEl.style.objectFit = 'cover';
+  imgEl.style.borderRadius = '12px';
+  imgEl.style.border = '2px solid #ccc';
+  
+  // Try loading from the brain directory symlink
+  imgEl.src = `./assets/brain/${img.file}`;
+  
+  imgEl.onerror = function() {
+    // If symlink fails, show placeholder
+    this.style.background = '#f0f0f0';
+    this.alt = `${img.save} — nicht geladen`;
+  };
+  
+  const label = document.createElement('div');
+  label.textContent = `${img.save}`;
+  label.style.marginTop = '8px';
+  label.style.fontWeight = 'bold';
+  
+  div.appendChild(imgEl);
+  div.appendChild(label);
+  container.appendChild(div);
+});
+
+// Auto-download function using canvas
+async function downloadAll() {
+  for (const img of images) {
+    try {
+      const response = await fetch(`./assets/brain/${img.file}`);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = img.save;
+      a.click();
+      URL.revokeObjectURL(url);
+      await new Promise(r => setTimeout(r, 500));
+    } catch(e) {
+      console.log(`Failed to download ${img.save}:`, e);
+    }
+  }
+}
+
+// Add download button
+const btn = document.createElement('button');
+btn.textContent = 'Alle herunterladen';
+btn.style.cssText = 'margin: 20px; padding: 12px 24px; font-size: 16px; cursor: pointer;';
+btn.onclick = downloadAll;
+document.body.insertBefore(btn, container);
+</script>
+</body>
+</html>

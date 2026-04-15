@@ -1,0 +1,441 @@
+/* ============================================
+   BOARD SCREEN
+   ============================================ */
+
+.board-screen {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100dvh;
+  box-sizing: border-box;
+  flex-direction: row;
+  gap: 0;
+  align-items: stretch;
+  /* Direct background — no ::before trick */
+  background-color: #fdf5e6;
+  background-image: url('../../assets/img/steph_bild_3.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ::before removed — was causing the black screen bug */
+/* ::after removed — Dark Reader breaks rgba overlays and creates solid black walls! */
+
+/* ── Board Area ── */
+.board-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  z-index: 2; /* Sits above the dimming overlay */
+}
+
+/* Let's make sure the UI elements really pop with white glows! */
+.turn-bar, .dice-container, .board-sidebar, .standee-card {
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.9));
+}
+
+.board-path-container {
+  position: absolute; /* Takes it out of document flow so it doesn't push the Dice Area off-screen! */
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none; /* Allows clicks to pass through empty space to the UI below if needed */
+}
+
+.field-tile, .player-standee-container {
+  pointer-events: auto; /* Re-enable clicks on the characters and tiles */
+}
+
+.board-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.field-tile {
+  width: 95px;
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-cardboard);
+  font-size: var(--font-size-md);
+  color: #fff;
+  font-weight: bold;
+  position: absolute;
+  z-index: 2;
+  transition: transform 0.2s var(--ease-bounce);
+  opacity: 0; /* GANZ WICHTIG: Die erstellten Felder verstecken, damit das Kunstwerk glänzt! */
+  cursor: pointer;
+}
+
+/* Edit Mode Hint: Mark fields clearly if we activate path editor */
+.board-area.edit-mode .field-tile {
+  opacity: 0.9 !important;
+  border: 4px dashed red;
+  border-radius: 50% !important;
+  background: rgba(255,0,0,0.2) !important;
+}
+.board-area.edit-mode .field-tile > * {
+  display: none !important;
+}
+
+.field-tile:hover {
+  transform: translate(-50%, -50%) scale(1.1) rotate(5deg) !important;
+  z-index: 10;
+}
+
+.cardboard-field {
+  transition: all 0.3s var(--ease-bounce);
+}
+
+
+.turn-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-xl);
+  min-height: 70px;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  z-index: 50;
+  margin-top: var(--space-md);
+  /* The nuclear option: real SVG background image. Unblockable by Dark Mode. */
+  background-color: #d1bfae !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 0l8 8M8 0L0 8' stroke='%23b8a28e' stroke-width='1.5'/%3E%3C/svg%3E") !important;
+  box-shadow: inset 0 0 0 1000px rgba(220, 205, 190, 0.5), var(--shadow-cardboard-md) !important;
+  border: 2px dashed #6b503a !important;
+  border-radius: 12px;
+  transform: rotate(-0.5deg);
+}
+
+.turn-player-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-family-display);
+  font-size: 1.4rem;
+  color: #3b2b1a !important;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+}
+
+.turn-round {
+  font-size: var(--font-size-xs);
+  color: #5D4037;
+  background: rgba(0,0,0,0.05);
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px dashed rgba(0,0,0,0.1);
+}
+
+/* ── Dice Area ── */
+.dice-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.dice-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dice.cardboard-chip {
+  width: 80px;
+  height: 80px;
+  background-color: #d1bfae !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 0l8 8M8 0L0 8' stroke='%23b8a28e' stroke-width='1.5'/%3E%3C/svg%3E") !important;
+  border: 2px dashed #6b503a !important;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 10px;
+  /* Dark Reader CANNOT invert inset box shadows! */
+  box-shadow: 
+    inset 0 0 0 1000px rgba(220, 205, 190, 0.5),
+    inset -4px -4px 8px rgba(0,0,0,0.15),
+    var(--shadow-cardboard-lg) !important;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.dice.cardboard-chip:active {
+  transform: scale(0.9) translateY(2px);
+}
+
+.dice-dot {
+  width: 12px;
+  height: 12px;
+  background: #3b2b1a;
+  border-radius: 50%;
+  justify-self: center;
+  align-self: center;
+  opacity: 0;
+}
+
+.dice-dot.visible {
+  opacity: 1;
+}
+
+.dice.rolling {
+  animation: dice-shake 0.2s infinite;
+}
+
+@keyframes dice-shake {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(5deg) scale(1.05); }
+  75% { transform: rotate(-5deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* ── Sidebar ── */
+.board-sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  flex-shrink: 0;
+  z-index: 60;
+  margin-top: var(--space-xl);
+}
+
+.sidebar-section {
+  position: relative;
+  padding: var(--space-lg);
+  font-family: var(--font-handwritten);
+  background-color: #d1bfae !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 0l8 8M8 0L0 8' stroke='%23b8a28e' stroke-width='1.5'/%3E%3C/svg%3E") !important;
+  box-shadow: inset 0 0 0 1000px rgba(220, 205, 190, 0.6), var(--shadow-cardboard-xl) !important;
+  color: #3b2b1a !important;
+  border-radius: 4px 20px 8px 18px;
+  border: 2px dashed #6b503a !important;
+  transform: rotate(0.8deg);
+  margin-bottom: var(--space-md);
+}
+
+.sidebar-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  text-align: center;
+  margin-bottom: var(--space-md);
+  color: #3b2b1a !important;
+  border-bottom: 2px dashed #6b503a;
+  padding-bottom: 8px;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+}
+
+/* ── Field Legend ── */
+.field-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xs);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.legend-dot.normal    { background: var(--field-normal); }
+.legend-dot.challenge { background: var(--field-challenge); }
+.legend-dot.team      { background: var(--field-team); }
+.legend-dot.reward    { background: var(--field-reward); }
+.legend-dot.surprise  { background: var(--field-surprise); }
+.legend-dot.helper    { background: var(--field-helper); }
+.legend-dot.movement  { background: var(--field-movement); }
+.legend-dot.treasure  { background: var(--field-treasure); }
+
+/* ── Player Standee ── */
+.player-standee-container {
+  position: absolute;
+  width: 60px;
+  height: 80px;
+  transition: all 0.4s var(--ease-bounce);
+  z-index: 25;
+  pointer-events: none;
+}
+
+.standee-card {
+  position: relative;
+  width: 320px;
+  height: 450px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+  z-index: 2;
+  transform-origin: bottom center;
+}
+
+.standee-base {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 380px;
+  height: 80px;
+  background: #7a5a3a; /* Darker wooden base */
+  border-radius: 12px;
+  transform: translateX(-50%);
+  box-shadow: 
+    inset 0 -8px 0 rgba(0,0,0,0.3), 
+    0 12px 24px rgba(0,0,0,0.5),
+    0 2px 4px rgba(0,0,0,0.2);
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.1'/%3E%3C/svg%3E");
+}
+
+.standee-shadow {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  width: 480px;
+  height: 100px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  filter: blur(20px);
+  z-index: 0;
+}
+
+
+.player-standee-container.active .standee-card {
+  animation: standee-hover 2s infinite ease-in-out;
+  border-color: var(--color-accent);
+}
+
+@keyframes standee-hover {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-5px) rotate(1.5deg); }
+}
+
+@keyframes token-hop {
+  0% { transform: translate(calc(-50% + var(--offset)), -85%) scale(1); }
+  50% { transform: translate(calc(-50% + var(--offset)), -150%) scale(1.1); }
+  100% { transform: translate(calc(-50% + var(--offset)), -85%) scale(1); }
+}
+
+/* --- Dynamic Field Effects --- */
+
+.teleport-flash {
+  animation: teleport-flash 0.6s ease-out forwards;
+}
+
+@keyframes teleport-flash {
+  0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  30% { opacity: 0.5; transform: scale(1.5); filter: brightness(3) blur(2px); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+}
+
+.trap-shake {
+  animation: trap-shake 0.5s ease-in-out;
+}
+
+@keyframes trap-shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px) rotate(-2deg); }
+  40% { transform: translateX(10px) rotate(2deg); }
+  60% { transform: translateX(-10px) rotate(-1deg); }
+  80% { transform: translateX(10px) rotate(1deg); }
+  100% { transform: translateX(0); }
+}
+
+.portal-vortex {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(92, 107, 192, 0.4) 0%, transparent 70%);
+  animation: vortex-pulse 2s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes vortex-pulse {
+  from { opacity: 0.3; transform: scale(0.8); }
+  to { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .board-screen {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .board-sidebar {
+    width: 100%;
+    max-width: 750px;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .sidebar-section {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+/* ── Board Field Hover Info ── */
+.field-tooltip {
+  position: absolute;
+  background: var(--bg-card);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+  z-index: var(--z-ui);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all var(--duration-fast) var(--ease-smooth);
+  white-space: nowrap;
+}
+
+.field-tile:hover + .field-tooltip,
+.field-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cleanup: Removing legacy board decorators */
+
+/* ── Game Menu Button ── */
+.game-menu-btn {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: var(--z-ui);
+}

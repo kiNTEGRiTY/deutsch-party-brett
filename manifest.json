@@ -1,0 +1,22 @@
+{
+  "name": "Deutsch Party Brett",
+  "short_name": "DeutschBoard",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8f0e6",
+  "theme_color": "#FF3366",
+  "description": "Handgezeichnetes Deutsch-Lern-Brettspiel aus Karton.",
+  "icons": [
+    {
+      "src": "assets/img/char_drawing_lion.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/img/char_drawing_rabbit.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

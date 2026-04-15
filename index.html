@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="darkreader-lock">
+  <meta name="description" content="Deutsch Party Brett — Das lustige Lernspiel für die Grundschule! Ein Brettspiel zum Deutschlernen mit Würfeln, Mini-Spielen und Belohnungen.">
+  <meta name="theme-color" content="#FF85A2">
+  <title>Deutsch Party Brett</title>
+
+  <!-- PWA & iOS Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DeutschBoard">
+  <link rel="apple-touch-icon" href="assets/img/char_drawing_lion.png">
+
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles (Cache Busted!) -->
+  <link rel="stylesheet" href="css/design-tokens.css?v=3">
+  <link rel="stylesheet" href="css/base.css?v=3">
+  <link rel="stylesheet" href="css/components.css?v=3">
+  <link rel="stylesheet" href="css/animations.css?v=3">
+  <link rel="stylesheet" href="css/screens/start.css?v=3">
+  <link rel="stylesheet" href="css/screens/setup.css?v=3">
+  <link rel="stylesheet" href="css/screens/board.css?v=3">
+  <link rel="stylesheet" href="css/screens/minigame.css?v=3">
+  <link rel="stylesheet" href="css/screens/results.css?v=3">
+
+  <!-- App -->
+  <script type="module" src="js/app.js"></script>
+  <script>
+    // KILL PWA CACHE to force update CSS
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script>
+
+  <!-- App -->
+</head>
+<body style="background-color: #fdf5e6 !important;">
+
+  <!-- START SCREEN -->
+  <div id="screen-start" class="screen start-screen">
+    <img src="assets/img/steph_bild_1.jpg" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; z-index: 0; pointer-events: none;" alt="bg">
+    <div class="start-deco start-deco-1"></div>
+    <div class="start-deco start-deco-2"></div>
+    <div class="start-deco start-deco-3"></div>
+    <div class="start-deco start-deco-4"></div>
+
+    <!-- Scattered decorative hearts -->
+    <div class="start-deco-heart" style="top:15%; left:10%; animation-delay:0.3s;">
+      <svg viewBox="0 0 20 20" width="20" height="20"><path d="M10 18 Q0 10 4 4 Q8 0 10 4 Q12 0 16 4 Q20 10 10 18Z" fill="currentColor"/></svg>
+    </div>
+    <div class="start-deco-heart" style="top:25%; right:15%; animation-delay:1.2s; font-size:14px; color:#C8B898;">
+      <svg viewBox="0 0 20 20" width="16" height="16"><path d="M10 2 L12 8 L18 8 L13 12 L15 18 L10 14 L5 18 L7 12 L2 8 L8 8Z" fill="currentColor"/></svg>
+    </div>
+    <div class="start-deco-heart" style="bottom:30%; left:8%; animation-delay:0.8s; font-size:16px;">
+      <svg viewBox="0 0 20 20" width="16" height="16"><path d="M10 18 Q0 10 4 4 Q8 0 10 4 Q12 0 16 4 Q20 10 10 18Z" fill="currentColor"/></svg>
+    </div>
+    <div class="start-deco-heart" style="bottom:20%; right:12%; animation-delay:1.8s; color:#B0C4DE;">
+      <svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 2 L12 8 L18 8 L13 12 L15 18 L10 14 L5 18 L7 12 L2 8 L8 8Z" fill="currentColor"/></svg>
+    </div>
+
+    <div class="start-content">
+      <div class="start-title animate-bounce-in">
+        <!-- Dice icon -->
+        <div class="title-icon">
+          <svg viewBox="0 0 80 80" width="64" height="64">
+            <rect x="8" y="8" width="64" height="64" rx="14" fill="#FFF8E1" stroke="#A0755A" stroke-width="4"/>
+            <circle cx="24" cy="24" r="5" fill="#5D4037"/>
+            <circle cx="56" cy="24" r="5" fill="#5D4037"/>
+            <circle cx="24" cy="56" r="5" fill="#5D4037"/>
+            <circle cx="56" cy="56" r="5" fill="#5D4037"/>
+            <circle cx="40" cy="40" r="5" fill="#5D4037"/>
+          </svg>
+        </div>
+        <h1>Deutsch Party Brett</h1>
+      </div>
+
+      <!-- Character mascots floating -->
+      <div class="start-mascots animate-slide-up stagger-2" id="start-mascots"></div>
+
+      <p class="start-subtitle animate-slide-up stagger-3">
+        Das lustige Lernspiel für die Grundschule!<br>
+        Würfle, löse Aufgaben und sammle Sterne!
+      </p>
+
+      <div class="start-buttons animate-slide-up stagger-4">
+        <button class="btn btn-primary btn-lg" id="btn-new-game">
+          <svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align:middle; margin-right:4px;">
+            <circle cx="12" cy="12" r="10" fill="#FFF" opacity="0.3"/>
+            <path d="M9 6 L18 12 L9 18Z" fill="#FFF"/>
+          </svg>
+          Neues Spiel
+        </button>
+        <button class="btn btn-secondary" id="btn-continue">Fortsetzen</button>
+        <button class="btn btn-secondary" id="btn-profiles">Profil laden</button>
+      </div>
+      <div class="start-version animate-fade-in stagger-6">
+        v0.2 · Handgezeichneter Stil · Erstellt für die Grundschule
+      </div>
+    </div>
+  </div>
+
+  <!-- SETUP SCREEN -->
+  <div id="screen-setup" class="screen setup-screen">
+    <div id="setup-content"></div>
+  </div>
+
+  <!-- BOARD SCREEN -->
+  <div id="screen-board" class="screen board-screen">
+    <img src="assets/img/steph_bild_2.jpg" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; z-index: 0; pointer-events: none;" alt="bg">
+    <div id="board-content" style="display: contents;"></div>
+  </div>
+
+  <!-- MINI-GAME SCREEN -->
+  <div id="screen-minigame" class="screen minigame-screen">
+    <div id="minigame-content"></div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div id="screen-results" class="screen results-screen">
+    <div id="results-content"></div>
+  </div>
+
+  <!-- Load character mascots on start screen -->
+  <script type="module">
+    import { renderCharacterAvatar, CHARACTERS } from './js/ui/characters.js';
+    
+    const mascotContainer = document.getElementById('start-mascots');
+    if (mascotContainer) {
+      // Show all floating character mascots
+      mascotContainer.innerHTML = CHARACTERS.map((char, i) => 
+        `<div class="mascot-char" style="animation-delay: ${i * 0.4}s" title="${char.name_de}">${renderCharacterAvatar(i, 48)}</div>`
+      ).join('');
+    }
+  </script>
+</body>
+</html>

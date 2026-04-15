@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Gochi+Hand&family=Nunito:wght@400;600;700;800&family=Fredoka+One&display=swap');
+
+:root {
+  /* ── Brand Colors ── */
+  --color-primary: #FF3366; /* Hot Pink instead of Corporate Blue */
+  --color-primary-light: #FF85A2;
+  --color-primary-dark: #cc0033;
+  --color-accent: #FFD93D;
+  --color-accent-glow: #FFE882;
+
+  /* ── Background ── */
+  --bg-main: #FFFaf5; /* Warmer, less sterile */
+  --bg-warm: #ffefe5;
+  --bg-card: #FFFFFF;
+  --bg-overlay: rgba(0, 0, 0, 0.45);
+  --bg-glass: rgba(255, 240, 245, 0.85); /* Pinkish glass */
+  --bg-board: transparent; /* Board is purely the background image now */
+
+  /* ── Text ── */
+  --text-primary: #2D3142;
+  --text-secondary: #5A5F7A;
+  --text-light: #8E92A8;
+  --text-on-dark: #FFFFFF;
+  --text-on-accent: #3D2E00;
+
+  /* ── Field Colors (Board) ── */
+  --field-normal: #4A90D9;
+  --field-normal-light: #7AB3EB;
+  --field-challenge: #E85D75;
+  --field-challenge-light: #F08D9D;
+  --field-team: #5DB875;
+  --field-team-light: #8DD4A0;
+  --field-reward: #F5C542;
+  --field-reward-light: #FFE082;
+  --field-surprise: #9B72CF;
+  --field-surprise-light: #BEA2E2;
+  --field-helper: #4ECDC4;
+  --field-helper-light: #7EDED8;
+  --field-movement: #FF8C5A;
+  --field-movement-light: #FFB694;
+  --field-treasure: #FFD700;
+  --field-treasure-light: #FFE761;
+
+  /* ── Player Colors ── */
+  --player-1: #FF6B6B;
+  --player-2: #4ECDC4;
+  --player-3: #FFD93D;
+  --player-4: #6C5CE7;
+  --player-5: #FF8A5C;
+  --player-6: #A3DE83;
+
+  /* ── Spacing Scale ── */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ── Typography (HANDMADE UPDATES) ── */
+  --font-family: 'Indie Flower', 'Nunito', system-ui, sans-serif;
+  --font-family-display: 'Gochi Hand', 'Fredoka One', cursive;
+  --font-family-cardboard: 'Indie Flower', cursive;
+
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 22px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 36px;
+  --font-size-3xl: 48px;
+  --font-size-4xl: 64px;
+
+  /* ── High-Fidelity Craft Shadows ── */
+  --shadow-cardboard-sm: 1px 1px 0 rgba(0,0,0,0.1), 2px 2px 4px rgba(0,0,0,0.1);
+  --shadow-cardboard-md: 2px 2px 0 rgba(0,0,0,0.1), 4px 4px 10px rgba(0,0,0,0.15);
+  --shadow-cardboard-lg: 3px 3px 0 rgba(0,0,0,0.15), 8px 8px 18px rgba(0,0,0,0.2);
+  --shadow-cardboard-xl: 4px 4px 0 rgba(0,0,0,0.15), 12px 12px 30px rgba(0,0,0,0.25);
+  --shadow-washi-tape: 1px 1px 2px rgba(0,0,0,0.1);
+
+  /* ── Legacy Shadows (Kept for compatibility) ── */
+  --shadow-sm: var(--shadow-cardboard-sm);
+  --shadow-md: var(--shadow-cardboard-md);
+  --shadow-lg: var(--shadow-cardboard-lg);
+  --shadow-xl: var(--shadow-cardboard-xl);
+
+  /* ── Animation Timing ── */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* ── Z-Index Scale ── */
+  --z-base: 1;
+  --z-board: 10;
+  --z-tokens: 20;
+  --z-ui: 30;
+  --z-overlay: 100;
+
+  /* ── Board Details ── */
+  --board-field-size: 64px;
+  --token-size: 36px;
+  --dice-size: 80px;
+}
+
+/* ── Dark mode prep (not active yet) ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Future: dark mode tokens */
+  }
+}

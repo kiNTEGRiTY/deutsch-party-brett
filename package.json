@@ -1,0 +1,13 @@
+{
+  "name": "deutsch-party-brett",
+  "version": "1.0.0",
+  "description": "Lernspiel",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -p $PORT"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

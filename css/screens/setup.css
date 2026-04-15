@@ -1,0 +1,372 @@
+/* ============================================
+   SETUP SCREEN
+   ============================================ */
+
+.setup-screen {
+  padding: var(--space-xl) var(--space-lg);
+  background-color: #f8f0e6;
+  background-image: var(--game-background-img, url('../../assets/img/steph_bild_2.jpg'));
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-attachment: scroll; /* Changed from fixed to prevent weird scaling issues */
+  align-items: center;
+}
+
+.setup-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  background: #fdf5e6;
+  padding: var(--space-2xl);
+  border-radius: 8px 45px 12px 40px;
+  box-shadow: var(--shadow-cardboard-xl);
+  border: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  transform: rotate(-0.5deg);
+}
+
+/* ── Step Navigation ── */
+.setup-steps {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-md) 0;
+}
+
+.setup-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #C8B898;
+  opacity: 0.5;
+  transition: all var(--duration-normal) var(--ease-bounce);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.setup-step-dot.active {
+  opacity: 1;
+  transform: scale(1.4);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 🌈 Rainbow Dots for Pro-Level Demo 🌈 */
+.setup-step-dot.active:nth-child(1) { background: #FF85A2; }
+.setup-step-dot.active:nth-child(2) { background: #FFD93D; }
+.setup-step-dot.active:nth-child(3) { background: #6EB5FF; }
+.setup-step-dot.active:nth-child(4) { background: #A3E4D7; }
+.setup-step-dot.active:nth-child(5) { background: #FFB347; }
+
+.setup-step-dot.done {
+  opacity: 0.15; /* Done dots are subtle to keep focus on next steps */
+  transform: scale(1.1);
+  background: #C8B898;
+}
+
+/* ── Setup Header ── */
+.setup-header {
+  text-align: center;
+}
+
+.setup-header h2 {
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.setup-header p {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+}
+
+/* ── Step Content ── */
+.setup-step-content {
+  display: none;
+}
+
+.setup-step-content.active {
+  display: block;
+  animation: slide-in-up 0.3s var(--ease-smooth) both;
+}
+
+/* ── Player Setup ── */
+.player-setup-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.player-setup-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-card);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  border-radius: 15px 20px 18px 22px;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
+  animation: slide-in-up 0.3s var(--ease-smooth) both;
+}
+
+.player-color-pick {
+  width: 50px;
+  height: 50px;
+  /* Removed border radius so 3D custom tokens aren't squeezed into circles */
+  border: 3px solid transparent;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-bounce);
+}
+
+.player-color-pick:hover {
+  transform: scale(1.1);
+}
+
+.player-name-input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--bg-warm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  background: var(--bg-warm);
+  transition: all var(--duration-fast) var(--ease-smooth);
+  min-height: 48px;
+}
+
+.player-name-input:focus {
+  border-color: var(--color-primary);
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+}
+
+.player-remove-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-round);
+  border: none;
+  background: var(--color-error-light);
+  color: var(--color-error);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  transition: all var(--duration-fast) var(--ease-bounce);
+}
+
+.player-remove-btn:hover {
+  background: var(--color-error);
+  color: white;
+  transform: scale(1.1);
+}
+
+.add-player-btn {
+  border: 2px dashed var(--text-light);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-smooth);
+  min-height: 56px;
+}
+
+.add-player-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(74, 108, 247, 0.05);
+}
+
+/* ── Preset Cards ── */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.preset-card {
+  padding: var(--space-lg);
+  text-align: center;
+  cursor: pointer;
+}
+
+.preset-card .preset-icon {
+  font-size: 40px;
+  margin-bottom: var(--space-sm);
+}
+
+.preset-card .preset-name {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+
+.preset-card .preset-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* ── Topic Grid ── */
+.topic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+/* ── Difficulty Axes ── */
+.difficulty-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 600px) {
+  .difficulty-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Game Mode Cards ── */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-md);
+}
+
+.mode-card {
+  padding: var(--space-lg);
+  text-align: center;
+  cursor: pointer;
+}
+
+.mode-card .mode-icon {
+  font-size: 36px;
+  margin-bottom: var(--space-xs);
+}
+
+.mode-card .mode-name {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── Setup Footer / Navigation ── */
+.setup-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-lg);
+  border-top: 2px solid var(--bg-warm);
+}
+
+/* ── Class Level Grid ── */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-sm);
+}
+
+.level-card {
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  cursor: pointer;
+  border-radius: 12px 15px 10px 14px;
+  position: relative;
+  overflow: visible;
+}
+
+.level-card::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 40px;
+  height: 15px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(2px);
+  transform: rotate(45deg);
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+  pointer-events: none;
+}
+
+.level-card .level-name {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+
+/* ── Summary ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-item {
+  padding: var(--space-md);
+  background: var(--bg-warm);
+  border-radius: var(--radius-lg);
+}
+
+.summary-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-2xs);
+}
+
+.summary-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+/* ── Profile Section ── */
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--bg-warm);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-md);
+}
+
+.profile-section input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  background: white;
+  min-height: 44px;
+}
+
+.profile-section input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}

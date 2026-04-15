@@ -1,0 +1,253 @@
+/* 🧩 Cardboard Games - Visual Styles & Animations 🧩 */
+
+:root {
+  --color-cardboard: #d4a76a;
+  --color-cardboard-dark: #b88a4d;
+  --color-cardboard-light: #e5c191;
+  --font-handwritten: 'Indie Flower', 'Coming Soon', cursive;
+  --color-tape-cyan: rgba(0, 188, 212, 0.4);
+  --color-tape-pink: rgba(233, 30, 99, 0.4);
+  --color-tape-yellow: rgba(255, 235, 59, 0.4);
+}
+
+/* 🏆 Premium Cardboard Chip 🏆 */
+.cardboard-chip {
+  position: relative;
+  background-color: var(--color-cardboard);
+  background-image: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(0,0,0,0.03) 16px, rgba(0,0,0,0.03) 18px);
+  border: 1px solid var(--color-cardboard-dark);
+  box-shadow: var(--shadow-cardboard-md);
+  /* 🧶 Organic Hand-Cut Blob Shaping 🧶 */
+  border-radius: 40% 60% 70% 30% / 30% 70% 30% 70%;
+  padding: 12px 20px;
+  font-family: var(--font-family-cardboard);
+  color: #4b3621;
+  transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s;
+  user-select: none;
+  overflow: visible;
+}
+
+/* 🌈 Highly Vibrant Rainbow Cardboard Palette - Organic Shapes Only 🌈 */
+.cardboard-pink { background-color: #FF85A2 !important; border-color: #FF3366 !important; color: #fff !important; border-radius: 60% 40% 30% 70% / 70% 30% 40% 60% !important; }
+.cardboard-yellow { background-color: #FFD93D !important; border-color: #E8B830 !important; color: #3b2b1a !important; border-radius: 40% 60% 70% 30% / 40% 50% 60% 40% !important; }
+.cardboard-blue { background-color: #4A90E2 !important; border-color: #2D6EB4 !important; color: #fff !important; border-radius: 70% 30% 50% 50% / 30% 70% 40% 60% !important; }
+.cardboard-green { background-color: #58D68D !important; border-color: #27AE60 !important; color: #fff !important; border-radius: 50% 50% 70% 30% / 50% 40% 60% 50% !important; }
+.cardboard-orange { background-color: #EB984E !important; border-color: #D35400 !important; color: #fff !important; border-radius: 30% 70% 40% 60% / 60% 30% 70% 40% !important; }
+.cardboard-purple { background-color: #AF7AC5 !important; border-color: #8E44AD !important; color: #fff !important; border-radius: 60% 40% 60% 40% / 40% 60% 40% 60% !important; }
+.cardboard-cyan { background-color: #48C9B0 !important; border-color: #16A085 !important; color: #fff !important; border-radius: 40% 60% 30% 70% / 50% 50% 50% 50% !important; }
+.cardboard-red { background-color: #EC7063 !important; border-color: #CB4335 !important; color: #fff !important; border-radius: 70% 30% 40% 60% / 40% 60% 30% 70% !important; }
+.cardboard-lime { background-color: #82E0AA !important; border-color: #2ECC71 !important; color: #3b2b1a !important; border-radius: 50% 50% 30% 70% / 70% 30% 50% 50% !important; }
+
+.cardboard-chip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+.cardboard-chip:hover {
+  transform: translateY(-4px) rotate(1deg);
+  box-shadow: var(--shadow-cardboard-lg);
+}
+
+/* 🩹 Washi Tape Decorator 🩹 */
+.washi-tape {
+  position: absolute;
+  width: 80px;
+  height: 28px;
+  background: var(--color-tape-cyan);
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-washi-tape);
+  z-index: 5;
+  pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%);
+}
+
+.washi-tape.pink { background: var(--color-tape-pink); }
+.washi-tape.yellow { background: var(--color-tape-yellow); }
+
+.washi-tape.rotated-left { transform: rotate(-45deg); }
+.washi-tape.rotated-right { transform: rotate(40deg); }
+
+/* 📍 Pin / Tack 📍 */
+.pin {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
+  border-radius: 50%;
+  box-shadow: 2px 3px 4px rgba(0,0,0,0.4);
+  z-index: 10;
+}
+
+.pin::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 4px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  transform: translate(-3px, -3px);
+}
+
+/* Cardboard Generic Item (Original preserved for compat) */
+.cardboard-item {
+  position: relative;
+  background-color: var(--color-cardboard);
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(0,0,0,0.02) 11px,
+    rgba(0,0,0,0.02) 13px
+  );
+  border: 2px solid var(--color-cardboard-dark);
+  box-shadow: 
+    0 4px 0 var(--color-cardboard-dark),
+    0 8px 15px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  padding: 12px 20px;
+  cursor: grab;
+  user-select: none;
+  font-family: var(--font-handwritten);
+  font-weight: bold;
+  font-size: var(--font-size-md);
+  color: #4b3621;
+  text-align: center;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+}
+
+.cardboard-item:active {
+  cursor: grabbing;
+}
+
+.cardboard-item.is-dragging {
+  transform: scale(1.1) rotate(2deg);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+  cursor: grabbing;
+}
+
+/* Cardboard Wobble Animation */
+@keyframes cardboard-wobble {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(2deg); }
+  50%  { transform: rotate(-2deg); }
+  75%  { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.cardboard-wobble {
+  animation: cardboard-wobble 0.4s ease-in-out;
+}
+
+/* 🧱 Pappen-Stapler Styles 🧱 */
+.stapler-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  min-height: 400px;
+  background: radial-gradient(circle at center, #fff9f0 0%, #fdf5e6 100%);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stapler-base {
+  width: 200px;
+  height: 20px;
+  background-color: #8b6b4a;
+  border-radius: 10px;
+  margin-top: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.stack-target {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: 40px;
+  border: 2px dashed rgba(0,0,0,0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  color: rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+
+/* Cardboard Paper Layers (for Schnipsel-Suche) */
+.paper-scrap {
+  position: absolute;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  transition: transform 0.3s var(--ease-bounce);
+}
+
+.paper-star { background-color: #ffd700; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 60px; height: 60px; }
+.paper-heart { background-color: #ff6b6b; clip-path: path("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"); width: 60px; height: 60px; transform: scale(3);}
+
+/* 🗑️ Sorting Bins 🗑️ */
+.sorting-bin {
+  background-color: var(--color-cardboard-dark);
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 4px solid #8b6b4a;
+  border-radius: 8px 12px 6px 10px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.sorting-bin::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  pointer-events: none;
+}
+
+.sorting-bin-label {
+  background: #fdf5e6;
+  padding: 2px 10px;
+  font-family: var(--font-handwritten);
+  font-size: 0.9rem;
+  font-weight: bold;
+  transform: rotate(-1deg);
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  align-self: center;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+/* 📄 Hand-Torn Result Card 📄 */
+.cardboard-result-card {
+  background: #fdf5e6;
+  border: 4px solid var(--color-cardboard);
+  padding: 30px;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.cardboard-result-card::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: 50%;
+  width: 60px; height: 30px;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateX(-50%) rotate(2deg);
+  border: 1px solid rgba(0,0,0,0.05);
+}

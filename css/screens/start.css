@@ -1,0 +1,138 @@
+/* ============================================
+   START SCREEN
+   ============================================ */
+
+.start-screen {
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-2xl);
+  position: relative;
+  background-color: #fdf5e6; /* Soft border color if aspect ratio differs */
+  background-image: var(--game-background-img, url('../../assets/img/steph_bild_1.jpg'));
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: hidden;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/* ── Decorative Elements ── */
+.start-deco {
+  position: absolute;
+  opacity: 0.12;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
+}
+
+.start-deco-1 {
+  width: 320px;
+  height: 320px;
+  background: var(--color-primary);
+  top: -80px;
+  right: -80px;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; /* Hand-cut paper look */
+  animation: float 6s ease-in-out infinite;
+}
+
+.start-deco-2 {
+  width: 220px;
+  height: 220px;
+  background: var(--color-accent);
+  bottom: -40px;
+  left: -40px;
+  border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+  animation: float 5s ease-in-out infinite 1s;
+}
+
+.start-deco-3 {
+  width: 160px;
+  height: 160px;
+  background: var(--field-team);
+  top: 40%;
+  left: -40px;
+  clip-path: polygon(10% 25%, 35% 25%, 35% 10%, 65% 10%, 65% 25%, 90% 25%, 90% 50%, 65% 50%, 65% 90%, 35% 90%, 35% 50%, 10% 50%); /* Plus shape */
+  animation: float 7s ease-in-out infinite 0.5s;
+}
+
+.start-deco-4 {
+  width: 190px;
+  height: 190px;
+  background: var(--field-surprise);
+  bottom: 20%;
+  right: -60px;
+  border-radius: 30% 70% 70% 30% / 50% 50% 50% 50%;
+  animation: float 5.5s ease-in-out infinite 1.5s;
+}
+
+/* ── "Tape" Corners ── */
+.start-screen::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(2px);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  z-index: 10;
+  bottom: 20px;
+  right: -20px;
+  transform: rotate(-45deg);
+}
+
+.start-content {
+  position: relative;
+  z-index: 10;
+  background: #fdf5e6;
+  padding: var(--space-2xl);
+  border-radius: 8px 40px 15px 35px;
+  box-shadow: var(--shadow-cardboard-xl);
+  max-width: 600px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.05);
+  transform: rotate(1.2deg);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+.start-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.start-title h1 {
+  font-family: var(--font-family-display);
+  font-size: 3.5rem;
+  color: #3b2b1a;
+  margin: 0;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+}
+
+.start-subtitle {
+  font-family: var(--font-handwritten);
+  font-size: 1.5rem;
+  color: #5D4037;
+  margin-bottom: var(--space-xl);
+  line-height: 1.3;
+}
+
+.mascot-char {
+  filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease;
+}
+
+.mascot-char:hover {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* ── Mascots Wrapper ── */
+.start-mascots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: var(--space-lg) auto;
+  max-width: 600px;
+}
