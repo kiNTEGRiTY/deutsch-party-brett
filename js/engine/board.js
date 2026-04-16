@@ -6,54 +6,17 @@
  */
 
 import { FieldType } from './field-types.js';
-
-// Board layout: 30 fields in a winding path
-// Positions are percentages of the board container (0-100)
-const BOARD_LAYOUT = [
-  // Row 1: left to right (fields 0-6)
-  { id: 0,  type: FieldType.START,     x: 8,  y: 88 },
-  { id: 1,  type: FieldType.NORMAL,    x: 20, y: 88 },
-  { id: 2,  type: FieldType.NORMAL,    x: 32, y: 88 },
-  { id: 3,  type: FieldType.REWARD,    x: 44, y: 88 },
-  { id: 4,  type: FieldType.NORMAL,    x: 56, y: 88 },
-  { id: 5,  type: FieldType.CHALLENGE, x: 68, y: 88 },
-  { id: 6,  type: FieldType.NORMAL,    x: 80, y: 88 },
-  // Turn up
-  { id: 7,  type: FieldType.SURPRISE,  x: 90, y: 78 },
-  // Row 2: right to left (fields 8-13)
-  { id: 8,  type: FieldType.NORMAL,    x: 80, y: 68 },
-  { id: 9,  type: FieldType.TEAM,      x: 68, y: 68 },
-  { id: 10, type: FieldType.NORMAL,    x: 56, y: 68 },
-  { id: 11, type: FieldType.HELPER,    x: 44, y: 68 },
-  { id: 12, type: FieldType.NORMAL,    x: 32, y: 68 },
-  { id: 13, type: FieldType.MOVEMENT,  x: 20, y: 68 },
-  // Turn up
-  { id: 14, type: FieldType.NORMAL,    x: 8,  y: 58 },
-  // Row 3: left to right (fields 15-20)
-  { id: 15, type: FieldType.TREASURE,  x: 20, y: 48 },
-  { id: 16, type: FieldType.NORMAL,    x: 32, y: 48 },
-  { id: 17, type: FieldType.CHALLENGE, x: 44, y: 48 },
-  { id: 18, type: FieldType.NORMAL,    x: 56, y: 48 },
-  { id: 19, type: FieldType.REWARD,    x: 68, y: 48 },
-  { id: 20, type: FieldType.NORMAL,    x: 80, y: 48 },
-  // Turn up
-  { id: 21, type: FieldType.SURPRISE,  x: 90, y: 38 },
-  // Row 4: right to left (fields 22-27)
-  { id: 22, type: FieldType.NORMAL,    x: 80, y: 28 },
-  { id: 23, type: FieldType.TEAM,      x: 68, y: 28 },
-  { id: 24, type: FieldType.NORMAL,    x: 56, y: 28 },
-  { id: 25, type: FieldType.CHALLENGE, x: 44, y: 28 },
-  { id: 26, type: FieldType.HELPER,    x: 32, y: 28 },
-  { id: 27, type: FieldType.NORMAL,    x: 20, y: 28 },
-  // Turn up to finish
-  { id: 28, type: FieldType.TREASURE,  x: 8,  y: 15 },
-  { id: 29, type: FieldType.FINISH,    x: 25, y: 8  },
-];
+import { getBoardLayoutForImage } from './board-layouts.js';
 
 export class Board {
-  constructor(randomize = true) {
-    this.fields = BOARD_LAYOUT.map(f => ({ ...f }));
+  constructor(randomize = true, imageId = 'default') {
+    const layout = getBoardLayoutForImage(imageId);
+    this.fields = layout.map(f => ({ ...f, type: FieldType.NORMAL }));
     this.totalFields = this.fields.length;
+    
+    // Explicitly set Start and Finish fields
+    this.fields[0].type = FieldType.START;
+    this.fields[this.totalFields - 1].type = FieldType.FINISH;
     
     if (randomize) {
       this.randomizeLayout();

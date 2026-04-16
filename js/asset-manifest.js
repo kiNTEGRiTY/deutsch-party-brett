@@ -20,6 +20,16 @@ export const BACKGROUNDS = [
     "name": "KI: Pirateninsel"
   },
   {
+    "id": "montessori_nature",
+    "url": "assets/img/backgrounds/montessori_nature.png",
+    "name": "KI: Naturpark (Montessori)"
+  },
+  {
+    "id": "storybook_mystery",
+    "url": "assets/img/backgrounds/storybook_mystery.png",
+    "name": "KI: Magischer Portal-Wald"
+  },
+  {
     "id": "1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
     "url": "assets/img/backgrounds/1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
     "name": "HG: 1966197D-160"

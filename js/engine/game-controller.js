@@ -38,7 +38,7 @@ export class GameController {
    * Initialize a new game
    */
   initGame(playerConfigs, settings) {
-    this.board = new Board();
+    this.board = new Board(true, settings.selectedBoard || 'default');
     this.dice = new Dice();
     this.turnManager = new TurnManager();
     this.settings = settings;
