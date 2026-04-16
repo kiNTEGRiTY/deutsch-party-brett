@@ -78,16 +78,21 @@ const TOPIC_MINIGAME_MAP = {
  * @param {string} fieldType - Board field type (normal, challenge, team)
  * @returns {object} Task object with miniGame type, content, and settings
  */
-export function generateTask(activeTopics, difficulty, fieldType = 'normal') {
+export function generateTask(activeTopics, difficulty, fieldType = 'normal', explicitTopic = null) {
   const lang = getLanguageModule();
   
-  // Pick a random active topic
-  const validTopics = activeTopics.filter(t => TOPIC_MINIGAME_MAP[t]);
-  if (validTopics.length === 0) {
-    // Fallback to article choice
-    validTopics.push('artikel');
+  let topic;
+  if (explicitTopic && TOPIC_MINIGAME_MAP[explicitTopic]) {
+    topic = explicitTopic;
+  } else {
+    // Pick a random active topic
+    const validTopics = activeTopics.filter(t => TOPIC_MINIGAME_MAP[t]);
+    if (validTopics.length === 0) {
+      // Fallback to article choice
+      validTopics.push('artikel');
+    }
+    topic = validTopics[Math.floor(Math.random() * validTopics.length)];
   }
-  const topic = validTopics[Math.floor(Math.random() * validTopics.length)];
   
   // Pick a mini-game for the topic
   const games = TOPIC_MINIGAME_MAP[topic] || TOPIC_MINIGAME_MAP._default;

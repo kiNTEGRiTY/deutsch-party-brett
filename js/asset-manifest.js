@@ -10,6 +10,16 @@ export const BACKGROUNDS = [
     "name": "KI: Sonnenpfad (Neu)"
   },
   {
+    "id": "winter_wonderland",
+    "url": "assets/img/backgrounds/winter_wonderland.png",
+    "name": "KI: Winterwunderland"
+  },
+  {
+    "id": "pirate_island",
+    "url": "assets/img/backgrounds/pirate_island.png",
+    "name": "KI: Pirateninsel"
+  },
+  {
     "id": "1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
     "url": "assets/img/backgrounds/1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
     "name": "HG: 1966197D-160"

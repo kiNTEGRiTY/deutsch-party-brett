@@ -66,15 +66,16 @@ export class Board {
   randomizeLayout() {
     // Definable pool of field types to distribute
     const pool = [
-      FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL,
-      FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL, FieldType.NORMAL,
-      FieldType.CHALLENGE, FieldType.CHALLENGE, FieldType.CHALLENGE,
+      FieldType.NOMEN, FieldType.NOMEN, FieldType.NOMEN, FieldType.NOMEN,
+      FieldType.VERBEN, FieldType.VERBEN, FieldType.VERBEN, FieldType.VERBEN,
+      FieldType.ADJEKTIV, FieldType.ADJEKTIV, FieldType.ADJEKTIV, FieldType.ADJEKTIV,
+      FieldType.CHALLENGE, FieldType.CHALLENGE,
       FieldType.TEAM, FieldType.TEAM,
       FieldType.REWARD, FieldType.REWARD,
       FieldType.SURPRISE, FieldType.SURPRISE,
       FieldType.HELPER, FieldType.HELPER,
       FieldType.MOVEMENT,
-      FieldType.TREASURE, FieldType.TREASURE,
+      FieldType.TREASURE,
       FieldType.TRAP, FieldType.TRAP,
       FieldType.PORTAL, FieldType.PORTAL
     ];

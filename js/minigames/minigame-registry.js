@@ -133,8 +133,12 @@ import { MysteryBox } from './mystery-box.js';
 import { SentenceStacker } from './sentence-stacker.js';
 import { SyllableFishing } from './syllable-fishing.js';
 import { ScrapHunt } from './scrap-hunt.js';
+import { WordChaos } from './word-chaos.js';
+import { SyllableNinja } from './syllable-ninja.js';
 
 const MINIGAMES = {
+  'word-chaos': WordChaos,
+  'syllable-ninja': SyllableNinja,
   'word-type-sort': WordTypeSort,
   'article-choice': ArticleChoice,
   'sentence-order': SentenceOrder,

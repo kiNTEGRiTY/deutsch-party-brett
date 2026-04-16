@@ -12,9 +12,11 @@
 
 import { getFieldIcon } from '../ui/icons.js';
 
-// Field type enum
 export const FieldType = {
   NORMAL:    'normal',
+  NOMEN:     'nomen',
+  VERBEN:    'verben',
+  ADJEKTIV:  'adjektiv',
   CHALLENGE: 'challenge',
   TEAM:      'team',
   REWARD:    'reward',
@@ -43,6 +45,27 @@ export const FIELD_META = {
     color: 'normal',
     description: 'Löse eine Deutsch-Aufgabe!',
     handler: 'minigame_single'
+  },
+  [FieldType.NOMEN]: {
+    label: 'Nomen',
+    iconId: 'nomen',
+    color: 'challenge',
+    description: 'Spiele ein Nomen-Spiel!',
+    handler: 'minigame_nomen'
+  },
+  [FieldType.VERBEN]: {
+    label: 'Verben',
+    iconId: 'verben',
+    color: 'team',
+    description: 'Löse eine Verben-Aufgabe!',
+    handler: 'minigame_verben'
+  },
+  [FieldType.ADJEKTIV]: {
+    label: 'Adjektive',
+    iconId: 'adjektiv',
+    color: 'helper',
+    description: 'Spiele mit Adjektiven!',
+    handler: 'minigame_adjektiv'
   },
   [FieldType.CHALLENGE]: {
     label: 'Herausforderung',

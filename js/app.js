@@ -76,13 +76,13 @@ class App {
     const minigameContainer = document.getElementById('minigame-content');
     this.minigameRenderer = new MinigameRenderer(minigameContainer, settings);
     
-    this.boardRenderer.onMinigameNeeded = (result) => this._launchMinigame(result.mode);
+    this.boardRenderer.onMinigameNeeded = (result) => this._launchMinigame(result.mode, result.topic);
     this.boardRenderer.render();
   }
 
-  _launchMinigame(mode) {
+  _launchMinigame(mode, topic) {
     this.screenManager.show('minigame');
-    this.minigameRenderer.launch(mode, (result) => {
+    this.minigameRenderer.launch(mode, topic, (result) => {
       this.gameController.onMinigameComplete(result);
       if (this.gameController.state === 'finished') {
         this._showResults();

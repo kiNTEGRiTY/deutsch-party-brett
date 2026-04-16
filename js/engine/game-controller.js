@@ -143,6 +143,18 @@ export class GameController {
         });
         return { action: 'minigame', mode: 'single' };
 
+      case 'minigame_nomen':
+        this._emit('minigameStart', { mode: 'single', player, field, topic: 'nomen' });
+        return { action: 'minigame', mode: 'single', topic: 'nomen' };
+
+      case 'minigame_verben':
+        this._emit('minigameStart', { mode: 'single', player, field, topic: 'verben' });
+        return { action: 'minigame', mode: 'single', topic: 'verben' };
+
+      case 'minigame_adjektiv':
+        this._emit('minigameStart', { mode: 'single', player, field, topic: 'adjektiv' });
+        return { action: 'minigame', mode: 'single', topic: 'adjektiv' };
+
       case 'minigame_all':
         this._emit('minigameStart', { 
           mode: 'challenge', 

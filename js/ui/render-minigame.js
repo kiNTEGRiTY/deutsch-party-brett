@@ -15,13 +15,14 @@ export class MinigameRenderer {
     this.timerInterval = null;
   }
 
-  launch(mode, onComplete) {
+  launch(mode, explicitTopic = null, onComplete) {
     this.onComplete = onComplete;
     
     const task = generateTask(
       this.settings.activeTopics,
       this.settings.difficulty,
-      mode
+      mode,
+      explicitTopic
     );
     
     const minigame = getMinigame(task.miniGameId);

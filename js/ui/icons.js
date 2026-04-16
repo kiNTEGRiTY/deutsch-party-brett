@@ -161,6 +161,27 @@ export function iconTeam(size = 24) {
   return `<svg viewBox="0 0 40 40" width="${size}" height="${size}"><path d="M12 22 Q8 18 12 14 Q16 10 20 14" fill="#81C784" stroke="#388E3C" stroke-width="1.5"/><path d="M28 22 Q32 18 28 14 Q24 10 20 14" fill="#A5D6A7" stroke="#388E3C" stroke-width="1.5"/><path d="M16 28 Q12 24 16 20 Q20 16 24 20 Q28 24 24 28Z" fill="#66BB6A" stroke="#2E7D32" stroke-width="1.5"/></svg>`;
 }
 
+export function iconNomen(size = 24) {
+  return `<svg viewBox="0 0 40 40" width="${size}" height="${size}">
+    <circle cx="20" cy="20" r="18" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+    <text x="20" y="27" text-anchor="middle" font-family="'Fredoka One', sans-serif" font-size="20" font-weight="900" fill="#ffffff" stroke="#900" stroke-width="1.5">N</text>
+  </svg>`;
+}
+
+export function iconVerben(size = 24) {
+  return `<svg viewBox="0 0 40 40" width="${size}" height="${size}">
+    <circle cx="20" cy="20" r="18" fill="#2ecc71" stroke="#27ae60" stroke-width="3"/>
+    <text x="20" y="27" text-anchor="middle" font-family="'Fredoka One', sans-serif" font-size="20" font-weight="900" fill="#ffffff" stroke="#060" stroke-width="1.5">V</text>
+  </svg>`;
+}
+
+export function iconAdjektiv(size = 24) {
+  return `<svg viewBox="0 0 40 40" width="${size}" height="${size}">
+    <circle cx="20" cy="20" r="18" fill="#3498db" stroke="#2980b9" stroke-width="3"/>
+    <text x="20" y="27" text-anchor="middle" font-family="'Fredoka One', sans-serif" font-size="20" font-weight="900" fill="#ffffff" stroke="#005" stroke-width="1.5">A</text>
+  </svg>`;
+}
+
 export function iconReward(size = 24) {
   return `<svg viewBox="0 0 40 40" width="${size}" height="${size}"><rect x="8" y="14" width="24" height="18" rx="3" fill="#FFE082" stroke="#F9A825" stroke-width="2"/><path d="M8 14 Q8 10 20 10 Q32 10 32 14" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/><rect x="17" y="10" width="6" height="22" fill="#FF8F00" opacity="0.3"/><path d="M14 14 Q20 6 26 14" fill="none" stroke="#E65100" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
@@ -330,6 +351,9 @@ export function iconPresetEasy(size = 24) {
 export function getFieldIcon(type, size = 24) {
   const map = {
     normal: iconTask,
+    nomen: iconNomen,
+    verben: iconVerben,
+    adjektiv: iconAdjektiv,
     challenge: iconChallenge,
     team: iconTeam,
     reward: iconReward,
