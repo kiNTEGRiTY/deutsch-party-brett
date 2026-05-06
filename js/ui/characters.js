@@ -5,14 +5,18 @@
  * hearts, clovers, sparkles - kawaii craft-art aesthetic.
  * 
  * Falls back to inline SVG avatars.
- * When PNG images are available in assets/img/, they overlay automatically.
  */
-
-import { EXTRACTED_CHARS } from '../asset-manifest.js';
-
-export const CHARACTERS = [
-  ...EXTRACTED_CHARS
+const SVG_CHARACTER_LIBRARY = [
+  { id: 'fox', name_de: 'Fuchs', svgKey: 'fox' },
+  { id: 'penguin', name_de: 'Pinguin', svgKey: 'penguin' },
+  { id: 'bunny', name_de: 'Hase', svgKey: 'bunny' },
+  { id: 'bear', name_de: 'Bär', svgKey: 'bear' },
+  { id: 'elephant', name_de: 'Elefant', svgKey: 'elephant' },
+  { id: 'deer', name_de: 'Reh', svgKey: 'deer' },
+  { id: 'cat', name_de: 'Katze', svgKey: 'cat' }
 ];
+
+export const CHARACTERS = SVG_CHARACTER_LIBRARY;
 
 /**
  * EYE BUILDER - Common 'Steph' style eyes (Large, big iris, sparkling highlight)
@@ -123,8 +127,15 @@ function svgCat(s) {
   </svg>`;
 }
 
-// Removed SVG Builders to enforce strictly only cutout drawings as requested.
-export const SVG_BUILDERS = {};
+export const SVG_BUILDERS = {
+  fox: svgFox,
+  penguin: svgPenguin,
+  bunny: svgBunny,
+  bear: svgBear,
+  elephant: svgElephant,
+  deer: svgDeer,
+  cat: svgCat
+};
 
 export function getCharacter(index) {
   return CHARACTERS[index % CHARACTERS.length];
@@ -144,9 +155,12 @@ function buildCharacterSprite(char, size) {
       height: 100%;
     "></div>`;
   }
-  
-  // Return empty if no cutout sprite is available - strictest mode
-  return '';
+
+  if (char.svgKey && SVG_BUILDERS[char.svgKey]) {
+    return SVG_BUILDERS[char.svgKey](size);
+  }
+
+  return svgFox(size);
 }
 
 /**
