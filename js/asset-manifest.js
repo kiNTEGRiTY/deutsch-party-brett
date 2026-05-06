@@ -1,130 +1,23 @@
 export const BACKGROUNDS = [
   {
-    "id": "magical_forest",
-    "url": "assets/img/backgrounds/magical_forest.png",
-    "name": "KI: Zauberwald (Neu)"
-  },
-  {
-    "id": "sunny_adventure",
-    "url": "assets/img/backgrounds/sunny_adventure.png",
-    "name": "KI: Sonnenpfad (Neu)"
-  },
-  {
-    "id": "winter_wonderland",
-    "url": "assets/img/backgrounds/winter_wonderland.png",
-    "name": "KI: Winterwunderland"
-  },
-  {
-    "id": "pirate_island",
-    "url": "assets/img/backgrounds/pirate_island.png",
-    "name": "KI: Pirateninsel"
-  },
-  {
-    "id": "montessori_nature",
-    "url": "assets/img/backgrounds/montessori_nature.png",
-    "name": "KI: Naturpark (Montessori)"
-  },
-  {
-    "id": "storybook_mystery",
-    "url": "assets/img/backgrounds/storybook_mystery.png",
-    "name": "KI: Magischer Portal-Wald"
-  },
-  {
-    "id": "1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
-    "url": "assets/img/backgrounds/1966197D-1605-45D3-ACB5-001D7228CFF4.JPG",
-    "name": "HG: 1966197D-160"
-  },
-  {
-    "id": "3E4A3E09-62E4-4F75-93F0-D0D74B7D4EFD.jpg",
-    "url": "assets/img/backgrounds/3E4A3E09-62E4-4F75-93F0-D0D74B7D4EFD.jpg",
-    "name": "HG: 3E4A3E09-62E"
-  },
-  {
-    "id": "764F3A90-3791-4417-8F85-84861B869324.JPG",
-    "url": "assets/img/backgrounds/764F3A90-3791-4417-8F85-84861B869324.JPG",
-    "name": "HG: 764F3A90-379"
-  },
-  {
-    "id": "D81B56C4-A4C5-4D76-B0EF-D397EA516FAE.jpeg",
-    "url": "assets/img/backgrounds/D81B56C4-A4C5-4D76-B0EF-D397EA516FAE.jpeg",
-    "name": "HG: D81B56C4-A4C"
-  },
-  {
-    "id": "DB8AE81E-B56E-4464-BC57-644860B988EF_1_201_a.heic",
-    "url": "assets/img/backgrounds/DB8AE81E-B56E-4464-BC57-644860B988EF_1_201_a.heic",
-    "name": "HG: DB8AE81E-B56"
-  },
-  {
-    "id": "Gemini_Generated_Image_2vyj1f2vyj1f2vyj.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_2vyj1f2vyj1f2vyj.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_8apsuu8apsuu8aps 4.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_8apsuu8apsuu8aps 4.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_9mektb9mektb9mek.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_9mektb9mektb9mek.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_d10rfnd10rfnd10r.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_d10rfnd10rfnd10r.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_gc2rt7gc2rt7gc2r.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_gc2rt7gc2rt7gc2r.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_pgbox6pgbox6pgbo.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_pgbox6pgbox6pgbo.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_twnndftwnndftwnn.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_twnndftwnndftwnn.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "Gemini_Generated_Image_wagm8ewagm8ewagm.png",
-    "url": "assets/img/backgrounds/Gemini_Generated_Image_wagm8ewagm8ewagm.png",
-    "name": "HG: Gemini_Gener"
-  },
-  {
-    "id": "IMG_2601.jpeg",
-    "url": "assets/img/backgrounds/IMG_2601.jpeg",
-    "name": "HG: IMG_2601.jpe"
-  },
-  {
-    "id": "IMG_2606.jpeg",
-    "url": "assets/img/backgrounds/IMG_2606.jpeg",
-    "name": "HG: IMG_2606.jpe"
-  },
-  {
-    "id": "IMG_7985.jpeg",
-    "url": "assets/img/backgrounds/IMG_7985.jpeg",
-    "name": "HG: IMG_7985.jpe"
-  },
-  {
-    "id": "IMG_8117.JPG",
-    "url": "assets/img/backgrounds/IMG_8117.JPG",
-    "name": "HG: IMG_8117.JPG"
-  },
-  {
-    "id": "IMG_8121.jpeg",
-    "url": "assets/img/backgrounds/IMG_8121.jpeg",
-    "name": "HG: IMG_8121.jpe"
-  },
-  {
-    "id": "IMG_8736.JPG",
-    "url": "assets/img/backgrounds/IMG_8736.JPG",
-    "name": "HG: IMG_8736.JPG"
+    id: 'wortgarten',
+    url: 'assets/img/backgrounds/standard_board_preview.svg',
+    name: 'Zauberwald'
   }
 ];
+
+export function getDefaultBackground() {
+  return BACKGROUNDS[0] || {
+    id: 'wortgarten',
+    url: 'assets/img/backgrounds/standard_board_preview.svg',
+    name: 'Zauberwald'
+  };
+}
+
+export function getBackgroundById(id) {
+  return BACKGROUNDS.find((background) => background.id === id) || null;
+}
+
 export const EXTRACTED_CHARS = [
   {
     "id": "custom_0",

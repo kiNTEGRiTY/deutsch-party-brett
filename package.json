@@ -2,6 +2,7 @@
   "name": "deutsch-party-brett",
   "version": "1.0.0",
   "description": "Lernspiel",
+  "type": "module",
   "main": "index.html",
   "scripts": {
     "start": "npx serve -s . -p $PORT"

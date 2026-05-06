@@ -1,45 +1,61 @@
 /**
- * Board Layouts - Maps specific background images to custom coordinate paths.
- * Fields 0..N, x/y are percentages of the board width/height (0-100%).
+ * Board Layouts - integrated board path geometry without background images.
  */
 
-// Default Snake Path
-export const DEFAULT_LAYOUT = [
-  { id: 0,  x: 8,  y: 88 }, { id: 1,  x: 20, y: 88 }, { id: 2,  x: 32, y: 88 }, { id: 3,  x: 44, y: 88 },
-  { id: 4,  x: 56, y: 88 }, { id: 5,  x: 68, y: 88 }, { id: 6,  x: 80, y: 88 }, { id: 7,  x: 90, y: 80 },
-  { id: 8,  x: 85, y: 68 }, { id: 9,  x: 70, y: 68 }, { id: 10, x: 55, y: 68 }, { id: 11, x: 40, y: 68 },
-  { id: 12, x: 25, y: 68 }, { id: 13, x: 10, y: 60 }, { id: 14, x: 15, y: 48 }, { id: 15, x: 30, y: 48 },
-  { id: 16, x: 45, y: 48 }, { id: 17, x: 60, y: 48 }, { id: 18, x: 75, y: 48 }, { id: 19, x: 88, y: 40 },
-  { id: 20, x: 80, y: 28 }, { id: 21, x: 65, y: 28 }, { id: 22, x: 50, y: 28 }, { id: 23, x: 35, y: 28 },
-  { id: 24, x: 20, y: 28 }, { id: 25, x: 8,  y: 20 }, { id: 26, x: 20, y: 10 }, { id: 27, x: 35, y: 12 },
-  { id: 28, x: 50, y: 12 }
+const WORD_GARDEN_PATH = [
+  [14, 90],
+  [24, 89],
+  [35, 88],
+  [46, 87],
+  [57, 86],
+  [68, 84],
+  [78, 81],
+  [84, 74],
+  [80, 66],
+  [69, 63],
+  [58, 62],
+  [47, 63],
+  [36, 64],
+  [25, 67],
+  [17, 72],
+  [13, 64],
+  [21, 56],
+  [31, 53],
+  [42, 52],
+  [53, 52],
+  [64, 54],
+  [74, 58],
+  [81, 53],
+  [75, 45],
+  [65, 41],
+  [54, 40],
+  [43, 40],
+  [32, 41],
+  [22, 45],
+  [17, 38],
+  [23, 30],
+  [33, 26],
+  [45, 24],
+  [57, 24],
+  [69, 25],
+  [80, 29]
 ];
 
-// Frame around the elephant (leaves center untouched)
-export const ELEPHANT_LAYOUT = [
-  { id: 0, x: 5, y: 95 }, { id: 1, x: 5, y: 80 }, { id: 2, x: 5, y: 65 }, { id: 3, x: 5, y: 50 },
-  { id: 4, x: 5, y: 35 }, { id: 5, x: 5, y: 20 }, { id: 6, x: 5, y: 5 }, { id: 7, x: 20, y: 5 },
-  { id: 8, x: 35, y: 5 }, { id: 9, x: 50, y: 5 }, { id: 10, x: 65, y: 5 }, { id: 11, x: 80, y: 5 },
-  { id: 12, x: 95, y: 5 }, { id: 13, x: 95, y: 20 }, { id: 14, x: 95, y: 35 }, { id: 15, x: 95, y: 50 },
-  { id: 16, x: 95, y: 65 }, { id: 17, x: 95, y: 80 }, { id: 18, x: 95, y: 95 }, { id: 19, x: 80, y: 95 },
-  { id: 20, x: 65, y: 95 }, { id: 21, x: 50, y: 95 }, { id: 22, x: 35, y: 95 }, { id: 23, x: 20, y: 95 }
-];
+export const BOARD_THEME = {
+  id: 'wortgarten',
+  name: 'Zauberwald',
+  subtitle: 'Ein freundlicher Waldpfad aus großen Lernsteinen, auf dem Figuren sichtbar von Feld zu Feld ziehen.',
+  interactions: ['Drag & Drop', 'Auswahl', 'Zuordnen', 'Reihenfolge', 'Lückensatz'],
+  values: ['Respekt', 'Achtsamkeit', 'Zusammenarbeit']
+};
 
-// Wandering path for the Montessori Nature board
-export const MONTESSORI_LAYOUT = [
-  { id: 0, x: 10, y: 90 }, { id: 1, x: 22, y: 88 }, { id: 2, x: 32, y: 85 }, { id: 3, x: 42, y: 80 },
-  { id: 4, x: 50, y: 70 }, { id: 5, x: 55, y: 60 }, { id: 6, x: 62, y: 52 }, { id: 7, x: 72, y: 50 },
-  { id: 8, x: 82, y: 52 }, { id: 9, x: 88, y: 44 }, { id: 10, x: 85, y: 34 }, { id: 11, x: 75, y: 28 },
-  { id: 12, x: 62, y: 24 }, { id: 13, x: 50, y: 24 }, { id: 14, x: 40, y: 30 }, { id: 15, x: 30, y: 38 },
-  { id: 16, x: 20, y: 40 }, { id: 17, x: 10, y: 35 }, { id: 18, x: 10, y: 22 }, { id: 19, x: 20, y: 15 },
-  { id: 20, x: 32, y: 12 }, { id: 21, x: 45, y: 12 }, { id: 22, x: 60, y: 12 }, { id: 23, x: 75, y: 12 },
-  { id: 24, x: 88, y: 15 }
-];
+export const STANDARD_BOARD_LAYOUT = WORD_GARDEN_PATH.map(([x, y], id) => ({
+  id,
+  x,
+  y,
+  difficultyLevel: id < 12 ? 1 : id < 24 ? 2 : 3
+}));
 
-export function getBoardLayoutForImage(imageId) {
-  if (imageId.includes('1966197D')) return ELEPHANT_LAYOUT;
-  if (imageId.includes('montessori_nature')) return MONTESSORI_LAYOUT;
-  if (imageId.includes('storybook_mystery')) return MONTESSORI_LAYOUT; // Re-use wandering path
-  
-  return DEFAULT_LAYOUT;
+export function getBoardLayoutForImage() {
+  return STANDARD_BOARD_LAYOUT.map((field) => ({ ...field }));
 }
