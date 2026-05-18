@@ -18,6 +18,15 @@ import {
   iconGold, iconSilver, iconBronze
 } from './ui/icons.js';
 
+const Screens = {
+  START: 'start',
+  SETUP: 'setup',
+  BOARD: 'board',
+  MINIGAME_MENU: 'minigame-menu',
+  MINIGAME: 'minigame',
+  RESULTS: 'results'
+};
+
 class App {
   constructor() {
     this.screenManager = new ScreenManager();
@@ -32,21 +41,22 @@ class App {
 
   init() {
     SoundManager.installGestureUnlock();
-    this.screenManager.register('start', document.getElementById('screen-start'));
-    this.screenManager.register('setup', document.getElementById('screen-setup'));
-    this.screenManager.register('board', document.getElementById('screen-board'));
-    this.screenManager.register('minigame-menu', document.getElementById('screen-minigame-menu'));
-    this.screenManager.register('minigame', document.getElementById('screen-minigame'));
-    this.screenManager.register('results', document.getElementById('screen-results'));
+    this.screenManager.register(Screens.START, document.getElementById('screen-start'));
+    this.screenManager.register(Screens.SETUP, document.getElementById('screen-setup'));
+    this.screenManager.register(Screens.BOARD, document.getElementById('screen-board'));
+    this.screenManager.register(Screens.MINIGAME_MENU, document.getElementById('screen-minigame-menu'));
+    this.screenManager.register(Screens.MINIGAME, document.getElementById('screen-minigame'));
+    this.screenManager.register(Screens.RESULTS, document.getElementById('screen-results'));
 
-    this._mountAmbientDecor();
-    this.screenManager.show('start');
     this._setupStartScreen();
     this._setupGameEvents();
+    this._showStart();
     
     // Expose for debugging and manual minigame triggers
     window.app = this;
     
+    this._applyDebugRoute();
+
     console.log('Deutsch Party Brett - initialized!');
   }
 
@@ -75,17 +85,20 @@ class App {
       this.settings.reset();
       this._showSetup();
     });
-    document.getElementById('btn-profiles')?.addEventListener('click', () => {
-      this._showProfilePicker();
-    });
     document.getElementById('btn-minigames')?.addEventListener('click', () => {
       this._showMinigameMenu();
     });
   }
 
+  _showStart() {
+    this._clearResultsTimeout();
+    this._refreshStartScreenCta();
+    this.screenManager.show(Screens.START);
+  }
+
   _showSetup() {
     this._clearResultsTimeout();
-    this.screenManager.show('setup');
+    this.screenManager.show(Screens.SETUP);
     const setupContainer = document.getElementById('setup-content');
     this.setupRenderer = new SetupRenderer(setupContainer, this.settings, (players, settings) => {
       this._startGame(players, settings);
@@ -95,10 +108,10 @@ class App {
 
   _showMinigameMenu() {
     this._clearResultsTimeout();
-    this.screenManager.show('minigame-menu');
+    this.screenManager.show(Screens.MINIGAME_MENU);
     const menuContainer = document.getElementById('minigame-menu-content');
     this.minigameMenuRenderer = new MinigameMenuRenderer(menuContainer, this.settings.getSnapshot(), {
-      onBack: () => this.screenManager.show('start'),
+      onBack: () => this._showStart(),
       onLaunch: (payload) => this._launchStandaloneMinigame(payload)
     });
     this.minigameMenuRenderer.render();
@@ -107,7 +120,7 @@ class App {
   _startGame(players, settings) {
     this._clearResultsTimeout();
     this.gameController.initGame(players, settings.getSnapshot());
-    this.screenManager.show('board');
+    this.screenManager.show(Screens.BOARD);
     SoundManager.play('launch');
 
     this._mountGameUi(settings.getSnapshot());
@@ -117,7 +130,7 @@ class App {
 
   _launchMinigame(request, explicitTopic = null) {
     this._clearResultsTimeout();
-    this.screenManager.show('minigame');
+    this.screenManager.show(Screens.MINIGAME);
     SoundManager.play('launch');
     const resolvedRequest = typeof request === 'object' && request !== null
       ? request
@@ -138,9 +151,9 @@ class App {
       currentPlayerId: this.gameController.getCurrentPlayer()?.id ?? null,
       exitOptions: {
         backLabel: 'Zum Brett',
-        onBack: () => this._abortMinigame(resolvedRequest.mode, 'board'),
+        onBack: () => this._abortMinigame(resolvedRequest.mode, Screens.BOARD),
         menuLabel: 'Zum Menü',
-        onMenu: () => this._abortMinigame(resolvedRequest.mode, 'start')
+        onMenu: () => this._abortMinigame(resolvedRequest.mode, Screens.START)
       }
     };
 
@@ -149,7 +162,7 @@ class App {
       if (this.gameController.state === 'finished') {
         this._showResults();
       } else {
-        this.screenManager.show('board');
+        this.screenManager.show(Screens.BOARD);
         this.boardRenderer.update();
         this._persistActiveGame();
       }
@@ -158,7 +171,7 @@ class App {
 
   _launchStandaloneMinigame(payload) {
     this._clearResultsTimeout();
-    this.screenManager.show('minigame');
+    this.screenManager.show(Screens.MINIGAME);
     SoundManager.play('launch');
     this._ensureMinigameRenderer(this.settings.getSnapshot());
     const runtimeContext = {
@@ -168,7 +181,7 @@ class App {
         backLabel: 'Zu Minigames',
         onBack: () => this._showMinigameMenu(),
         menuLabel: 'Zum Start',
-        onMenu: () => this.screenManager.show('start')
+        onMenu: () => this._showStart()
       }
     };
 
@@ -178,14 +191,14 @@ class App {
   }
 
   _showResults() {
-    if (this.screenManager.getCurrent() === 'results') {
+    if (this.screenManager.getCurrent() === Screens.RESULTS) {
       return;
     }
 
     this._clearResultsTimeout();
     GameSessionStorage.clear();
     this._refreshStartScreenCta();
-    this.screenManager.show('results');
+    this.screenManager.show(Screens.RESULTS);
     const resultsContainer = document.getElementById('results-content');
     
     const players = this.gameController.getPlayers();
@@ -248,7 +261,7 @@ class App {
     });
     document.getElementById('btn-to-start')?.addEventListener('click', () => {
       this._refreshStartScreenCta();
-      this.screenManager.show('start');
+      this._showStart();
     });
   }
 
@@ -272,15 +285,86 @@ class App {
       return;
     }
 
-    continueBtn.textContent = 'Fortsetzen';
+    const labelEl = continueBtn.querySelector('span');
+    const detailEl = continueBtn.querySelector('small');
 
     if (GameSessionStorage.hasSavedGame()) {
+      if (labelEl) labelEl.textContent = 'Partie fortsetzen';
+      if (detailEl) detailEl.textContent = 'Gespeicherter Stand';
       continueBtn.title = 'Aktive Partie vom letzten Speicherpunkt weiter spielen';
     } else if (ProfileManager.hasProfiles()) {
+      if (labelEl) labelEl.textContent = 'Profil laden';
+      if (detailEl) detailEl.textContent = 'Gespeicherte Einstellungen';
       continueBtn.title = 'Gespeicherte Spielprofile laden';
     } else {
-      continueBtn.title = 'Gespeichertes Spiel öffnen oder direkt mit dem Setup weitergehen';
+      if (labelEl) labelEl.textContent = 'Setup oeffnen';
+      if (detailEl) detailEl.textContent = 'Keine gespeicherte Partie';
+      continueBtn.title = 'Direkt mit dem Setup weitergehen';
     }
+  }
+
+  _applyDebugRoute() {
+    const params = new URLSearchParams(window.location.search);
+    const requestedScreen = params.get('screen') || params.get('debugScreen');
+    const debugBoard = params.get('debugBoard') || (requestedScreen === Screens.BOARD ? '1' : '');
+    const miniGameId = params.get('debugMinigame');
+
+    if (requestedScreen === Screens.SETUP || params.has('debugSetup')) {
+      window.setTimeout(() => {
+        this.settings.reset();
+        this._showSetup();
+      }, 0);
+      return;
+    }
+
+    if (debugBoard) {
+      const playerCount = Math.max(2, Math.min(4, Number(params.get('debugPlayers') || 2)));
+      const activePlayerIndex = Math.max(0, Math.min(playerCount - 1, Number(params.get('debugCurrent') || 0)));
+      const round = Math.max(1, Number(params.get('debugRound') || 1));
+      const positions = String(params.get('debugPositions') || '0,5')
+        .split(',')
+        .map((value) => Math.max(0, Math.min(35, Number(value.trim()) || 0)));
+
+      window.setTimeout(() => {
+        this.settings.reset();
+        this._startGame(
+          Array.from({ length: playerCount }, (_, index) => ({
+            name: `Spieler ${index + 1}`,
+            colorIndex: index
+          })),
+          this.settings
+        );
+
+        this.gameController.getPlayers().forEach((player, index) => {
+          player.moveTo(positions[index] ?? 0);
+        });
+        this.gameController.turnManager.currentPlayerIndex = activePlayerIndex;
+        this.gameController.turnManager.round = round;
+        this.boardRenderer?.render();
+        this._persistActiveGame();
+      }, 0);
+
+      return;
+    }
+
+    if (!miniGameId) {
+      return;
+    }
+
+    const playMode = params.get('debugMode') || 'solo_arcade';
+    const topic = params.get('debugTopic') || 'satzbau';
+    const timeLimitSec = Number(params.get('debugTimeLimit') || 8);
+    const rounds = Number(params.get('debugRounds') || 1);
+
+    window.setTimeout(() => {
+      this._launchStandaloneMinigame({
+        miniGameId,
+        playMode,
+        topic,
+        timeLimitSec,
+        rounds
+      });
+    }, 0);
   }
 
   _setupGameEvents() {
@@ -325,12 +409,11 @@ class App {
     this.boardRenderer.onMinigameNeeded = (result) => this._launchMinigame(result);
     this.boardRenderer.onMenuRequested = () => {
       this._persistActiveGame();
-      this._refreshStartScreenCta();
-      this.screenManager.show('start');
+      this._showStart();
     };
   }
 
-  _abortMinigame(mode, destination = 'board') {
+  _abortMinigame(mode, destination = Screens.BOARD) {
     this.gameController.onMinigameComplete({
       correct: false,
       partial: false,
@@ -347,12 +430,12 @@ class App {
     this._persistActiveGame();
     this._refreshStartScreenCta();
 
-    if (destination === 'start') {
-      this.screenManager.show('start');
+    if (destination === Screens.START) {
+      this._showStart();
       return;
     }
 
-    this.screenManager.show('board');
+    this.screenManager.show(Screens.BOARD);
     this.boardRenderer?.update();
   }
 
@@ -383,7 +466,7 @@ class App {
       }
 
       this._clearResultsTimeout();
-      this.screenManager.show('board');
+      this.screenManager.show(Screens.BOARD);
       this._mountGameUi(normalizedSettings);
       this.boardRenderer.render();
       this.boardRenderer.showToast('Spielstand geladen', 'success');
@@ -418,37 +501,6 @@ class App {
 
     window.clearTimeout(this.resultsTimeoutId);
     this.resultsTimeoutId = null;
-  }
-
-  _mountAmbientDecor() {
-    if (document.querySelector('.floating-shapes')) {
-      return;
-    }
-
-    const layer = document.createElement('div');
-    layer.className = 'floating-shapes';
-    const colors = [
-      'linear-gradient(135deg, rgba(255,79,124,0.22), rgba(255,138,91,0.12))',
-      'linear-gradient(135deg, rgba(82,183,255,0.2), rgba(82,183,255,0.06))',
-      'linear-gradient(135deg, rgba(255,212,90,0.24), rgba(255,212,90,0.08))',
-      'linear-gradient(135deg, rgba(138,107,255,0.18), rgba(138,107,255,0.08))',
-      'linear-gradient(135deg, rgba(68,212,167,0.18), rgba(68,212,167,0.08))'
-    ];
-
-    for (let i = 0; i < 14; i += 1) {
-      const orb = document.createElement('div');
-      orb.className = 'floating-shape';
-      orb.style.width = `${80 + Math.random() * 180}px`;
-      orb.style.height = orb.style.width;
-      orb.style.left = `${Math.random() * 100}%`;
-      orb.style.top = `${Math.random() * 100}%`;
-      orb.style.background = colors[i % colors.length];
-      orb.style.animationDelay = `${Math.random() * 6}s`;
-      orb.style.animationDuration = `${10 + Math.random() * 8}s`;
-      layer.appendChild(orb);
-    }
-
-    document.body.prepend(layer);
   }
 }
 

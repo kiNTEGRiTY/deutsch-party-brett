@@ -5,127 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light">
   <meta name="darkreader-lock">
-  <meta name="description" content="Deutsch Party Brett — Das lustige Lernspiel für die Grundschule!">
-  <meta name="theme-color" content="#beddba">
+  <meta name="description" content="Deutsch Party Brett - ein lokales Lern-Brettspiel fuer die Grundschule.">
+  <meta name="theme-color" content="#f4ead8">
   <title>Deutsch Party Brett</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ff4f7c'/%3E%3Cpath d='M18 16h28v9H18z' fill='%23ffd45a'/%3E%3Ccircle cx='22' cy='47' r='7' fill='%23fff8ef'/%3E%3Ccircle cx='42' cy='47' r='7' fill='%23fff8ef'/%3E%3Cpath d='M20 25h24l-4 16H24z' fill='%23fff8ef'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232d5a48'/%3E%3Cpath d='M13 42C21 24 36 19 52 16' fill='none' stroke='%23f2c15d' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='17' cy='42' r='6' fill='%23f06f57'/%3E%3Ccircle cx='32' cy='29' r='6' fill='%235bbf8d'/%3E%3Ccircle cx='49' cy='17' r='6' fill='%236aa8ff'/%3E%3C/svg%3E">
   <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <script>
+    if (window.location.protocol === 'file:') {
+      window.location.replace('http://127.0.0.1:4174/?from=file');
+    }
+  </script>
 
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/cardboard-games.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/screens/start.css">
-  <link rel="stylesheet" href="css/screens/setup.css">
-  <link rel="stylesheet" href="css/screens/board.css">
+  <link rel="stylesheet" href="css/screens/start.css?v=shell-reboot-8">
+  <link rel="stylesheet" href="css/screens/setup.css?v=shell-reboot-8">
+  <link rel="stylesheet" href="css/screens/board.css?v=shell-reboot-8">
   <link rel="stylesheet" href="css/screens/minigame.css">
   <link rel="stylesheet" href="css/screens/results.css">
 
-  <!-- Core layout lock -->
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
-    html, body {
-      margin: 0; padding: 0;
-      width: 100vw; height: 100vh;
+    html,
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
-      background: linear-gradient(180deg, #eef8e8 0%, #d9efcc 100%) !important;
       color-scheme: only light !important;
       forced-color-adjust: none !important;
-      font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+      background: #f5ead6 !important;
+      font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
     }
 
     .screen {
       position: absolute;
-      top: 0; left: 0;
+      inset: 0;
+      display: none;
       width: 100vw;
       height: 100vh;
-      display: none;
-      flex-direction: column;
-      background: linear-gradient(180deg, #eef8e8 0%, #d9efcc 100%) !important;
       overflow: hidden;
+      background: #f5ead6;
     }
 
     .screen.active {
       display: flex !important;
     }
 
-    .board-screen, .board-screen.active {
-      flex-direction: row !important;
-    }
-
-    #board-content {
-      display: flex !important;
-      flex-direction: row !important;
-      position: absolute !important;
-      top: 0 !important; left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      overflow: hidden !important;
-    }
-
-    @media (max-width: 980px), (orientation: portrait) and (max-width: 1400px) {
-      .board-screen,
-      .board-screen.active {
-        flex-direction: column !important;
-      }
-
-      #board-content {
-        flex-direction: column !important;
-      }
+    #setup-content,
+    #board-content,
+    #minigame-menu-content,
+    #minigame-content,
+    #results-content {
+      width: 100%;
+      height: 100%;
     }
   </style>
 
-  <!-- App -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=shell-reboot-8"></script>
 </head>
 <body>
-
-  <!-- START SCREEN -->
   <div id="screen-start" class="screen start-screen">
-    <div class="start-shell animate-screen">
-      <section class="start-copy">
-        <h1 class="start-title">Deutsch Party Brett</h1>
-        <div class="start-actions">
-          <button id="btn-new-game" type="button" class="btn btn-primary btn-lg">Neues Spiel</button>
-          <button id="btn-continue" type="button" class="btn btn-secondary btn-lg">Fortsetzen</button>
-          <button id="btn-minigames" type="button" class="btn btn-secondary btn-lg">Minispiele</button>
+    <main class="start-shell animate-screen" aria-labelledby="start-title">
+      <section class="start-hero" aria-label="Spielstart">
+        <div class="start-brand-mark" aria-hidden="true">
+          <span>D</span>
+          <span>P</span>
+          <span>B</span>
+        </div>
+        <p class="start-kicker">Lokales Lernbrettspiel</p>
+        <h1 id="start-title" class="start-title">Deutsch Party Brett</h1>
+        <p class="start-subtitle">Eine klare Partie fuer zwei bis vier Spieler: Figuren waehlen, Klasse einstellen, wuerfeln und Deutsch-Aufgaben auf einem sichtbaren Pfad loesen.</p>
+
+        <div class="start-actions" aria-label="Hauptaktionen">
+          <button id="btn-new-game" type="button" class="start-action start-action--primary" data-testid="start-new-game">
+            <span>Neue Partie</span>
+            <small>Setup starten</small>
+          </button>
+          <button id="btn-continue" type="button" class="start-action" data-testid="start-continue">
+            <span>Setup öffnen</span>
+            <small>Keine gespeicherte Partie</small>
+          </button>
+          <button id="btn-minigames" type="button" class="start-action start-action--quiet" data-testid="start-minigames">
+            <span>Minispiele</span>
+            <small>Direkt ueben</small>
+          </button>
         </div>
       </section>
-    </div>
+
+      <aside class="start-brief" aria-label="Spielrahmen">
+        <div class="start-brief-card start-brief-card--dark">
+          <span class="start-brief-label">Partie</span>
+          <strong>36 Felder bis zum Ziel</strong>
+          <p>Nomen, Verben, Adjektive und Bewegungsfelder wechseln sichtbar ab.</p>
+        </div>
+        <div class="start-brief-grid">
+          <div class="start-brief-card">
+            <span>Spieler</span>
+            <strong>2-4</strong>
+          </div>
+          <div class="start-brief-card">
+            <span>Stufe</span>
+            <strong>V-4</strong>
+          </div>
+          <div class="start-brief-card">
+            <span>Modus</span>
+            <strong>Lokal</strong>
+          </div>
+        </div>
+        <div class="start-token-rack" aria-hidden="true">
+          <span style="--token:#c84f3f;">A</span>
+          <span style="--token:#2f7057;">B</span>
+          <span style="--token:#4d78b7;">C</span>
+          <span style="--token:#c19034;">D</span>
+        </div>
+      </aside>
+    </main>
   </div>
 
-  <!-- SETUP SCREEN -->
   <div id="screen-setup" class="screen setup-screen">
-    <div id="setup-content" style="width:100%;height:100%;overflow:auto;"></div>
+    <div id="setup-content"></div>
   </div>
 
-  <!-- BOARD SCREEN: board-content is the render target for BoardRenderer -->
-  <div id="screen-board" class="screen board-screen" style="
-    background: linear-gradient(180deg, #d7efca 0%, #c7e4bc 100%);
-  ">
+  <div id="screen-board" class="screen board-screen">
     <div id="board-content"></div>
   </div>
 
-  <!-- MINIGAME MENU SCREEN -->
   <div id="screen-minigame-menu" class="screen setup-screen">
-    <div id="minigame-menu-content" style="width:100%;height:100%;overflow:auto;"></div>
+    <div id="minigame-menu-content"></div>
   </div>
 
-  <!-- MINIGAME SCREEN -->
   <div id="screen-minigame" class="screen minigame-screen">
-    <div id="minigame-content" style="width:100%;height:100%;"></div>
+    <div id="minigame-content"></div>
   </div>
 
-  <!-- RESULTS SCREEN -->
   <div id="screen-results" class="screen results-screen">
-    <div id="results-content" style="width:100%;height:100%;overflow:auto;"></div>
+    <div id="results-content"></div>
   </div>
-
-  <!-- NO MASCOT LOADER: caused 44-image grid blocking buttons -->
 </body>
 </html>
