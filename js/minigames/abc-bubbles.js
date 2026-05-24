@@ -16,6 +16,14 @@ export const AbcBubbles = {
     
     let currentIdx = 0;
     let isPlaying = false;
+    let animationFrame = 0;
+    let gameHeight = 0;
+    let cleanupDone = false;
+    let resizeObserver = null;
+    let bubbles = [];
+    const pendingTimeouts = new Set();
+    const listeners = new AbortController();
+    const { signal } = listeners;
 
     container.innerHTML = `
       <div class="bubbles-container" style="position: relative; width: 100%; height: 60vh; max-height: 500px; background: linear-gradient(to top, #3498db, #ecf0f1); border-radius: 16px; overflow: hidden; touch-action: none;">
@@ -40,10 +48,64 @@ export const AbcBubbles = {
 
     const gameArea = container.querySelector('#bbl-game-area');
     const targetEl = container.querySelector('#bbl-target');
-    let bubbles = [];
+
+    function scheduleTimeout(callback, delay) {
+      const timeoutId = window.setTimeout(() => {
+        pendingTimeouts.delete(timeoutId);
+        callback();
+      }, delay);
+      pendingTimeouts.add(timeoutId);
+      return timeoutId;
+    }
+
+    function measureArea() {
+      gameHeight = gameArea.clientHeight || container.clientHeight || 500;
+    }
+
+    function cleanup() {
+      if (cleanupDone) return;
+      cleanupDone = true;
+      isPlaying = false;
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+      pendingTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+      pendingTimeouts.clear();
+      listeners.abort();
+      resizeObserver?.disconnect();
+      resizeObserver = null;
+      bubbles.forEach((bubble) => bubble.el.remove());
+      bubbles = [];
+
+      if (container.__minigameCleanup === cleanup) {
+        delete container.__minigameCleanup;
+      }
+    }
+
+    function finalize(result, delay = 0) {
+      const run = () => {
+        cleanup();
+        onComplete(result);
+      };
+
+      if (delay > 0) {
+        scheduleTimeout(run, delay);
+      } else {
+        run();
+      }
+    }
+
+    container.__minigameCleanup = cleanup;
+
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(measureArea);
+      resizeObserver.observe(gameArea);
+    }
+    measureArea();
 
     function spawnBubble(letter, isCorrect) {
-        if(!isPlaying) return;
+        if (!isPlaying || cleanupDone) return;
 
         const b = document.createElement('div');
         b.textContent = letter;
@@ -69,7 +131,7 @@ export const AbcBubbles = {
             color: '#2c3e50',
             cursor: 'pointer',
             userSelect: 'none',
-            backdropFilter: 'blur(2px)'
+            willChange: 'transform, opacity'
         });
 
         gameArea.appendChild(b);
@@ -84,41 +146,41 @@ export const AbcBubbles = {
 
         b.addEventListener('pointerdown', (e) => {
             e.preventDefault();
-            if (!isPlaying) return;
+            if (!isPlaying || cleanupDone) return;
 
             if (letter === targetSequence[currentIdx]) {
-                // Correct!
                 currentIdx++;
                 
-                // Pop effect
                 b.style.transform = 'scale(1.5)';
                 b.style.opacity = '0';
                 b.style.transition = 'all 0.2s';
                 
-                setTimeout(() => b.remove(), 200);
+                scheduleTimeout(() => b.remove(), 200);
                 bubbles = bubbles.filter(item => item !== obj);
 
                 if (currentIdx >= targetSequence.length) {
                     isPlaying = false;
+                    if (animationFrame) {
+                        cancelAnimationFrame(animationFrame);
+                        animationFrame = 0;
+                    }
                     targetEl.textContent = '🎉';
-                    setTimeout(() => onComplete({ correct: true, score: 100 }), 1000);
+                    finalize({ correct: true, score: 100 }, 1000);
                 } else {
                     targetEl.textContent = targetSequence[currentIdx];
                 }
             } else {
-                // Wrong!
                 b.style.background = 'rgba(231, 76, 60, 0.6)';
-                setTimeout(() => {
+                scheduleTimeout(() => {
                     if (b.parentNode) b.style.background = 'rgba(255, 255, 255, 0.4)';
                 }, 300);
             }
-        });
+        }, { signal });
     }
 
     function gameLoop() {
-        if (!isPlaying) return;
+        if (!isPlaying || cleanupDone) return;
 
-        // Move bubbles
         for (let i = bubbles.length - 1; i >= 0; i--) {
             const b = bubbles[i];
             b.y += b.speed;
@@ -128,20 +190,18 @@ export const AbcBubbles = {
             
             b.el.style.transform = `translate(${wobbleX}px, ${-b.y}px)`;
 
-            if (b.y > container.clientHeight + 150) {
+            if (b.y > gameHeight + 150) {
                 b.el.remove();
                 bubbles.splice(i, 1);
                 
-                // If it was the correct bubble that vanished, penalize
                 if (b.letter === targetSequence[currentIdx]) {
                     isPlaying = false;
-                    setTimeout(() => onComplete({ correct: false, score: 0 }), 500);
+                    finalize({ correct: false, score: 0 }, 500);
                     return;
                 }
             }
         }
 
-        // Spawn logic
         if (Math.random() < 0.02 && bubbles.length < 5) {
             const hasTarget = bubbles.some(b => b.letter === targetSequence[currentIdx]);
             if (!hasTarget) {
@@ -152,13 +212,19 @@ export const AbcBubbles = {
             }
         }
 
-        requestAnimationFrame(gameLoop);
+        animationFrame = requestAnimationFrame(gameLoop);
     }
 
     container.querySelector('#bbl-start-btn').addEventListener('click', () => {
         container.querySelector('#bbl-overlay').style.display = 'none';
         isPlaying = true;
+        measureArea();
         gameLoop();
-    });
+    }, { signal });
+
+    return {
+      destroy: cleanup,
+      cleanup
+    };
   }
 };

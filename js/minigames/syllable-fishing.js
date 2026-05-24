@@ -5,6 +5,7 @@
  */
 
 import { CardboardUtils } from '../ui/cardboard-utils.js';
+import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
 
 export const SyllableFishing = {
   id: 'syllable-fishing',
@@ -34,7 +35,7 @@ export const SyllableFishing = {
         
         <!-- The Fisherman (Cardboard Penguin) -->
         <div class="fisherman" style="position:absolute; left:30px; bottom:120px; width:100px; height:100px; z-index:5;">
-            <div class="char-sprite" style="background-image: url('assets/img/player-avatars.png'); background-size: 200% 200%; background-position: 100% 100%; width:100%; height:100%; filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.1));"></div>
+            ${renderCharacterAvatar(1, 100)}
             <div class="fishing-rod" style="position:absolute; right:-20px; top:20px; width:120px; height:6px; background:#8b6b4a; transform:rotate(-35deg); transform-origin:left; border-radius:3px;"></div>
         </div>
 

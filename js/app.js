@@ -4,15 +4,11 @@
  */
 
 import { ScreenManager } from './ui/screen-manager.js';
-import { GameController } from './engine/game-controller.js';
+import { GameController } from './engine/game-controller.js?v=game-feel-cutouts-30';
 import { SettingsManager } from './settings/settings-manager.js';
 import { GameSessionStorage } from './settings/game-session.js';
 import { ProfileManager } from './settings/profiles.js';
-import { SetupRenderer } from './ui/render-setup.js';
-import { BoardRenderer } from './ui/render-board.js';
-import { MinigameRenderer } from './ui/render-minigame.js';
-import { MinigameMenuRenderer } from './ui/render-minigame-menu.js';
-import { SoundManager } from './ui/sound-manager.js';
+import { SoundManager } from './ui/sound-manager.js?v=game-feel-cutouts-30';
 import { 
   iconDice, iconHome, iconCoin, iconStar,
   iconGold, iconSilver, iconBronze
@@ -37,6 +33,10 @@ class App {
     this.minigameRenderer = null;
     this.minigameMenuRenderer = null;
     this.resultsTimeoutId = null;
+    this._setupRendererClass = null;
+    this._boardRendererClass = null;
+    this._minigameRendererClass = null;
+    this._minigameMenuRendererClass = null;
   }
 
   init() {
@@ -67,11 +67,11 @@ class App {
       GameSessionStorage.clear();
       this._refreshStartScreenCta();
       this.settings.reset();
-      this._showSetup();
+      void this._showSetup();
     });
-    document.getElementById('btn-continue')?.addEventListener('click', () => {
+    document.getElementById('btn-continue')?.addEventListener('click', async () => {
       if (GameSessionStorage.hasSavedGame()) {
-        const restored = this._restoreSavedGame();
+        const restored = await this._restoreSavedGame();
         if (restored) {
           return;
         }
@@ -83,10 +83,10 @@ class App {
       }
 
       this.settings.reset();
-      this._showSetup();
+      await this._showSetup();
     });
     document.getElementById('btn-minigames')?.addEventListener('click', () => {
-      this._showMinigameMenu();
+      void this._showMinigameMenu();
     });
   }
 
@@ -96,39 +96,41 @@ class App {
     this.screenManager.show(Screens.START);
   }
 
-  _showSetup() {
+  async _showSetup() {
     this._clearResultsTimeout();
     this.screenManager.show(Screens.SETUP);
     const setupContainer = document.getElementById('setup-content');
+    const SetupRenderer = await this._getSetupRendererClass();
     this.setupRenderer = new SetupRenderer(setupContainer, this.settings, (players, settings) => {
-      this._startGame(players, settings);
+      void this._startGame(players, settings);
     });
     this.setupRenderer.render();
   }
 
-  _showMinigameMenu() {
+  async _showMinigameMenu() {
     this._clearResultsTimeout();
     this.screenManager.show(Screens.MINIGAME_MENU);
     const menuContainer = document.getElementById('minigame-menu-content');
+    const MinigameMenuRenderer = await this._getMinigameMenuRendererClass();
     this.minigameMenuRenderer = new MinigameMenuRenderer(menuContainer, this.settings.getSnapshot(), {
       onBack: () => this._showStart(),
-      onLaunch: (payload) => this._launchStandaloneMinigame(payload)
+      onLaunch: (payload) => void this._launchStandaloneMinigame(payload)
     });
     this.minigameMenuRenderer.render();
   }
 
-  _startGame(players, settings) {
+  async _startGame(players, settings) {
     this._clearResultsTimeout();
     this.gameController.initGame(players, settings.getSnapshot());
     this.screenManager.show(Screens.BOARD);
     SoundManager.play('launch');
 
-    this._mountGameUi(settings.getSnapshot());
+    await this._mountGameUi(settings.getSnapshot());
     this.boardRenderer.render();
     this._persistActiveGame();
   }
 
-  _launchMinigame(request, explicitTopic = null) {
+  async _launchMinigame(request, explicitTopic = null) {
     this._clearResultsTimeout();
     this.screenManager.show(Screens.MINIGAME);
     SoundManager.play('launch');
@@ -140,7 +142,7 @@ class App {
       ? { ...settingsSnapshot, difficulty: { ...resolvedRequest.difficulty } }
       : settingsSnapshot;
 
-    this._ensureMinigameRenderer(minigameSettings);
+    await this._ensureMinigameRenderer(minigameSettings);
     const runtimeContext = {
       players: this.gameController.getPlayers().map((player) => ({
         id: player.id,
@@ -169,24 +171,24 @@ class App {
     });
   }
 
-  _launchStandaloneMinigame(payload) {
+  async _launchStandaloneMinigame(payload) {
     this._clearResultsTimeout();
     this.screenManager.show(Screens.MINIGAME);
     SoundManager.play('launch');
-    this._ensureMinigameRenderer(this.settings.getSnapshot());
+    await this._ensureMinigameRenderer(this.settings.getSnapshot());
     const runtimeContext = {
       players: Array.isArray(payload.players) ? payload.players : [],
       currentPlayerId: payload.players?.[0]?.id ?? null,
       exitOptions: {
         backLabel: 'Zu Minigames',
-        onBack: () => this._showMinigameMenu(),
+        onBack: () => void this._showMinigameMenu(),
         menuLabel: 'Zum Start',
         onMenu: () => this._showStart()
       }
     };
 
     this.minigameRenderer.launchDirect(payload, runtimeContext, () => {
-      this._showMinigameMenu();
+      void this._showMinigameMenu();
     });
   }
 
@@ -257,7 +259,7 @@ class App {
     this._spawnConfetti();
     document.getElementById('btn-play-again')?.addEventListener('click', () => {
       this.settings.reset();
-      this._showSetup();
+      void this._showSetup();
     });
     document.getElementById('btn-to-start')?.addEventListener('click', () => {
       this._refreshStartScreenCta();
@@ -275,7 +277,10 @@ class App {
     const selected = prompt(`Profil wählen:\n${choice}`);
     if (selected) {
       const profile = ProfileManager.load(selected);
-      if (profile) { this.settings.loadSnapshot(profile.settings); this._showSetup(); }
+      if (profile) {
+        this.settings.loadSnapshot(profile.settings);
+        void this._showSetup();
+      }
     }
   }
 
@@ -312,7 +317,7 @@ class App {
     if (requestedScreen === Screens.SETUP || params.has('debugSetup')) {
       window.setTimeout(() => {
         this.settings.reset();
-        this._showSetup();
+        void this._showSetup();
       }, 0);
       return;
     }
@@ -325,9 +330,9 @@ class App {
         .split(',')
         .map((value) => Math.max(0, Math.min(35, Number(value.trim()) || 0)));
 
-      window.setTimeout(() => {
+      window.setTimeout(async () => {
         this.settings.reset();
-        this._startGame(
+        await this._startGame(
           Array.from({ length: playerCount }, (_, index) => ({
             name: `Spieler ${index + 1}`,
             colorIndex: index
@@ -357,7 +362,7 @@ class App {
     const rounds = Number(params.get('debugRounds') || 1);
 
     window.setTimeout(() => {
-      this._launchStandaloneMinigame({
+      void this._launchStandaloneMinigame({
         miniGameId,
         playMode,
         topic,
@@ -401,16 +406,20 @@ class App {
     setTimeout(() => container.remove(), 5000);
   }
 
-  _mountGameUi(settingsSnapshot) {
+  async _mountGameUi(settingsSnapshot) {
     const boardContainer = document.getElementById('board-content');
+    const BoardRenderer = await this._getBoardRendererClass();
     this.boardRenderer = new BoardRenderer(boardContainer, this.gameController);
-    this._ensureMinigameRenderer(settingsSnapshot);
 
-    this.boardRenderer.onMinigameNeeded = (result) => this._launchMinigame(result);
+    this.boardRenderer.onMinigameNeeded = (result) => void this._launchMinigame(result);
     this.boardRenderer.onMenuRequested = () => {
       this._persistActiveGame();
       this._showStart();
     };
+
+    void this._ensureMinigameRenderer(settingsSnapshot).catch((error) => {
+      console.error('Minigame renderer preload failed:', error);
+    });
   }
 
   _abortMinigame(mode, destination = Screens.BOARD) {
@@ -439,12 +448,13 @@ class App {
     this.boardRenderer?.update();
   }
 
-  _ensureMinigameRenderer(settingsSnapshot) {
+  async _ensureMinigameRenderer(settingsSnapshot) {
     const minigameContainer = document.getElementById('minigame-content');
+    const MinigameRenderer = await this._getMinigameRendererClass();
     this.minigameRenderer = new MinigameRenderer(minigameContainer, settingsSnapshot);
   }
 
-  _restoreSavedGame() {
+  async _restoreSavedGame() {
     const snapshot = GameSessionStorage.load();
     if (!snapshot) {
       this._refreshStartScreenCta();
@@ -467,7 +477,7 @@ class App {
 
       this._clearResultsTimeout();
       this.screenManager.show(Screens.BOARD);
-      this._mountGameUi(normalizedSettings);
+      await this._mountGameUi(normalizedSettings);
       this.boardRenderer.render();
       this.boardRenderer.showToast('Spielstand geladen', 'success');
       SoundManager.play('success');
@@ -501,6 +511,38 @@ class App {
 
     window.clearTimeout(this.resultsTimeoutId);
     this.resultsTimeoutId = null;
+  }
+
+  async _getSetupRendererClass() {
+    if (!this._setupRendererClass) {
+      const module = await import('./ui/render-setup.js?v=game-feel-cutouts-30');
+      this._setupRendererClass = module.SetupRenderer;
+    }
+    return this._setupRendererClass;
+  }
+
+  async _getBoardRendererClass() {
+    if (!this._boardRendererClass) {
+      const module = await import('./ui/render-board.js?v=game-feel-cutouts-30');
+      this._boardRendererClass = module.BoardRenderer;
+    }
+    return this._boardRendererClass;
+  }
+
+  async _getMinigameRendererClass() {
+    if (!this._minigameRendererClass) {
+      const module = await import('./ui/render-minigame.js?v=game-feel-cutouts-30');
+      this._minigameRendererClass = module.MinigameRenderer;
+    }
+    return this._minigameRendererClass;
+  }
+
+  async _getMinigameMenuRendererClass() {
+    if (!this._minigameMenuRendererClass) {
+      const module = await import('./ui/render-minigame-menu.js?v=game-feel-cutouts-30');
+      this._minigameMenuRendererClass = module.MinigameMenuRenderer;
+    }
+    return this._minigameMenuRendererClass;
   }
 }
 

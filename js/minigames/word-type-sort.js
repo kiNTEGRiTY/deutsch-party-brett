@@ -38,10 +38,10 @@ export const WordTypeSort = {
         
         <div class="sort-columns" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width:100%; padding:10px;">
           ${Object.entries(categories).map(([key, cat]) => `
-            <div class="sorting-bin" data-category="${key}">
+            <button class="sorting-bin" type="button" data-category="${key}">
               <div class="sorting-bin-label">${cat.label}</div>
               <div class="bin-content" style="display:flex; flex-direction:column; gap:5px; align-items:center;"></div>
-            </div>
+            </button>
           `).join('')}
         </div>
       </div>
@@ -49,67 +49,81 @@ export const WordTypeSort = {
 
     const pool = container.querySelector('.word-pool');
     const bins = container.querySelectorAll('.sorting-bin');
+    let selectedScrap = null;
+
+    const finishIfComplete = () => {
+      if (sortedCount < totalWords) {
+        return;
+      }
+
+      const score = Math.round((correctCount / totalWords) * 100);
+      setTimeout(() => onComplete({ correct: score >= 80, partial: score >= 50, score }), 1000);
+    };
+
+    const placeScrapInBin = (el, droppedInBin) => {
+      if (!el || !droppedInBin || el.dataset.sorted === 'true') {
+        return;
+      }
+
+      const word = el.dataset.word;
+      const category = droppedInBin.dataset.category;
+      const isCorrect = categories[category].correct.includes(word);
+      const binContent = droppedInBin.querySelector('.bin-content');
+
+      el.dataset.sorted = 'true';
+      el.classList.remove('is-selected');
+      selectedScrap = null;
+      el.style.position = 'relative';
+      el.style.left = '0';
+      el.style.top = '0';
+      el.style.zIndex = 'auto';
+      el.style.transform = `rotate(${Math.random() * 4 - 2}deg) scale(0.9)`;
+      binContent.appendChild(el);
+
+      if (isCorrect) {
+        correctCount++;
+        el.style.backgroundColor = '#a3de83';
+      } else {
+        el.style.backgroundColor = '#ff8a5c';
+        CardboardUtils.wobble(el);
+      }
+
+      el.style.pointerEvents = 'none';
+      el.disabled = true;
+      sortedCount++;
+      finishIfComplete();
+    };
 
     words.forEach((word) => {
-      const scrap = CardboardUtils.createCardboardElement('div', 'word-scrap', word);
+      const scrap = CardboardUtils.createCardboardElement('button', 'word-scrap', word);
+      scrap.type = 'button';
       scrap.dataset.word = word;
       scrap.style.position = 'relative'; // Let layout handle initial pos in pool
       scrap.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
       pool.appendChild(scrap);
 
-      // Make Draggable
-      CardboardUtils.makeDraggable(scrap, {
-        onStart: (el) => {
-          el.style.transform = 'scale(1.1) rotate(0deg)';
-          el.style.boxShadow = '0 15px 30px rgba(0,0,0,0.3)';
-        },
-        onDrop: (el, event) => {
-          // Check intersection with bins
-          let droppedInBin = null;
-          const rect = el.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-
-          bins.forEach(bin => {
-            const binRect = bin.getBoundingClientRect();
-            if (centerX > binRect.left && centerX < binRect.right &&
-                centerY > binRect.top && centerY < binRect.bottom) {
-              droppedInBin = bin;
-            }
-          });
-
-          if (droppedInBin) {
-            const category = droppedInBin.dataset.category;
-            const isCorrect = categories[category].correct.includes(word);
-            
-            // Move to bin
-            const binContent = droppedInBin.querySelector('.bin-content');
-            el.style.position = 'relative';
-            el.style.left = '0';
-            el.style.top = '0';
-            el.style.transform = `rotate(${Math.random() * 4 - 2}deg) scale(0.9)`;
-            binContent.appendChild(el);
-            
-            if (isCorrect) {
-              correctCount++;
-              el.style.backgroundColor = '#a3de83'; // Light green cardboard
-            } else {
-              el.style.backgroundColor = '#ff8a5c'; // Light red cardboard
-              CardboardUtils.wobble(el);
-            }
-
-            el.style.pointerEvents = 'none'; // Lock in bin
-            sortedCount++;
-
-            if (sortedCount >= totalWords) {
-              const score = Math.round((correctCount / totalWords) * 100);
-              setTimeout(() => onComplete({ correct: score >= 80, partial: score >= 50, score }), 1000);
-            }
-          } else {
-            // Snap back to pool or just stay? Let's stay but wobble
-            el.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
-          }
+      scrap.addEventListener('click', () => {
+        if (scrap.dataset.sorted === 'true') {
+          return;
         }
+
+        pool.querySelectorAll('.word-scrap.is-selected').forEach((node) => node.classList.remove('is-selected'));
+        selectedScrap = scrap;
+        scrap.classList.add('is-selected');
+      });
+
+      // Tap-first control: select a word, then tap the category. The old drag layer
+      // positioned all scraps absolutely and made the game look broken in the shell.
+    });
+
+    bins.forEach((bin) => {
+      bin.addEventListener('click', () => {
+        if (!selectedScrap) {
+          CardboardUtils.wobble(bin);
+          return;
+        }
+
+        placeScrapInBin(selectedScrap, bin);
       });
     });
 

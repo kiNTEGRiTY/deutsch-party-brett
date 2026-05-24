@@ -3,12 +3,12 @@
  * No emojis - all illustrated SVG icons
  */
 
-import { getMinigame } from '../minigames/minigame-registry.js';
+import { getMinigame } from '../minigames/minigame-registry.js?v=game-feel-cutouts-30';
 import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigames/core/party-game-core.js';
-import { createDirectTask, generateTask } from '../learning/task-generator.js';
-import { SoundManager } from './sound-manager.js';
+import { createDirectTask, generateTask } from '../learning/task-generator.js?v=game-feel-cutouts-30';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=game-feel-cutouts-30';
+import { SoundManager } from './sound-manager.js?v=game-feel-cutouts-30';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
-import { renderRainbowText } from './rainbow-text.js';
 
 export class MinigameRenderer {
   constructor(containerEl, settings) {
@@ -16,6 +16,8 @@ export class MinigameRenderer {
     this.settings = settings;
     this.onComplete = null;
     this.timerInterval = null;
+    this.activeCleanup = null;
+    this.activeGameId = null;
   }
 
   launch(mode, explicitTopic = null, runtimeContext = {}, onComplete) {
@@ -63,6 +65,7 @@ export class MinigameRenderer {
 
   _launchTask(task, mode, runtimeContext, onComplete) {
     this.onComplete = onComplete;
+    this._disposeActiveGame({ keepShell: true });
 
     const minigame = getMinigame(task.miniGameId);
     if (!minigame) {
@@ -88,22 +91,40 @@ export class MinigameRenderer {
     const partyConfig = task.partyConfig;
     const useExternalTimer = task.timerSeconds > 0 && !minigame.usesInternalTimer;
     const exitOptions = runtimeContext.exitOptions || {};
+    const titleClassName = minigame.name_de.length > 14
+      ? 'minigame-title minigame-title--compact'
+      : 'minigame-title';
+    const arcadeGameIds = new Set([
+      'wort-labyrinth-jagd',
+      'artikel-invaders',
+      'wort-tetris-stapel',
+      'wortarten-sprunglauf',
+      'schneeball-wortschlacht',
+      'artikel-gate-runner',
+      'silben-beat-surfer',
+      'satz-jetpack',
+      'grammatik-bossfight'
+    ]);
+    const overlayClassName = arcadeGameIds.has(task.miniGameId)
+      ? 'minigame-overlay animate-screen minigame-overlay--arcade'
+      : 'minigame-overlay animate-screen';
 
     this.container.innerHTML = `
-      <div class="minigame-overlay animate-screen" id="minigame-overlay" style="
+      <div class="${overlayClassName}" id="minigame-overlay" style="
         --minigame-accent:${theme.primary};
         --minigame-secondary:${theme.secondary};
-      ">
+      " data-topic="${task.topic || 'wortschatz'}" data-mode="${mode}" data-game="${task.miniGameId || 'deutsch'}" data-world="${BOARD_THEME.id}">
         <div class="minigame-shell">
           <aside class="minigame-sidebar">
             <div class="minigame-kicker">${modeIcon}<span>${this._getModeLabel(mode)}</span></div>
             <div class="minigame-title-row">
               <div class="minigame-title-icon">${modeIcon}</div>
               <div>
-                <h2 class="minigame-title">${renderRainbowText(minigame.name_de, { className: 'rainbow-title-markup' })}</h2>
+                <h2 class="${titleClassName}">${this._escape(minigame.name_de)}</h2>
                 <p class="minigame-subtitle">${theme.subtitle}</p>
               </div>
             </div>
+            ${this._renderMissionTrail(topicLabel)}
             <div class="minigame-meta">
               <span class="mission-chip">Thema: ${topicLabel}</span>
               <span class="mission-chip">Modus: ${getModeLabel(partyConfig.mode)}</span>
@@ -116,7 +137,7 @@ export class MinigameRenderer {
 
           <section class="minigame-stage">
             <div class="minigame-stage-topbar">
-              <div class="minigame-stage-title">${renderRainbowText('Mission läuft', { className: 'rainbow-title-markup rainbow-title-markup--tiny' })}</div>
+              <div class="minigame-stage-title">Aufgabenblatt</div>
               <div class="minigame-stage-actions">
                 ${exitOptions.backLabel ? `
                   <button class="btn btn-secondary btn-sm minigame-nav-btn" id="btn-minigame-back-out" type="button">
@@ -144,14 +165,12 @@ export class MinigameRenderer {
     `;
 
     document.getElementById('btn-minigame-back-out')?.addEventListener('click', () => {
-      this._clearTimer();
-      this.container.innerHTML = '';
+      this._disposeActiveGame();
       exitOptions.onBack?.();
     });
 
     document.getElementById('btn-minigame-menu-out')?.addEventListener('click', () => {
-      this._clearTimer();
-      this.container.innerHTML = '';
+      this._disposeActiveGame();
       exitOptions.onMenu?.();
     });
 
@@ -159,6 +178,7 @@ export class MinigameRenderer {
 
     if (useExternalTimer) {
       this._startTimer(task.timerSeconds, () => {
+        this._disposeActiveGame({ keepShell: true });
         this._showResult({
           correct: false,
           partial: false,
@@ -172,19 +192,30 @@ export class MinigameRenderer {
     const gameArea = document.getElementById('minigame-game-area');
     gameArea.dataset.topic = task.topic || 'wortschatz';
     gameArea.dataset.game = task.miniGameId || 'deutsch';
-    minigame.setup(gameArea, task, (result) => {
+    const cleanup = minigame.setup(gameArea, task, (result) => {
       this._clearTimer();
+      this._disposeActiveGame({ keepShell: true, clearTimer: false });
       result.mode = mode;
       result.miniGameId = task.miniGameId;
       result.topic = task.topic;
       this._showResult(result);
     });
+    this._registerCleanup(task.miniGameId, cleanup);
     this._decorateGameArea(gameArea, task, minigame);
   }
 
   _showResult(result) {
     const gameArea = document.getElementById('minigame-game-area');
     if (!gameArea) return;
+    const stageTitle = document.querySelector('.minigame-stage-title');
+    const timerNode = document.getElementById('minigame-timer');
+    const timerArea = timerNode?.parentElement;
+
+    gameArea.classList.add('is-result-state');
+
+    if (stageTitle) {
+      stageTitle.textContent = 'Runde vorbei';
+    }
 
     let icon;
     let title;
@@ -221,8 +252,16 @@ export class MinigameRenderer {
     if (result.correct) coinsEarned = 3;
     else if (result.partial) coinsEarned = 1;
 
+    if (timerArea) {
+      timerArea.innerHTML = `
+        <div class="mission-chip minigame-status-chip ${result.timeout ? 'is-timeout' : result.correct ? 'is-success' : result.partial ? 'is-partial' : 'is-retry'}">
+          ${result.timeout ? 'Zeit um' : result.correct ? 'Treffer' : result.partial ? 'Fast' : 'Weiter'}
+        </div>
+      `;
+    }
+
     gameArea.innerHTML = `
-      <div class="minigame-result">
+      <div class="minigame-result minigame-result--${result.timeout ? 'timeout' : result.correct ? 'success' : result.partial ? 'partial' : 'retry'}">
         <div class="cardboard-result-card animate-bounce-in">
           <div class="result-icon">${icon}</div>
           <div class="result-title ${titleClass}">${title}</div>
@@ -247,6 +286,7 @@ export class MinigameRenderer {
     `;
 
     document.getElementById('minigame-continue')?.addEventListener('click', () => {
+      this._disposeActiveGame({ keepShell: true });
       this.container.innerHTML = '';
       if (this.onComplete) {
         this.onComplete(result);
@@ -289,8 +329,49 @@ export class MinigameRenderer {
   }
 
   close() {
-    this._clearTimer();
+    this._disposeActiveGame({ keepShell: true });
     this.container.innerHTML = '';
+  }
+
+  _registerCleanup(gameId, cleanup) {
+    this.activeGameId = gameId || null;
+    if (typeof cleanup === 'function') {
+      this.activeCleanup = cleanup;
+      return;
+    }
+
+    if (cleanup && typeof cleanup.destroy === 'function') {
+      this.activeCleanup = () => cleanup.destroy();
+      return;
+    }
+
+    if (cleanup && typeof cleanup.cleanup === 'function') {
+      this.activeCleanup = () => cleanup.cleanup();
+      return;
+    }
+
+    this.activeCleanup = null;
+  }
+
+  _disposeActiveGame({ keepShell = false, clearTimer = true } = {}) {
+    if (clearTimer) {
+      this._clearTimer();
+    }
+
+    if (typeof this.activeCleanup === 'function') {
+      try {
+        this.activeCleanup();
+      } catch (error) {
+        console.warn('Mini-game cleanup failed:', this.activeGameId, error);
+      }
+    }
+
+    this.activeCleanup = null;
+    this.activeGameId = null;
+
+    if (!keepShell) {
+      this.container.innerHTML = '';
+    }
   }
 
   _decorateGameArea(gameArea, task, minigame) {
@@ -305,6 +386,7 @@ export class MinigameRenderer {
 
     const modernSelectors = [
       '.arcade-stage',
+      '.arcade-game',
       '.alchemy-stage',
       '.lie-detector-shell',
       '.showcase-shell',
@@ -429,5 +511,31 @@ export class MinigameRenderer {
     }
 
     return { primary: '#8a6bff', secondary: '#52b7ff', subtitle: 'Kurze Mission, starke Belohnung.' };
+  }
+
+  _renderMissionTrail(topicLabel) {
+    return `
+      <div class="minigame-paper-trail" aria-hidden="true">
+        <svg viewBox="0 0 260 132" role="presentation">
+          <path class="minigame-paper-trail-wash" d="M 20 86 C 56 54, 96 38, 134 48 C 178 60, 190 92, 234 56"></path>
+          <path class="minigame-paper-trail-line" d="M 20 86 C 56 54, 96 38, 134 48 C 178 60, 190 92, 234 56"></path>
+          <circle class="trail-dot trail-dot--red" cx="22" cy="86" r="12"></circle>
+          <circle class="trail-dot trail-dot--green" cx="82" cy="50" r="12"></circle>
+          <circle class="trail-dot trail-dot--blue" cx="142" cy="50" r="12"></circle>
+          <circle class="trail-dot trail-dot--gold" cx="194" cy="86" r="12"></circle>
+          <circle class="trail-dot trail-dot--goal" cx="234" cy="56" r="15"></circle>
+        </svg>
+        <span>${this._escape(topicLabel)}</span>
+      </div>
+    `;
+  }
+
+  _escape(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 }

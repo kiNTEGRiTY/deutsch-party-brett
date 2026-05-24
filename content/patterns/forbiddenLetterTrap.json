@@ -1,0 +1,40 @@
+{
+  "sets": [
+    {
+      "forbidden": "e",
+      "category": "Tiere",
+      "accepted": ["Hund", "Puma", "Aal", "Luchs", "Yak"],
+      "generalAccepted": ["Hund", "Puma", "Aal", "Luchs", "Ball", "Boot", "Haus"]
+    },
+    {
+      "forbidden": "a",
+      "category": "Berufe",
+      "accepted": ["Koch", "Pilot", "Jurist", "Bote"],
+      "generalAccepted": ["Koch", "Pilot", "Jurist", "Bote", "Motor", "Tisch", "Blume"]
+    },
+    {
+      "forbidden": "i",
+      "category": "Gegenstaende",
+      "accepted": ["Lampe", "Tasse", "Sofa", "Hammer", "Trommel"],
+      "generalAccepted": ["Lampe", "Tasse", "Sofa", "Hammer", "Trommel", "Koffer", "Papagei"]
+    },
+    {
+      "forbidden": "o",
+      "category": "Essen",
+      "accepted": ["Apfel", "Kuchen", "Kiwi", "Banane", "Salat"],
+      "generalAccepted": ["Apfel", "Kuchen", "Kiwi", "Banane", "Salat", "Lampe", "Pinsel"]
+    },
+    {
+      "forbidden": "u",
+      "category": "Orte",
+      "accepted": ["Hafen", "Park", "Weg", "Wiese", "Kirche"],
+      "generalAccepted": ["Hafen", "Park", "Weg", "Wiese", "Kirche", "Lampe", "Gabel"]
+    },
+    {
+      "forbidden": "t",
+      "category": "Gefuehle",
+      "accepted": ["Sorge", "Ekel", "Freude", "Wonne"],
+      "generalAccepted": ["Sorge", "Ekel", "Freude", "Wonne", "Lampe", "Pinsel"]
+    }
+  ]
+}

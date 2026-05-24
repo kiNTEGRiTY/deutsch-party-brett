@@ -122,6 +122,35 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-130%) skewX(-22deg); opacity: 0; }
+  20%  { opacity: 0.7; }
+  100% { transform: translateX(260%) skewX(-22deg); opacity: 0; }
+}
+
+@keyframes orb-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  25% { transform: translate3d(12px, -18px, 0) scale(1.06); }
+  50% { transform: translate3d(-8px, -28px, 0) scale(0.96); }
+  75% { transform: translate3d(-12px, 10px, 0) scale(1.04); }
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0.12; transform: scale(0.9) rotate(0deg); }
+  50% { opacity: 0.42; transform: scale(1.15) rotate(12deg); }
+}
+
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-1.5deg); }
+}
+
+@keyframes gradient-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* ── Utility Animation Classes ── */
 .animate-bounce-in  { animation: bounce-in 0.5s var(--ease-bounce) both; }
 .animate-slide-up   { animation: slide-in-up 0.4s var(--ease-smooth) both; }
@@ -133,6 +162,9 @@
 .animate-glow       { animation: glow-ring 2s ease-in-out infinite; }
 .animate-fade-in    { animation: fade-in 0.3s ease both; }
 .animate-screen     { animation: screen-enter 0.4s var(--ease-smooth) both; }
+.animate-hero-bob   { animation: hero-bob 4s ease-in-out infinite; }
+.animate-twinkle    { animation: sparkle-twinkle 2.8s ease-in-out infinite; }
+.animate-drift      { animation: orb-drift 10s ease-in-out infinite; }
 
 /* ── Stagger Animation Delays ── */
 .stagger-1 { animation-delay: 0.05s; }
@@ -176,6 +208,7 @@
 .floating-shape {
   position: absolute;
   border-radius: var(--radius-round);
-  opacity: 0.07;
-  animation: float var(--duration-extra) ease-in-out infinite;
+  opacity: 0.11;
+  filter: blur(2px);
+  animation: orb-drift var(--duration-slow) ease-in-out infinite;
 }

@@ -10,7 +10,7 @@ export const ArticleCannon = {
   topics: ['artikel'],
 
   setup(container, task, onComplete) {
-    const content = task.content;
+    const content = task.content || {};
     
     let words = [];
     if (content.quizSets) {
@@ -37,7 +37,16 @@ export const ArticleCannon = {
     let currentIndex = 0;
     let activeTarget = null;
     let activeBullet = null;
-    let gameLoopFrame;
+    let gameLoopFrame = 0;
+    let cleanupDone = false;
+    let resizeObserver = null;
+    let areaWidth = 0;
+    let areaHeight = 0;
+    let cannonOriginX = 0;
+    let cannonOriginY = 0;
+    const pendingTimeouts = new Set();
+    const listeners = new AbortController();
+    const { signal } = listeners;
 
     container.innerHTML = `
       <div class="cannon-container" style="position: relative; width: 100%; height: 60vh; max-height: 500px; background: #87CEEB; border-radius: 16px; overflow: hidden; touch-action: none; user-select: none;">
@@ -75,27 +84,85 @@ export const ArticleCannon = {
     const gameArea = container.querySelector('#can-game-area');
     const barrel = container.querySelector('#can-barrel');
     const scoreEl = container.querySelector('#can-score');
+    const overlay = container.querySelector('#can-overlay');
+
+    function scheduleTimeout(callback, delay) {
+      const timeoutId = window.setTimeout(() => {
+        pendingTimeouts.delete(timeoutId);
+        callback();
+      }, delay);
+      pendingTimeouts.add(timeoutId);
+      return timeoutId;
+    }
+
+    function measureArea() {
+      areaWidth = gameArea.clientWidth || 800;
+      areaHeight = gameArea.clientHeight || 500;
+      cannonOriginX = areaWidth / 2 - 20;
+      cannonOriginY = areaHeight - 80;
+    }
+
+    function cleanup() {
+      if (cleanupDone) return;
+      cleanupDone = true;
+      isPlaying = false;
+      cancelAnimationFrame(gameLoopFrame);
+      gameLoopFrame = 0;
+      pendingTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+      pendingTimeouts.clear();
+      listeners.abort();
+      resizeObserver?.disconnect();
+      resizeObserver = null;
+      activeTarget?.el?.remove();
+      activeBullet?.el?.remove();
+      activeTarget = null;
+      activeBullet = null;
+
+      if (container.__minigameCleanup === cleanup) {
+        delete container.__minigameCleanup;
+      }
+    }
+
+    function finalize(result, delay = 0) {
+      const run = () => {
+        cleanup();
+        onComplete(result);
+      };
+
+      if (delay > 0) {
+        scheduleTimeout(run, delay);
+      } else {
+        run();
+      }
+    }
+
+    container.__minigameCleanup = cleanup;
+
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(measureArea);
+      resizeObserver.observe(gameArea);
+    }
+    measureArea();
 
     function endGame() {
       isPlaying = false;
       cancelAnimationFrame(gameLoopFrame);
+      gameLoopFrame = 0;
+      const percentage = (score / targetWords.length) * 100;
       
-      const overlay = container.querySelector('#can-overlay');
       overlay.style.display = 'flex';
       overlay.innerHTML = '<h2 style="color:white">Fertig! [Ziel getroffen]</h2>';
 
-      setTimeout(() => {
-        const percentage = (score / targetWords.length) * 100;
-        onComplete({
-          correct: percentage >= 80,
-          partial: percentage >= 50 && percentage < 80,
-          score: Math.round(percentage),
-          details: { score, total: targetWords.length }
-        });
+      finalize({
+        correct: percentage >= 80,
+        partial: percentage >= 50 && percentage < 80,
+        score: Math.round(percentage),
+        details: { score, total: targetWords.length }
       }, 1500);
     }
 
     function spawnNextTarget() {
+        if (cleanupDone) return;
         if (currentIndex >= targetWords.length) {
             endGame();
             return;
@@ -103,14 +170,14 @@ export const ArticleCannon = {
 
         const data = targetWords[currentIndex];
         
-        activeTarget = document.createElement('div');
-        activeTarget.textContent = data.word; // e.g., "Haus"
-        activeTarget.dataset.correct = data.correct; // "das"
+        const targetEl = document.createElement('div');
+        targetEl.textContent = data.word;
+        targetEl.dataset.correct = data.correct;
         
-        Object.assign(activeTarget.style, {
+        Object.assign(targetEl.style, {
             position: 'absolute',
             top: '40px',
-            left: '-100px', // start offscreen
+            left: '0',
             padding: '10px 20px',
             background: '#f39c12',
             color: 'white',
@@ -118,91 +185,90 @@ export const ArticleCannon = {
             fontWeight: 'bold',
             fontSize: '1.5rem',
             boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            willChange: 'transform'
         });
         
-        gameArea.appendChild(activeTarget);
-        
-        // Target state
-        activeTarget.x = -100;
-        activeTarget.speed = 1.5 + Math.random(); // Move speed
-        activeTarget.direction = 1;
+        gameArea.appendChild(targetEl);
 
-        // Reset barrel direction
+        const width = targetEl.offsetWidth;
+        const height = targetEl.offsetHeight;
+
+        activeTarget = {
+          el: targetEl,
+          word: data.word,
+          correct: data.correct,
+          x: -width,
+          y: 40,
+          width,
+          height,
+          speed: 1.5 + Math.random(),
+          direction: 1
+        };
+
+        targetEl.style.transform = `translate3d(${activeTarget.x}px, ${activeTarget.y}px, 0)`;
         barrel.style.transform = 'rotate(0deg)';
     }
 
     function update() {
-        if (!isPlaying) return;
+        if (!isPlaying || cleanupDone) return;
 
-        // Move target
         if (activeTarget) {
             activeTarget.x += activeTarget.speed * activeTarget.direction;
-            activeTarget.style.left = activeTarget.x + 'px';
 
-            // Bounce off walls
-            const areaWidth = gameArea.clientWidth;
-            const targetWidth = activeTarget.clientWidth;
-            if (activeTarget.x > areaWidth - targetWidth) {
+            if (activeTarget.x > areaWidth - activeTarget.width) {
+                activeTarget.x = areaWidth - activeTarget.width;
                 activeTarget.direction = -1;
             } else if (activeTarget.x < 0 && activeTarget.direction === -1) {
+                activeTarget.x = 0;
                 activeTarget.direction = 1;
             }
 
-            // Aim barrel at target
-            const targetCenterX = activeTarget.x + targetWidth / 2;
-            const barrelCenterX = areaWidth / 2;
-            const deltaX = targetCenterX - barrelCenterX;
-            const deltaY = gameArea.clientHeight - parseFloat(activeTarget.style.top); // approximate
-            const angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
-            barrel.style.transform = 'rotate(' + angle + 'deg)';
+            activeTarget.el.style.transform = `translate3d(${activeTarget.x}px, ${activeTarget.y}px, 0)`;
 
-            // Move Bullet
+            const targetCenterX = activeTarget.x + activeTarget.width / 2;
+            const deltaX = targetCenterX - (cannonOriginX + 20);
+            const deltaY = cannonOriginY - activeTarget.y;
+            const angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
+            barrel.style.transform = `rotate(${angle}deg)`;
+
             if (activeBullet) {
                 activeBullet.y -= activeBullet.speed;
                 activeBullet.x += activeBullet.vx;
-                activeBullet.el.style.top = activeBullet.y + 'px';
-                activeBullet.el.style.left = activeBullet.x + 'px';
+                activeBullet.el.style.transform = `translate3d(${activeBullet.x}px, ${activeBullet.y}px, 0)`;
 
-                // Collision detection
-                const bx = activeBullet.x;
-                const by = activeBullet.y;
+                const bx = activeBullet.x + 20;
+                const by = activeBullet.y + 20;
                 const tx = activeTarget.x;
-                const ty = parseFloat(activeTarget.style.top);
-                const tw = targetWidth;
-                const th = activeTarget.clientHeight;
+                const ty = activeTarget.y;
+                const tw = activeTarget.width;
+                const th = activeTarget.height;
 
                 if (bx > tx && bx < tx + tw && by > ty && by < ty + th) {
-                    // HIT!
-                    const isCorrect = activeBullet.el.textContent === activeTarget.dataset.correct;
+                    const isCorrect = activeBullet.article === activeTarget.correct;
                     
                     if (isCorrect) {
                         score++;
                         scoreEl.textContent = score;
-                        activeTarget.style.background = '#2ecc71';
+                        activeTarget.el.style.background = '#2ecc71';
                     } else {
-                        activeTarget.style.background = '#e74c3c';
+                        activeTarget.el.style.background = '#e74c3c';
                     }
                     
-                    // Show correct article
-                    activeTarget.textContent = activeTarget.dataset.correct + ' ' + activeTarget.textContent;
+                    activeTarget.el.textContent = `${activeTarget.correct} ${activeTarget.word}`;
                     
-                    // Destroy bullet
                     activeBullet.el.remove();
                     activeBullet = null;
 
-                    const t = activeTarget;
+                    const previousTarget = activeTarget;
                     activeTarget = null;
                     currentIndex++;
                     
-                    setTimeout(() => {
-                        t.remove();
+                    scheduleTimeout(() => {
+                        previousTarget.el.remove();
                         spawnNextTarget();
                     }, 1000);
-                }
-                
-                // Missed (went off screen)
-                else if (by < -50) {
+                } else if (by < -50) {
                     activeBullet.el.remove();
                     activeBullet = null;
                 }
@@ -212,19 +278,24 @@ export const ArticleCannon = {
         gameLoopFrame = requestAnimationFrame(update);
     }
 
-    container.querySelectorAll('.fire-btn').forEach(btn => {
+    container.querySelectorAll('.fire-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-            if (!isPlaying || !activeTarget || activeBullet) return;
+            if (!isPlaying || cleanupDone || !activeTarget || activeBullet) return;
 
             const article = btn.dataset.art;
-            
-            // Create bullet
-            const b = document.createElement('div');
-            b.textContent = article;
-            Object.assign(b.style, {
+            const barrelAngleStr = barrel.style.transform;
+            let angleDeg = 0;
+            if (barrelAngleStr.includes('rotate(')) {
+                angleDeg = parseFloat(barrelAngleStr.split('rotate(')[1]) || 0;
+            }
+            const angleRad = angleDeg * (Math.PI / 180);
+
+            const bulletEl = document.createElement('div');
+            bulletEl.textContent = article;
+            Object.assign(bulletEl.style, {
                 position: 'absolute',
-                top: (gameArea.clientHeight - 80) + 'px',
-                left: (gameArea.clientWidth / 2 - 20) + 'px',
+                top: '0',
+                left: '0',
                 width: '40px',
                 height: '40px',
                 background: btn.style.background,
@@ -235,33 +306,34 @@ export const ArticleCannon = {
                 justifyContent: 'center',
                 fontWeight: 'bold',
                 fontSize: '14px',
-                zIndex: 20
+                zIndex: 20,
+                willChange: 'transform'
             });
-            gameArea.appendChild(b);
-
-            // Bullet trajectories
-            const barrelAngleStr = barrel.style.transform;
-            let angleDeg = 0;
-            if (barrelAngleStr.includes('rotate(')) {
-                angleDeg = parseFloat(barrelAngleStr.split('rotate(')[1]);
-            }
-            const angleRad = angleDeg * (Math.PI / 180);
+            gameArea.appendChild(bulletEl);
 
             activeBullet = {
-                el: b,
-                x: gameArea.clientWidth / 2 - 20,
-                y: gameArea.clientHeight - 80,
+                el: bulletEl,
+                article,
+                x: cannonOriginX,
+                y: cannonOriginY,
                 speed: 10,
                 vx: Math.sin(angleRad) * 10
             };
-        });
+            bulletEl.style.transform = `translate3d(${activeBullet.x}px, ${activeBullet.y}px, 0)`;
+        }, { signal });
     });
 
     container.querySelector('#can-start-btn').addEventListener('click', () => {
-      container.querySelector('#can-overlay').style.display = 'none';
+      overlay.style.display = 'none';
+      measureArea();
       isPlaying = true;
       spawnNextTarget();
       update();
-    });
+    }, { signal });
+
+    return {
+      destroy: cleanup,
+      cleanup
+    };
   }
 };

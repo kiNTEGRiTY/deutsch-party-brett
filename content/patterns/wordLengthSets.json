@@ -1,0 +1,34 @@
+{
+  "sets": [
+    {
+      "targetLength": 4,
+      "category": "Tiere",
+      "accepted": ["Hund", "Maus", "Igel", "Lama"],
+      "generalAccepted": ["Haus", "Baum", "Brot", "Hand", "Boot", "Wind", "Kind", "Maus", "Hund", "Igel", "Lama"]
+    },
+    {
+      "targetLength": 5,
+      "category": "Essen",
+      "accepted": ["Apfel", "Beere", "Kakao", "Salat", "Kiwi"],
+      "generalAccepted": ["Apfel", "Beere", "Kakao", "Salat", "Tiger", "Radio", "Lampe", "Tisch", "Stuhl", "Adler"]
+    },
+    {
+      "targetLength": 6,
+      "category": "Orte",
+      "accepted": ["Schule", "Kirche", "Museum", "Garage"],
+      "generalAccepted": ["Schule", "Kirche", "Museum", "Garage", "Planet", "Garten", "Orange", "Lehrer"]
+    },
+    {
+      "targetLength": 7,
+      "category": "Orte",
+      "accepted": ["Bahnhof", "Stadion", "Rathaus", "Waldweg"],
+      "generalAccepted": ["Bahnhof", "Stadion", "Rathaus", "Waldweg", "Laterne", "Familie", "Spiegel"]
+    },
+    {
+      "targetLength": 8,
+      "category": "Dinge",
+      "accepted": ["Werkzeug", "Kochtopf", "Tastatur", "Fernrohr"],
+      "generalAccepted": ["Werkzeug", "Kochtopf", "Tastatur", "Fernrohr", "Windjacke", "Spielplan", "Holzkiste"]
+    }
+  ]
+}

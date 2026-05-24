@@ -1,8 +1,10 @@
 /**
  * Mini-Game: Word Ninja (Wort-Ninja)
- * 
+ *
  * Arcade style slice game. Nouns fly up, players swipe them. Avoid Verbs!
  */
+
+import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
 
 export const WordNinja = {
   id: 'word-ninja',
@@ -11,67 +13,108 @@ export const WordNinja = {
 
   setup(container, task, onComplete) {
     const content = task.content;
-    
-    // We need a mixed set to have targets (Nouns) and bombs (Verbs)
+
     let mixedSet;
     if (content.mixedSets && content.mixedSets.length > 0) {
       mixedSet = content.mixedSets[Math.floor(Math.random() * content.mixedSets.length)];
     } else {
       onComplete({ correct: false, score: 0 });
-      return;
+      return () => {};
     }
 
     const { nomen, verben } = mixedSet;
     if (!nomen || !verben || nomen.length === 0 || verben.length === 0) {
       onComplete({ correct: false, score: 0 });
-      return;
+      return () => {};
     }
 
-    let isPlaying = true;
+    let isPlaying = false;
     let score = 0;
-    let slicedNouns = 0;
-    const targetScore = Math.min(nomen.length, 5); // We spawn exactly targetScore nouns
+    const targetScore = Math.min(nomen.length, 5);
     let spawnedNouns = 0;
     let lives = 3;
+    let disposed = false;
+    let spawnIntervalId = null;
+    let animationFrameId = null;
+    let completionTimeoutId = null;
+    const activeWords = [];
 
-    // Build UI
     container.innerHTML = `
-      <div class="ninja-container" style="position: relative; width: 100%; height: 60vh; max-height: 500px; background: #2c3e50; border-radius: 16px; overflow: hidden; touch-action: none; user-select: none;">
-        
-        <!-- HUD -->
-        <div style="position: absolute; top: 10px; left: 10px; color: white; z-index: 10; font-family: 'Fredoka One', cursive; text-shadow: 1px 1px 2px black;">
-           <div>Punkte: <span id="ninja-score">0</span>/${targetScore}</div>
-           <div style="font-size: 0.8em; color: #ecf0f1;">Schneide NOMEN!</div>
-        </div>
-        <div style="position: absolute; top: 10px; right: 10px; color: #e74c3c; z-index: 10; font-size: 1.5rem; text-shadow: 1px 1px 2px black;">
-           <span id="ninja-lives">❤️❤️❤️</span>
-        </div>
-
-        <!-- Overlay -->
-        <div id="ninja-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-            <p style="color: white; font-size: 1.5rem; text-align: center; font-family: 'Fredoka One';">Markiere die NOMEN!<br><span style="font-size: 1rem; color:#e74c3c">Achtung vor den Verben!</span></p>
-            <button id="ninja-start-btn" class="btn btn-primary btn-lg mt-3">Start</button>
+      <div class="arcade-stage word-ninja-stage">
+        <div class="hud-row">
+          <div class="hud-chip is-success">
+            <span>Punkte</span>
+            <strong><span id="ninja-score">0</span> / ${targetScore}</strong>
+          </div>
+          <div class="hud-chip is-danger">
+            <span>Leben</span>
+            <strong id="ninja-lives">❤ ❤ ❤</strong>
+          </div>
         </div>
 
-        <div id="ninja-game-area" style="position: absolute; inset: 0; overflow: hidden;"></div>
+        <div id="ninja-overlay" class="premium-overlay-card">
+          <div>
+            <div class="premium-kicker">Arcade-Mission</div>
+            <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">Schneide nur die Nomen</div>
+            <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
+              Wörter fliegen durchs Bild. Nomen bringen Punkte, Verben kosten Herzen.
+            </p>
+            <div style="margin-top:24px; display:flex; justify-content:center;">
+              <button id="ninja-start-btn" class="btn btn-primary btn-lg" type="button">Los geht's</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="ninja-game-area" class="ninja-game-area"></div>
+        <div class="ninja-slice-hint">Mit Maus oder Finger durch die Wörter wischen</div>
       </div>
     `;
 
     const gameArea = container.querySelector('#ninja-game-area');
     const scoreEl = container.querySelector('#ninja-score');
     const livesEl = container.querySelector('#ninja-lives');
-    let gameLoopInterval;
+    const overlay = container.querySelector('#ninja-overlay');
+    const startButton = container.querySelector('#ninja-start-btn');
 
-    function endGame(won) {
-      if (!isPlaying) return;
+    function clearWord(word) {
+      if (!word || word.retired) {
+        return;
+      }
+
+      word.retired = true;
+      word.el.removeEventListener('pointerdown', word.handleSlice);
+      word.el.removeEventListener('pointerenter', word.handlePointerEnter);
+      word.el.remove();
+    }
+
+    function finish(won) {
+      if (!isPlaying || disposed) {
+        return;
+      }
+
       isPlaying = false;
-      clearInterval(gameLoopInterval);
-      
-      const overlay = container.querySelector('#ninja-overlay');
-      overlay.style.display = 'flex';
-      overlay.innerHTML = `<h2 style="color:white">${won ? 'Geschafft! 🎉' : 'Game Over 💥'}</h2>`;
+      window.clearInterval(spawnIntervalId);
+      spawnIntervalId = null;
+      window.cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
 
-      setTimeout(() => {
+      overlay.style.display = 'flex';
+      overlay.innerHTML = `
+        <div>
+          <div class="premium-kicker">${won ? 'Bonus!' : 'Neue Runde'}</div>
+          <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">
+            ${won ? 'Geschafft!' : 'Weiterkämpfen!'}
+          </div>
+          <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
+            ${won ? 'Alle Ziele erwischt. Sauber gespielt.' : 'Ein paar Wörter fehlen noch. Die nächste Runde sitzt.'}
+          </p>
+        </div>
+      `;
+
+      completionTimeoutId = window.setTimeout(() => {
+        if (disposed) {
+          return;
+        }
         onComplete({
           correct: won,
           partial: !won && score > 0,
@@ -81,127 +124,143 @@ export const WordNinja = {
       }, 1500);
     }
 
-    function spawnWord() {
-      if (!isPlaying) return;
+    function animateWords() {
+      if (!isPlaying || disposed) {
+        return;
+      }
 
-      // Decide if noun (target) or verb (bomb)
-      // If we still need to spawn nouns, 60% chance for noun
-      const isBomb = (spawnedNouns >= targetScore) || (Math.random() > 0.6);
-      
-      let wordText = "";
+      for (let index = activeWords.length - 1; index >= 0; index -= 1) {
+        const word = activeWords[index];
+        if (word.retired) {
+          activeWords.splice(index, 1);
+          continue;
+        }
+
+        word.velocityY -= word.gravity;
+        word.posY += word.velocityY;
+        word.posX += word.velocityX;
+        word.el.style.transform = `translate(${word.posX}%, ${-word.posY}px)`;
+
+        if (word.posY < -100) {
+          clearWord(word);
+          activeWords.splice(index, 1);
+
+          if (!word.isBomb && !word.sliced && isPlaying) {
+            spawnedNouns = Math.max(0, spawnedNouns - 1);
+          }
+        }
+      }
+
+      animationFrameId = window.requestAnimationFrame(animateWords);
+    }
+
+    function spawnWord() {
+      if (!isPlaying || disposed) {
+        return;
+      }
+
+      const isBomb = spawnedNouns >= targetScore || Math.random() > 0.6;
+      let wordText = '';
+
       if (isBomb) {
         wordText = verben[Math.floor(Math.random() * verben.length)];
       } else {
         wordText = nomen[spawnedNouns % nomen.length];
-        spawnedNouns++;
+        spawnedNouns += 1;
       }
 
       const el = document.createElement('div');
+      el.className = `ninja-word ${isBomb ? 'bomb' : 'target'}`;
       el.textContent = wordText;
-      // Style
-      Object.assign(el.style, {
-        position: 'absolute',
-        bottom: '-50px',
-        left: `${10 + Math.random() * 60}%`,
-        padding: '10px 20px',
-        background: 'white',
-        borderRadius: '20px',
-        fontWeight: 'bold',
-        fontSize: '1.2rem',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-        border: '3px solid',
-        borderColor: isBomb ? '#e74c3c' : '#3498db',
-        cursor: 'crosshair',
-        transition: 'transform 0.1s',
-        userSelect: 'none'
-      });
-      
       gameArea.appendChild(el);
 
-      // Simple physics: throw upwards, land
-      let posY = -50; // starts below container
-      let posX = parseFloat(el.style.left);
-      let velocityY = 12 + Math.random() * 4; // jump power
-      let velocityX = (Math.random() - 0.5) * 4; // slight horizontal movement
+      const word = {
+        el,
+        isBomb,
+        sliced: false,
+        retired: false,
+        posY: -50,
+        posX: 10 + Math.random() * 60,
+        velocityY: 12 + Math.random() * 4,
+        velocityX: (Math.random() - 0.5) * 4,
+        gravity: 0.2,
+        handleSlice: null,
+        handlePointerEnter: null
+      };
 
-      const gravity = 0.2;
-      let sliced = false;
+      el.style.transform = `translate(${word.posX}%, 50px)`;
 
-      function update() {
-        if (!isPlaying) return;
-        velocityY -= gravity;
-        posY += velocityY;
-        posX += velocityX;
+      word.handleSlice = (event) => {
+        if (word.sliced || !isPlaying || word.retired || disposed) {
+          return;
+        }
 
-        el.style.bottom = `${posY}px`;
-        el.style.left = `${posX}%`;
+        event.preventDefault();
+        word.sliced = true;
+        SoundManager.play('whoosh');
 
-        // If it falls below screen
-        if (posY < -100) {
-          el.remove();
-          // If a noun was missed, we don't lose lives, but we missed a target.
-          // For simplicity, just respawn it later if it was a noun
-          if (!isBomb && !sliced && isPlaying) {
-             spawnedNouns--; // Have another go at it
+        if (word.isBomb) {
+          lives -= 1;
+          livesEl.textContent = '❤ '.repeat(Math.max(0, lives)).trim();
+          el.classList.add('bad-hit');
+          SoundManager.play('error');
+          window.setTimeout(() => clearWord(word), 220);
+
+          if (lives <= 0) {
+            finish(false);
           }
           return;
         }
 
-        requestAnimationFrame(update);
-      }
+        score += 1;
+        scoreEl.textContent = score;
+        el.classList.add('sliced');
+        SoundManager.play('pop');
+        window.setTimeout(() => clearWord(word), 220);
 
-      requestAnimationFrame(update);
-
-      // Interaction (mouse over / touch)
-      const handleSlice = (e) => {
-        if (sliced || !isPlaying) return;
-        e.preventDefault();
-        sliced = true;
-
-        if (isBomb) {
-          // Hit a bomb
-          lives--;
-          livesEl.textContent = '❤️'.repeat(Math.max(0, lives));
-          el.style.background = '#e74c3c';
-          el.style.color = 'white';
-          
-          if (lives <= 0) {
-            endGame(false);
-          }
-        } else {
-          // Hit a noun
-          score++;
-          slicedNouns++;
-          scoreEl.textContent = score;
-          
-          // Sliced animation
-          el.style.transform = 'scale(1.2) rotate(15deg)';
-          el.style.background = '#2ecc71';
-          el.style.color = 'white';
-          el.style.opacity = '0';
-          el.style.transition = 'all 0.3s ease';
-
-          if (score >= targetScore) {
-            endGame(true);
-          }
+        if (score >= targetScore) {
+          finish(true);
         }
       };
 
-      el.addEventListener('pointerdown', handleSlice);
-      el.addEventListener('pointerenter', (e) => {
-          // Pointer enter acts like a swipe if mouse is down
-          if (e.buttons > 0) handleSlice(e);
-      });
+      word.handlePointerEnter = (event) => {
+        if (event.buttons > 0) {
+          word.handleSlice(event);
+        }
+      };
+
+      el.addEventListener('pointerdown', word.handleSlice);
+      el.addEventListener('pointerenter', word.handlePointerEnter);
+      activeWords.push(word);
     }
 
-    container.querySelector('#ninja-start-btn').addEventListener('click', () => {
-      container.querySelector('#ninja-overlay').style.display = 'none';
-      // Start spawning
-      gameLoopInterval = setInterval(() => {
-        if (isPlaying && (Math.random() > 0.3)) {
+    const handleStart = () => {
+      if (disposed) {
+        return;
+      }
+
+      overlay.style.display = 'none';
+      isPlaying = true;
+      SoundManager.play('launch');
+      spawnIntervalId = window.setInterval(() => {
+        if (isPlaying && Math.random() > 0.3) {
           spawnWord();
         }
       }, 800);
-    });
+      animationFrameId = window.requestAnimationFrame(animateWords);
+    };
+
+    startButton.addEventListener('click', handleStart);
+
+    return () => {
+      disposed = true;
+      isPlaying = false;
+      window.clearInterval(spawnIntervalId);
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(completionTimeoutId);
+      startButton.removeEventListener('click', handleStart);
+      activeWords.forEach((word) => clearWord(word));
+      activeWords.length = 0;
+    };
   }
 };

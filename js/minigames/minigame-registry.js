@@ -135,8 +135,149 @@ import { SyllableFishing } from './syllable-fishing.js';
 import { ScrapHunt } from './scrap-hunt.js';
 import { WordChaos } from './word-chaos.js';
 import { SyllableNinja } from './syllable-ninja.js';
+import {
+  BuchstabenDuell,
+  WortExplosionskette,
+  SilbenReflex,
+  DefinitionReverse,
+  WortEvolution,
+  AnagrammKampf,
+  SilbenTetris,
+  AlliterationsKettenreaktion,
+  WortSchrumpfung,
+  MetaphernMaschine,
+  KategorieHacker,
+  DramatischerMonolog,
+  UntertitelDesaster,
+  GefuehlGegenteil,
+  StimmBattle,
+  GemeinsameLuege,
+  WortVerraeter,
+  RankingChaos,
+  RegelFlip,
+  Zeitlupe,
+  Overload,
+  PublikumsManipulation
+} from './party-showcase-pack.js';
+import { WortStau } from './wort-stau.js';
+import { KompositumMaschine } from './kompositum-maschine.js';
+import { TaeuschMich } from './taeusch-mich.js';
+import { ReimBattle } from './reim-battle.js';
+import { RollenSprechen } from './rollen-sprechen.js';
+import {
+  SynonymFlucht,
+  GegensatzZwang,
+  VerbotenerBuchstabe,
+  FuenfSecTriple,
+  WortMorph,
+  VerbOnly,
+  SubstantivOnly,
+  DoppelKategorie,
+  WortKette
+} from './language-rule-pack.js';
+import {
+  WordEnding,
+  WordLengthHunt,
+  ForbiddenLetterTrap,
+  PrefixDuel,
+  SuffixDuel
+} from './pattern-rule-pack.js';
+import {
+  ArtikelAtelier,
+  Fehlerlupe,
+  Reimwerk,
+  SatzKompass,
+  Silbenstrom,
+  VerbTakt,
+  WortartenOrchester,
+  Wortfunkeln
+} from './premium-variety-pack.js?v=game-feel-cutouts-30';
+import {
+  BuchstabenMagneten,
+  ReimMemoryAquarell,
+  SatzFlickwerk,
+  SilbenTrommel,
+  WortartenBand
+} from './premium-motion-pack.js?v=game-feel-cutouts-30';
+import {
+  ArtikelBildjagd,
+  BildwortGalerie,
+  DialogSpotlight,
+  KompositumAtelier,
+  SatzStoryboard,
+  WimmelbildDetektiv
+} from './premium-content-pack.js?v=game-feel-cutouts-30';
+import {
+  AlphabetKartenreihe,
+  AnfangspaarJagd,
+  AnfangsbuchstabenLupe,
+  ArtikelStempelstudio,
+  ArtikelSortierband,
+  FigurenSatztheater,
+  KartenKlickLabor,
+  KartenMemoryDuo,
+  KartenlupeWortfang,
+  SilbenKlatschkarten,
+  TiernamenBingo,
+  TierblattSpurensuche,
+  WortkartenBlitzwahl,
+  WortkartenDomino
+} from './premium-atelier-pack.js?v=game-feel-cutouts-30';
+import {
+  ArtikelInvaders,
+  ArtikelGateRunner,
+  GrammatikBossfight,
+  SatzJetpack,
+  SchneeballWortschlacht,
+  SilbenBeatSurfer,
+  WortartenSprunglauf,
+  WortLabyrinthJagd,
+  WortTetrisStapel
+} from './premium-arcade-pack.js?v=game-feel-cutouts-30';
 
 const MINIGAMES = {
+  'wort-labyrinth-jagd': WortLabyrinthJagd,
+  'artikel-invaders': ArtikelInvaders,
+  'wort-tetris-stapel': WortTetrisStapel,
+  'wortarten-sprunglauf': WortartenSprunglauf,
+  'schneeball-wortschlacht': SchneeballWortschlacht,
+  'artikel-gate-runner': ArtikelGateRunner,
+  'silben-beat-surfer': SilbenBeatSurfer,
+  'satz-jetpack': SatzJetpack,
+  'grammatik-bossfight': GrammatikBossfight,
+  'karten-klick-labor': KartenKlickLabor,
+  'kartenlupe-wortfang': KartenlupeWortfang,
+  'wortkarten-blitzwahl': WortkartenBlitzwahl,
+  'artikel-stempelstudio': ArtikelStempelstudio,
+  'artikel-sortierband': ArtikelSortierband,
+  'silben-klatschkarten': SilbenKlatschkarten,
+  'anfangsbuchstaben-lupe': AnfangsbuchstabenLupe,
+  'anfangspaar-jagd': AnfangspaarJagd,
+  'karten-memory-duo': KartenMemoryDuo,
+  'alphabet-kartenreihe': AlphabetKartenreihe,
+  'tierblatt-spurensuche': TierblattSpurensuche,
+  'tiernamen-bingo': TiernamenBingo,
+  'figuren-satztheater': FigurenSatztheater,
+  'wortkarten-domino': WortkartenDomino,
+  'bildwort-galerie': BildwortGalerie,
+  'wimmelbild-detektiv': WimmelbildDetektiv,
+  'artikel-bildjagd': ArtikelBildjagd,
+  'satz-storyboard': SatzStoryboard,
+  'kompositum-atelier': KompositumAtelier,
+  'dialog-spotlight': DialogSpotlight,
+  'silben-trommel': SilbenTrommel,
+  'buchstaben-magneten': BuchstabenMagneten,
+  'wortarten-band': WortartenBand,
+  'reim-memory-aquarell': ReimMemoryAquarell,
+  'satz-flickwerk': SatzFlickwerk,
+  'artikel-atelier': ArtikelAtelier,
+  'fehlerlupe': Fehlerlupe,
+  'reimwerk': Reimwerk,
+  'satz-kompass': SatzKompass,
+  'silbenstrom': Silbenstrom,
+  'verb-takt': VerbTakt,
+  'wortarten-orchester': WortartenOrchester,
+  'wortfunkeln': Wortfunkeln,
   'word-chaos': WordChaos,
   'syllable-ninja': SyllableNinja,
   'word-type-sort': WordTypeSort,
@@ -264,7 +405,127 @@ const MINIGAMES = {
   'sentence-stacker': SentenceStacker,
   'syllable-fishing': SyllableFishing,
   'scrap-hunt': ScrapHunt,
+  'buchstaben-duell': BuchstabenDuell,
+  'wort-explosionskette': WortExplosionskette,
+  'silben-reflex': SilbenReflex,
+  'definition-reverse': DefinitionReverse,
+  'wort-evolution': WortEvolution,
+  'anagramm-kampf': AnagrammKampf,
+  'silben-tetris': SilbenTetris,
+  'alliterations-kettenreaktion': AlliterationsKettenreaktion,
+  'wort-schrumpfung': WortSchrumpfung,
+  'metaphern-maschine': MetaphernMaschine,
+  'kategorie-hacker': KategorieHacker,
+  'dramatischer-monolog': DramatischerMonolog,
+  'untertitel-desaster': UntertitelDesaster,
+  'gefuehl-gegenteil': GefuehlGegenteil,
+  'stimm-battle': StimmBattle,
+  'gemeinsame-luege': GemeinsameLuege,
+  'wort-verraeter': WortVerraeter,
+  'ranking-chaos': RankingChaos,
+  'regel-flip': RegelFlip,
+  'zeitlupe': Zeitlupe,
+  'overload': Overload,
+  'publikums-manipulation': PublikumsManipulation,
+  'wort-stau': WortStau,
+  'kompositum-maschine': KompositumMaschine,
+  'taeusch-mich': TaeuschMich,
+  'reim-battle': ReimBattle,
+  'rollen-sprechen': RollenSprechen,
+  'synonym-flucht': SynonymFlucht,
+  'gegensatz-zwang': GegensatzZwang,
+  'verbotener-buchstabe': VerbotenerBuchstabe,
+  'fuenf-sec-triple': FuenfSecTriple,
+  'wort-morph': WortMorph,
+  'verb-only': VerbOnly,
+  'substantiv-only': SubstantivOnly,
+  'doppel-kategorie': DoppelKategorie,
+  'wort-kette': WortKette,
+  word_ending: WordEnding,
+  word_length_hunt: WordLengthHunt,
+  forbidden_letter_trap: ForbiddenLetterTrap,
+  prefix_duel: PrefixDuel,
+  suffix_duel: SuffixDuel,
 };
+
+const DIRECT_PLAY_CURATION = Object.freeze([
+  {
+    id: 'arcade-premium',
+    label: 'Arcade-Neustart',
+    description: 'Neue Gaming-Loops: Labyrinth, Invaders, Wort-Tetris, Jump-n-run, Schneeball-Shooter, Gate-Runner, Rhythmus, Jetpack und Bossfight.',
+    gameIds: [
+      'wort-labyrinth-jagd',
+      'artikel-invaders',
+      'wort-tetris-stapel',
+      'wortarten-sprunglauf',
+      'schneeball-wortschlacht',
+      'artikel-gate-runner',
+      'silben-beat-surfer',
+      'satz-jetpack',
+      'grammatik-bossfight'
+    ]
+  },
+  {
+    id: 'visual-premium',
+    label: 'Kartenatelier',
+    description: 'Neue Premium-Spiele direkt mit den echten Karten- und Figurenfotos.',
+    gameIds: [
+      'karten-klick-labor',
+      'kartenlupe-wortfang',
+      'wortkarten-blitzwahl',
+      'tierblatt-spurensuche',
+      'tiernamen-bingo',
+      'karten-memory-duo',
+      'artikel-stempelstudio',
+      'artikel-sortierband',
+      'silben-klatschkarten',
+      'anfangsbuchstaben-lupe',
+      'anfangspaar-jagd',
+      'alphabet-kartenreihe',
+      'figuren-satztheater',
+      'wortkarten-domino',
+      'wimmelbild-detektiv',
+      'bildwort-galerie',
+      'satz-storyboard',
+      'dialog-spotlight',
+      'buchstaben-magneten'
+    ]
+  },
+  {
+    id: 'arcade-core',
+    label: 'Arcade & Regeln',
+    description: 'Schnelle, robuste Loops mit echtem Wiederspielwert.',
+    gameIds: [
+      'word-meteorites',
+      'word-type-sort',
+      'wort-stau',
+      'reim-battle',
+      'verbotener-buchstabe',
+      'wort-morph',
+      'fuenf-sec-triple'
+    ]
+  },
+  {
+    id: 'party-signature',
+    label: 'Party & Performance',
+    description: 'Die staerksten Social- und Showdown-Modi im Direktstart.',
+    gameIds: [
+      'kompositum-maschine',
+      'rollen-sprechen',
+      'taeusch-mich'
+    ]
+  }
+]);
+
+const CURATED_DIRECT_PLAY_IDS = Object.freeze(
+  DIRECT_PLAY_CURATION.flatMap((group) => group.gameIds)
+);
+
+function resolveGames(ids) {
+  return ids
+    .map((id) => MINIGAMES[id])
+    .filter((game) => game?.supportsDirectPlay);
+}
 
 /**
  * Get a mini-game by ID
@@ -278,4 +539,19 @@ export function getMinigame(id) {
  */
 export function getAllMinigames() {
   return Object.values(MINIGAMES);
+}
+
+export function getAllDirectPlayMinigames() {
+  return getAllMinigames().filter((game) => game.supportsDirectPlay);
+}
+
+export function getCuratedDirectPlayGroups() {
+  return DIRECT_PLAY_CURATION.map((group) => ({
+    ...group,
+    games: resolveGames(group.gameIds)
+  })).filter((group) => group.games.length);
+}
+
+export function getDirectPlayMinigames() {
+  return resolveGames(CURATED_DIRECT_PLAY_IDS);
 }

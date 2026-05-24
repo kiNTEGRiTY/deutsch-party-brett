@@ -1,0 +1,52 @@
+{
+  "sets": [
+    {
+      "ending": "en",
+      "category": "Verben",
+      "minWordLength": 4,
+      "accepted": ["laufen", "spielen", "malen", "wohnen", "backen", "atmen"]
+    },
+    {
+      "ending": "ung",
+      "category": "Nomen",
+      "minWordLength": 6,
+      "accepted": ["wohnung", "zeitung", "rechnung", "sammlung", "bewegung"]
+    },
+    {
+      "ending": "chen",
+      "category": "Dinge",
+      "minWordLength": 6,
+      "accepted": ["broetchen", "maedchen", "sternchen", "spielchen", "haeuschen"]
+    },
+    {
+      "ending": "heit",
+      "category": "Abstrakta",
+      "minWordLength": 7,
+      "accepted": ["freiheit", "gesundheit", "klarheit", "weisheit", "sicherheit"]
+    },
+    {
+      "ending": "ig",
+      "category": "Adjektive",
+      "minWordLength": 5,
+      "accepted": ["lustig", "mutig", "ruhig", "sonnig", "windig"]
+    },
+    {
+      "ending": "los",
+      "category": "Adjektive",
+      "minWordLength": 6,
+      "accepted": ["ratlos", "farblos", "endlos", "hilflos", "lautlos"]
+    },
+    {
+      "ending": "bar",
+      "category": "Adjektive",
+      "minWordLength": 6,
+      "accepted": ["sichtbar", "tragbar", "essbar", "denkbar", "fuehlbar"]
+    },
+    {
+      "ending": "er",
+      "category": "Nomen",
+      "minWordLength": 5,
+      "accepted": ["hammer", "teller", "fahrer", "zauber", "lehrer"]
+    }
+  ]
+}

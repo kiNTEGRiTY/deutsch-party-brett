@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light">
   <meta name="darkreader-lock">
   <meta name="description" content="Deutsch Party Brett - ein lokales Lern-Brettspiel fuer die Grundschule.">
-  <meta name="theme-color" content="#f4ead8">
+  <meta name="theme-color" content="#ead7b2">
   <title>Deutsch Party Brett</title>
 
   <link rel="manifest" href="manifest.json">
@@ -21,13 +21,13 @@
 
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/cardboard-games.css">
-  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/base.css?v=game-feel-cutouts-30">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/screens/start.css?v=shell-reboot-8">
-  <link rel="stylesheet" href="css/screens/setup.css?v=shell-reboot-8">
-  <link rel="stylesheet" href="css/screens/board.css?v=shell-reboot-8">
-  <link rel="stylesheet" href="css/screens/minigame.css">
+  <link rel="stylesheet" href="css/screens/start.css?v=game-feel-cutouts-30">
+  <link rel="stylesheet" href="css/screens/setup.css?v=game-feel-cutouts-30">
+  <link rel="stylesheet" href="css/screens/board.css?v=game-feel-cutouts-30">
+  <link rel="stylesheet" href="css/screens/minigame.css?v=game-feel-cutouts-30">
   <link rel="stylesheet" href="css/screens/results.css">
 
   <style>
@@ -42,8 +42,8 @@
       overflow: hidden;
       color-scheme: only light !important;
       forced-color-adjust: none !important;
-      background: #f5ead6 !important;
-      font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+      background: #ead7b2 !important;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
     }
 
     button,
@@ -58,7 +58,7 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background: #f5ead6;
+      background: #ead7b2;
     }
 
     .screen.active {
@@ -75,64 +75,50 @@
     }
   </style>
 
-  <script type="module" src="js/app.js?v=shell-reboot-8"></script>
+  <script type="module" src="js/app.js?v=game-feel-cutouts-30"></script>
 </head>
 <body>
   <div id="screen-start" class="screen start-screen">
     <main class="start-shell animate-screen" aria-labelledby="start-title">
-      <section class="start-hero" aria-label="Spielstart">
-        <div class="start-brand-mark" aria-hidden="true">
-          <span>D</span>
-          <span>P</span>
-          <span>B</span>
-        </div>
-        <p class="start-kicker">Lokales Lernbrettspiel</p>
-        <h1 id="start-title" class="start-title">Deutsch Party Brett</h1>
-        <p class="start-subtitle">Eine klare Partie fuer zwei bis vier Spieler: Figuren waehlen, Klasse einstellen, wuerfeln und Deutsch-Aufgaben auf einem sichtbaren Pfad loesen.</p>
+      <div class="start-art" aria-hidden="true">
+        <span class="start-cutout start-cutout--elephant"></span>
+        <span class="start-cutout start-cutout--penguin"></span>
+        <span class="start-cutout start-cutout--cat"></span>
+        <span class="start-cutout start-cutout--dog"></span>
+        <span class="start-cutout start-cutout--kangaroo"></span>
+        <span class="start-cutout start-cutout--fox"></span>
+        <span class="start-cutout start-cutout--deer"></span>
+        <span class="start-board-sketch"></span>
+      </div>
 
-        <div class="start-actions" aria-label="Hauptaktionen">
-          <button id="btn-new-game" type="button" class="start-action start-action--primary" data-testid="start-new-game">
-            <span>Neue Partie</span>
-            <small>Setup starten</small>
-          </button>
-          <button id="btn-continue" type="button" class="start-action" data-testid="start-continue">
-            <span>Setup öffnen</span>
-            <small>Keine gespeicherte Partie</small>
-          </button>
-          <button id="btn-minigames" type="button" class="start-action start-action--quiet" data-testid="start-minigames">
-            <span>Minispiele</span>
-            <small>Direkt ueben</small>
-          </button>
-        </div>
+      <section class="start-copy" aria-label="Spielstart">
+        <p class="start-kicker">Aquarell-Edition</p>
+        <h1 id="start-title" class="start-title">Deutsch Party Brett</h1>
+        <p class="start-subtitle">Ein gemaltes Party-Brettspiel mit Aufgaben, Duellen, Jokern, Bonusfeldern und schnellen Deutschmomenten fuer die ganze Runde.</p>
       </section>
 
-      <aside class="start-brief" aria-label="Spielrahmen">
-        <div class="start-brief-card start-brief-card--dark">
-          <span class="start-brief-label">Partie</span>
-          <strong>36 Felder bis zum Ziel</strong>
-          <p>Nomen, Verben, Adjektive und Bewegungsfelder wechseln sichtbar ab.</p>
-        </div>
-        <div class="start-brief-grid">
-          <div class="start-brief-card">
-            <span>Spieler</span>
-            <strong>2-4</strong>
-          </div>
-          <div class="start-brief-card">
-            <span>Stufe</span>
-            <strong>V-4</strong>
-          </div>
-          <div class="start-brief-card">
-            <span>Modus</span>
-            <strong>Lokal</strong>
-          </div>
-        </div>
-        <div class="start-token-rack" aria-hidden="true">
-          <span style="--token:#c84f3f;">A</span>
-          <span style="--token:#2f7057;">B</span>
-          <span style="--token:#4d78b7;">C</span>
-          <span style="--token:#c19034;">D</span>
-        </div>
+      <section class="start-actions" aria-label="Hauptaktionen">
+        <button id="btn-new-game" type="button" class="start-action start-action--primary" data-testid="start-new-game">
+          <span>Neue Partie</span>
+          <small>Setup, Figuren und Themen</small>
+        </button>
+        <button id="btn-continue" type="button" class="start-action" data-testid="start-continue">
+          <span>Setup oeffnen</span>
+          <small>Keine gespeicherte Partie</small>
+        </button>
+        <button id="btn-minigames" type="button" class="start-action start-action--quiet" data-testid="start-minigames">
+          <span>Minispiele</span>
+          <small>Direkt in die Aufgaben</small>
+        </button>
+      </section>
+
+      <aside class="start-moments" aria-label="Spielinhalt">
+        <span>Im Brett</span>
+        <strong>Wuerfeln · Duell · Teamruf · Joker · Risiko · Finale</strong>
       </aside>
+      <div class="start-floating start-floating--one" aria-hidden="true"></div>
+      <div class="start-floating start-floating--two" aria-hidden="true"></div>
+      <div class="start-floating start-floating--three" aria-hidden="true"></div>
     </main>
   </div>
 

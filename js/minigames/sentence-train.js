@@ -33,29 +33,29 @@ export const SentenceTrain = {
     let selectedWagons = [];
 
     container.innerHTML = `
-      <div class="train-container" style="padding: var(--space-md); text-align: center; user-select:none;">
-        <p style="font-size: var(--font-size-md); color: var(--text-secondary); margin-bottom: var(--space-lg);">
-          Belade den Zug in der richtigen Reihenfolge!
-        </p>
-
-        <!-- Train Track & Wagons -->
-        <div style="background: #ecf0f1; border-bottom: 4px solid #7f8c8d; padding: 20px 10px; min-height: 120px; display: flex; align-items: flex-end; gap: 5px; flex-wrap: wrap; margin-bottom: var(--space-xl); border-radius: 8px;">
-            <div style="font-size: 3rem; margin-right: 10px;">🚂</div>
-            <div id="train-wagons" style="display: flex; gap: 5px; flex-wrap: wrap; align-items: flex-end;"></div>
+      <div class="train-container train-premium-stage">
+        <div class="train-premium-header">
+          <div class="premium-kicker">Satzbau-Zug</div>
+          <p class="train-premium-prompt">Belade den Zug in der richtigen Reihenfolge!</p>
         </div>
 
-        <!-- Word Bank (Cargo) -->
-        <div id="cargo-area" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: var(--space-xl);">
-            ${shuffledWords.map((word, i) => `
-                <button class="cargo-btn btn btn-secondary" data-word="${word.replace(/"/g, '&quot;')}" style="font-size: 1.2rem; padding: 10px 20px; border-radius: 8px; box-shadow: 0 4px 0 var(--color-secondary-dark);">
-                    📦 ${word}
-                </button>
-            `).join('')}
+        <div class="train-scene">
+          <div class="train-track-glow"></div>
+          <div class="train-engine">🚂</div>
+          <div id="train-wagons" class="train-wagons"></div>
         </div>
 
-        <!-- Submit Switch -->
-        <button id="train-submit" class="btn btn-primary btn-lg" style="width: 100%; max-width: 300px; display:none;">
-            Abfahrt! 🚦
+        <div id="cargo-area" class="train-cargo-bank">
+          ${shuffledWords.map((word) => `
+            <button class="cargo-btn btn btn-secondary train-cargo-button" data-word="${word.replace(/"/g, '&quot;')}" type="button">
+              <span>📦</span>
+              <strong>${word}</strong>
+            </button>
+          `).join('')}
+        </div>
+
+        <button id="train-submit" class="btn btn-primary btn-lg train-submit-button" type="button" style="display:none;">
+          Abfahrt
         </button>
       </div>
     `;
@@ -65,28 +65,33 @@ export const SentenceTrain = {
     const submitBtn = container.querySelector('#train-submit');
 
     function renderWagons() {
-        wagonsContainer.innerHTML = selectedWagons.map((word, idx) => `
-            <div class="wagon-item" data-idx="${idx}" style="background: #3498db; color: white; padding: 10px 15px; border-radius: 4px 4px 0 0; font-weight: bold; border: 2px solid #2980b9; cursor: pointer; position:relative;">
-                ${word}
-                <div style="position:absolute; bottom: -8px; left: 10px; width:10px; height:10px; background:#333; border-radius:50%;"></div>
-                <div style="position:absolute; bottom: -8px; right: 10px; width:10px; height:10px; background:#333; border-radius:50%;"></div>
-            </div>
+        const filled = selectedWagons.map((word, idx) => `
+            <button class="wagon-item train-wagon-card" data-idx="${idx}" type="button">
+              <span class="train-wagon-label">${word}</span>
+              <span class="train-wheel left"></span>
+              <span class="train-wheel right"></span>
+            </button>
         `).join('');
+        const emptySlots = Array.from({ length: Math.max(0, words.length - selectedWagons.length) }, () => `
+          <div class="train-wagon-slot">Wort einladen</div>
+        `).join('');
+        wagonsContainer.innerHTML = `${filled}${emptySlots}`;
 
         // Wagon click to return cargo
         container.querySelectorAll('.wagon-item').forEach(wagon => {
             wagon.addEventListener('click', () => {
                 const w = selectedWagons.splice(wagon.dataset.idx, 1)[0];
-                const btn = container.querySelector(`.cargo-btn[data-word="${w.replace(/"/g, '\\"')}"]`);
+                const safeWord = CSS.escape(w);
+                const btn = container.querySelector(`.cargo-btn[data-word="${safeWord}"]`);
                 if(btn) {
-                    btn.style.visibility = 'visible';
+                    btn.style.display = '';
                 }
                 renderWagons();
             });
         });
 
         if (selectedWagons.length === words.length) {
-            submitBtn.style.display = 'inline-block';
+            submitBtn.style.display = 'inline-flex';
         } else {
             submitBtn.style.display = 'none';
         }
@@ -95,7 +100,7 @@ export const SentenceTrain = {
     container.querySelectorAll('.cargo-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             selectedWagons.push(btn.dataset.word);
-            btn.style.visibility = 'hidden';
+            btn.style.display = 'none';
             renderWagons();
         });
     });

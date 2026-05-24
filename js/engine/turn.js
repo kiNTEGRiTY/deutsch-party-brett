@@ -119,4 +119,26 @@ export class TurnManager {
   shouldEndGame(maxRounds = 50) {
     return this.round > maxRounds;
   }
+
+  getSnapshot() {
+    return {
+      currentPlayerIndex: this.currentPlayerIndex,
+      totalPlayers: this.totalPlayers,
+      round: this.round,
+      phase: this.phase,
+      turnLog: this.turnLog.map((entry) => ({ ...entry }))
+    };
+  }
+
+  loadSnapshot(snapshot) {
+    if (!snapshot) {
+      return;
+    }
+
+    this.currentPlayerIndex = Number.isFinite(snapshot.currentPlayerIndex) ? snapshot.currentPlayerIndex : 0;
+    this.totalPlayers = Number.isFinite(snapshot.totalPlayers) ? snapshot.totalPlayers : 0;
+    this.round = Number.isFinite(snapshot.round) ? snapshot.round : 1;
+    this.phase = snapshot.phase || TurnPhase.IDLE;
+    this.turnLog = Array.isArray(snapshot.turnLog) ? snapshot.turnLog.map((entry) => ({ ...entry })) : [];
+  }
 }

@@ -1,0 +1,34 @@
+{
+  "sets": [
+    {
+      "prefix": "be",
+      "minWordLength": 5,
+      "accepted": ["bekommen", "bezahlen", "begleiten", "beobachten", "bedecken"]
+    },
+    {
+      "prefix": "ver",
+      "minWordLength": 6,
+      "accepted": ["verkaufen", "vergessen", "verstehen", "verdoppeln", "verlernen"]
+    },
+    {
+      "prefix": "un",
+      "minWordLength": 5,
+      "accepted": ["unklar", "unruhig", "unsicher", "ungleich", "unendlich"]
+    },
+    {
+      "prefix": "vor",
+      "minWordLength": 5,
+      "accepted": ["vorlesen", "vorspielen", "vorfahren", "vorstellen", "vorplanen"]
+    },
+    {
+      "prefix": "mit",
+      "minWordLength": 5,
+      "accepted": ["mitdenken", "mitspielen", "mitbringen", "mitsingen", "mitfahren"]
+    },
+    {
+      "prefix": "ab",
+      "minWordLength": 5,
+      "accepted": ["abholen", "abfahren", "abtauchen", "abbiegen", "abtrocknen"]
+    }
+  ]
+}

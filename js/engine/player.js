@@ -4,7 +4,7 @@
  * Uses hand-drawn illustrated animal characters instead of emojis.
  */
 
-import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js';
+import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js?v=game-feel-cutouts-30';
 
 const PLAYER_COLORS = [
   'var(--player-1)', 'var(--player-2)', 'var(--player-3)',
@@ -27,6 +27,7 @@ export class Player {
     this.position = 0;
     this.finished = false;
     this.finishOrder = -1;
+    this.extraTurns = 0;
     
     // Inventory
     this.coins = 0;
@@ -94,11 +95,48 @@ export class Player {
     return this.coins + (this.stars * 10) + this.stats.totalScore;
   }
 
+  static fromJSON(data = {}) {
+    const player = new Player(
+      Number.isFinite(data.id) ? data.id : 0,
+      data.name,
+      Number.isFinite(data.colorIndex) ? data.colorIndex : data.id
+    );
+
+    player.avatarId = data.avatarId || player.avatarId;
+    player.avatarName = data.avatarName || player.avatarName;
+    player.avatarColor = data.avatarColor || player.avatarColor;
+    player.position = Number.isFinite(data.position) ? data.position : 0;
+    player.finished = Boolean(data.finished);
+    player.finishOrder = Number.isFinite(data.finishOrder) ? data.finishOrder : -1;
+    player.extraTurns = Number.isFinite(data.extraTurns) ? data.extraTurns : 0;
+    player.coins = Number.isFinite(data.coins) ? data.coins : 0;
+    player.stars = Number.isFinite(data.stars) ? data.stars : 0;
+    player.badges = Array.isArray(data.badges) ? [...data.badges] : [];
+    player.jokers = {
+      hint: 0,
+      protection: 0,
+      extraRoll: 0,
+      ...(data.jokers || {})
+    };
+    player.stats = {
+      tasksAttempted: 0,
+      tasksCorrect: 0,
+      totalScore: 0,
+      challengeWins: 0,
+      teamTasks: 0,
+      ...(data.stats || {})
+    };
+
+    return player;
+  }
+
   toJSON() {
     return {
       id: this.id, name: this.name, colorIndex: this.colorIndex,
-      avatarId: this.avatarId, position: this.position,
+      avatarId: this.avatarId, avatarName: this.avatarName, avatarColor: this.avatarColor,
+      position: this.position,
       finished: this.finished, finishOrder: this.finishOrder,
+      extraTurns: this.extraTurns,
       coins: this.coins, stars: this.stars,
       badges: [...this.badges], jokers: { ...this.jokers },
       stats: { ...this.stats }

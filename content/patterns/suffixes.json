@@ -1,0 +1,39 @@
+{
+  "sets": [
+    {
+      "suffix": "ung",
+      "minWordLength": 6,
+      "accepted": ["wohnung", "zeitung", "rechnung", "sammlung", "bewegung"]
+    },
+    {
+      "suffix": "heit",
+      "minWordLength": 7,
+      "accepted": ["freiheit", "gesundheit", "klarheit", "weisheit", "sicherheit"]
+    },
+    {
+      "suffix": "keit",
+      "minWordLength": 8,
+      "accepted": ["moeglichkeit", "freundlichkeit", "sauberkeit", "ehrlichkeit", "schnelligkeit"]
+    },
+    {
+      "suffix": "bar",
+      "minWordLength": 6,
+      "accepted": ["sichtbar", "tragbar", "essbar", "denkbar", "fuehlbar"]
+    },
+    {
+      "suffix": "los",
+      "minWordLength": 6,
+      "accepted": ["ratlos", "farblos", "endlos", "hilflos", "lautlos"]
+    },
+    {
+      "suffix": "chen",
+      "minWordLength": 6,
+      "accepted": ["broetchen", "maedchen", "sternchen", "haeuschen", "spielchen"]
+    },
+    {
+      "suffix": "erei",
+      "minWordLength": 7,
+      "accepted": ["baeckerei", "malerei", "zauberei", "druckerei", "gaertnerei"]
+    }
+  ]
+}

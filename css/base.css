@@ -287,12 +287,32 @@ body {
 .char-avatar,
 .char-token {
   position: relative;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-.char-sprite {
+.char-cutout {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  filter:
+    drop-shadow(0 2px 0 rgba(255, 249, 229, 0.8))
+    drop-shadow(0 7px 8px rgba(49, 31, 18, 0.2));
+  transform: scale(1.08);
+  transform-origin: center bottom;
+}
+
+.char-token .char-cutout {
+  transform: scale(1.18);
 }
 
 .turn-round {

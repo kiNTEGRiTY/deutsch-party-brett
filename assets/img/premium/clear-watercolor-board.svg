@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1672 941" role="img" aria-label="Klares Aquarell-Spielbrett mit einem eindeutigen Weg von Start zu Ziel">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-25%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#4b321d" flood-opacity="0.18"/>
+    </filter>
+    <filter id="paperNoise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.034" numOctaves="3" seed="14"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.18"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+    <pattern id="tileGrain" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M8 18 C20 10 31 27 44 14 M12 48 C26 35 39 54 56 42" fill="none" stroke="#6c4b2a" stroke-width="2" opacity="0.08"/>
+      <circle cx="15" cy="34" r="2" fill="#6c4b2a" opacity="0.08"/>
+      <circle cx="47" cy="27" r="1.8" fill="#fff5d8" opacity="0.3"/>
+    </pattern>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f5e5bf"/>
+      <stop offset="0.55" stop-color="#e9cf98"/>
+      <stop offset="1" stop-color="#d3a96b"/>
+    </linearGradient>
+    <linearGradient id="pathPaint" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff2cf"/>
+      <stop offset="0.55" stop-color="#f0d9a5"/>
+      <stop offset="1" stop-color="#d9b676"/>
+    </linearGradient>
+    <symbol id="fieldTile" viewBox="-50 -32 100 64">
+      <rect x="-47" y="-27" width="94" height="54" rx="15" fill="#5d4028" opacity="0.15" transform="translate(0 8)"/>
+      <rect class="tile-fill" x="-44" y="-26" width="88" height="52" rx="15" fill="currentColor"/>
+      <rect x="-44" y="-26" width="88" height="52" rx="15" fill="url(#tileGrain)" opacity="0.46"/>
+      <path d="M-35 -13 C-14 -23 18 -22 36 -11" fill="none" stroke="#fff6dd" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+      <rect x="-44" y="-26" width="88" height="52" rx="15" fill="none" stroke="#fff7df" stroke-width="6"/>
+      <rect x="-40" y="-22" width="80" height="44" rx="12" fill="none" stroke="#7d5431" stroke-width="1.4" opacity="0.22"/>
+    </symbol>
+    <marker id="arrow" markerWidth="15" markerHeight="15" refX="11" refY="7.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L13 7.5 L1 14 Z" fill="#6f4a2a" opacity="0.7"/>
+    </marker>
+    <style>
+      .field { filter: url(#softShadow); }
+      .field text { fill: #352418; font-family: Avenir Next, Segoe UI, sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 0; paint-order: stroke; stroke: rgba(255,248,226,.7); stroke-width: 3px; }
+      .field.start text, .field.finish text { font-size: 16px; }
+      .nomen { color: #bd604b; }
+      .verben { color: #7f946a; }
+      .adjektiv { color: #557585; }
+      .helper { color: #d9a33d; }
+      .movement { color: #cf8f45; }
+      .trap { color: #9d554f; }
+      .reward { color: #d6a43d; }
+      .portal { color: #9b6780; }
+      .start { color: #8ea06f; }
+      .finish { color: #e0ad38; }
+      .map-copy { font-family: Avenir Next, Segoe UI, sans-serif; font-weight: 950; letter-spacing: .07em; text-transform: uppercase; paint-order: stroke; stroke: rgba(255,248,226,.9); stroke-width: 5px; }
+    </style>
+  </defs>
+
+  <rect width="1672" height="941" fill="url(#paper)"/>
+  <rect width="1672" height="941" fill="#f8ecd0" opacity="0.62" filter="url(#paperNoise)"/>
+
+  <g opacity="0.72">
+    <path d="M0 272 C188 190 318 139 501 178 C638 208 710 92 881 123 C1025 150 1085 77 1233 105 C1368 130 1488 88 1672 141 L1672 0 L0 0 Z" fill="#d8d7ac"/>
+    <path d="M0 334 C197 253 340 229 508 272 C661 310 789 205 951 238 C1110 270 1254 222 1411 260 C1538 290 1601 264 1672 246 L1672 0 L0 0 Z" fill="#bdd2b3" opacity="0.55"/>
+    <path d="M105 814 C213 729 346 699 498 735 C640 769 718 690 872 708 C1019 725 1108 654 1266 689 C1414 721 1526 754 1672 704 L1672 941 L0 941 L0 869 Z" fill="#d9c893" opacity="0.52"/>
+  </g>
+
+  <g opacity="0.92">
+    <path d="M0 622 C148 598 218 533 326 540 C429 547 501 600 606 580 C711 560 765 498 877 511 C999 524 1070 590 1192 559 C1324 525 1458 451 1672 476" fill="none" stroke="#9fb8a5" stroke-width="52" stroke-linecap="round" opacity="0.34"/>
+    <path d="M0 619 C146 596 219 540 329 548 C431 555 498 603 606 583 C710 564 765 510 877 522 C997 535 1074 589 1194 561 C1328 530 1455 468 1672 496" fill="none" stroke="#d6eced" stroke-width="20" stroke-linecap="round" opacity="0.68"/>
+  </g>
+
+  <g filter="url(#softShadow)" opacity="0.96">
+    <path d="M234 215 L301 177 L371 211 L372 300 L234 300 Z" fill="#f2d7a8"/>
+    <path d="M218 218 L302 158 L389 218 Z" fill="#c97942"/>
+    <rect x="260" y="236" width="32" height="64" rx="4" fill="#7b5032"/>
+    <rect x="313" y="235" width="36" height="38" rx="5" fill="#5b7d89"/>
+    <path d="M1218 98 L1348 70 L1468 126 L1452 230 L1225 228 Z" fill="#f4dcb0"/>
+    <path d="M1205 103 L1350 42 L1494 111 Z" fill="#bd6c39"/>
+    <path d="M1270 151 L1428 151" stroke="#8f5d36" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <g opacity="0.86">
+    <ellipse cx="840" cy="610" rx="126" ry="42" fill="#9fac7d" opacity="0.36"/>
+    <ellipse cx="1165" cy="565" rx="96" ry="34" fill="#9fac7d" opacity="0.28"/>
+    <ellipse cx="475" cy="250" rx="92" ry="30" fill="#9fac7d" opacity="0.3"/>
+    <g fill="#61724d">
+      <path d="M138 530 C108 467 141 405 161 350 C184 413 209 483 174 536 Z"/>
+      <path d="M1510 305 C1474 240 1514 169 1534 113 C1560 182 1580 250 1547 315 Z"/>
+      <path d="M1018 204 C993 154 1024 96 1042 55 C1062 110 1079 165 1051 214 Z"/>
+    </g>
+  </g>
+
+  <polyline points="390,780 475,790 555,765 620,715 675,660 760,640 850,660 935,700 1025,730 1120,710 1200,660 1260,595 1280,520 1240,455 1155,420 1055,415 950,400 850,365 750,335 650,330 545,350 455,395 390,455 415,530 505,565 610,555 720,535 830,510 940,480 1050,435 1155,380 1235,315 1290,245 1245,180 1300,145 1320,215"
+    fill="none" stroke="#5f3d24" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" opacity="0.11"/>
+  <polyline points="390,780 475,790 555,765 620,715 675,660 760,640 850,660 935,700 1025,730 1120,710 1200,660 1260,595 1280,520 1240,455 1155,420 1055,415 950,400 850,365 750,335 650,330 545,350 455,395 390,455 415,530 505,565 610,555 720,535 830,510 940,480 1050,435 1155,380 1235,315 1290,245 1245,180 1300,145 1320,215"
+    fill="none" stroke="url(#pathPaint)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="390,780 475,790 555,765 620,715 675,660 760,640 850,660 935,700 1025,730 1120,710 1200,660 1260,595 1280,520 1240,455 1155,420 1055,415 950,400 850,365 750,335 650,330 545,350 455,395 390,455 415,530 505,565 610,555 720,535 830,510 940,480 1050,435 1155,380 1235,315 1290,245 1245,180 1300,145 1320,215"
+    fill="none" stroke="#fff8de" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+
+  <g fill="none" stroke="#6f4a2a" stroke-width="7" stroke-linecap="round" marker-end="url(#arrow)" opacity="0.5">
+    <path d="M552 712 C603 681 632 647 674 642"/>
+    <path d="M1245 514 C1239 472 1207 446 1162 428"/>
+    <path d="M480 428 C426 455 417 493 444 530"/>
+    <path d="M1138 392 C1204 351 1244 311 1270 259"/>
+  </g>
+
+  <g class="fields">
+    <g class="field start" transform="translate(390 780) rotate(6.7)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">START</text></g>
+    <g class="field helper" transform="translate(475 790) rotate(-5.2)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">01</text></g>
+    <g class="field nomen" transform="translate(555 765) rotate(-27.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">02</text></g>
+    <g class="field verben" transform="translate(620 715) rotate(-41.2)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">03</text></g>
+    <g class="field adjektiv" transform="translate(675 660) rotate(-28.2)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">04</text></g>
+    <g class="field helper" transform="translate(760 640) rotate(0)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">05</text></g>
+    <g class="field nomen" transform="translate(850 660) rotate(18.9)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">06</text></g>
+    <g class="field movement" transform="translate(935 700) rotate(21.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">07</text></g>
+    <g class="field trap" transform="translate(1025 730) rotate(3.1)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">08</text></g>
+    <g class="field verben" transform="translate(1120 710) rotate(-21.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">09</text></g>
+    <g class="field adjektiv" transform="translate(1200 660) rotate(-39.4)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">10</text></g>
+    <g class="field helper" transform="translate(1260 595) rotate(-60.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">11</text></g>
+    <g class="field movement" transform="translate(1280 520) rotate(-98.1)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">12</text></g>
+    <g class="field nomen" transform="translate(1240 455) rotate(-141.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">13</text></g>
+    <g class="field trap" transform="translate(1155 420) rotate(-167.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">14</text></g>
+    <g class="field verben" transform="translate(1055 415) rotate(-174.4)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">15</text></g>
+    <g class="field portal" transform="translate(950 400) rotate(-166.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">16</text></g>
+    <g class="field adjektiv" transform="translate(850 365) rotate(-162)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">17</text></g>
+    <g class="field reward" transform="translate(750 335) rotate(-170.1)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">18</text></g>
+    <g class="field nomen" transform="translate(650 330) rotate(175.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">19</text></g>
+    <g class="field verben" transform="translate(545 350) rotate(161.6)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">20</text></g>
+    <g class="field helper" transform="translate(455 395) rotate(145.9)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">21</text></g>
+    <g class="field movement" transform="translate(390 455) rotate(106.5)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">22</text></g>
+    <g class="field trap" transform="translate(415 530) rotate(43.7)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">23</text></g>
+    <g class="field nomen" transform="translate(505 565) rotate(7.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">24</text></g>
+    <g class="field verben" transform="translate(610 555) rotate(-7.9)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">25</text></g>
+    <g class="field reward" transform="translate(720 535) rotate(-11.6)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">26</text></g>
+    <g class="field adjektiv" transform="translate(830 510) rotate(-14)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">27</text></g>
+    <g class="field nomen" transform="translate(940 480) rotate(-18.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">28</text></g>
+    <g class="field movement" transform="translate(1050 435) rotate(-24.9)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">29</text></g>
+    <g class="field verben" transform="translate(1155 380) rotate(-33)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">30</text></g>
+    <g class="field helper" transform="translate(1235 315) rotate(-45)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">31</text></g>
+    <g class="field trap" transform="translate(1290 245) rotate(-85.8)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">32</text></g>
+    <g class="field nomen" transform="translate(1245 180) rotate(-84.3)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">33</text></g>
+    <g class="field reward" transform="translate(1300 145) rotate(25)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">34</text></g>
+    <g class="field finish" transform="translate(1320 215) rotate(74.1)"><use href="#fieldTile" x="-50" y="-32" width="100" height="64"/><text text-anchor="middle" dominant-baseline="central">ZIEL</text></g>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path d="M1372 103 L1372 272" stroke="#7b5435" stroke-width="5" stroke-linecap="round"/>
+    <path d="M1312 88 L1480 88 L1458 150 L1290 150 Z" fill="#f4dca2" stroke="#7b5435" stroke-width="6" stroke-linejoin="round"/>
+    <text x="1385" y="127" class="map-copy" text-anchor="middle" fill="#3a2617" font-size="38">ZIEL</text>
+    <circle cx="1372" cy="272" r="17" fill="#7b5435" opacity="0.42"/>
+  </g>
+
+  <text x="305" y="858" class="map-copy" fill="#3a2617" font-size="30">Start</text>
+  <text x="1166" y="104" class="map-copy" fill="#3a2617" font-size="22">Ein Weg</text>
+</svg>
