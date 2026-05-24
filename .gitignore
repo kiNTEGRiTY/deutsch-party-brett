@@ -1,6 +1,7 @@
 .DS_Store
 output/
 npm-cache/
+.npm-cache/
 .playwright-cli/
 .local-tools/
 node_modules/
