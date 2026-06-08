@@ -8,6 +8,7 @@
 import GermanModule from './languages/de/index.js?v=game-feel-cutouts-30';
 import { getTimerDuration } from './difficulty.js';
 import { buildTaskPartyConfig } from '../minigames/core/party-game-core.js';
+import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=game-feel-cutouts-30';
 
 // Language module registry - future: add English here
 const LANGUAGE_MODULES = {
@@ -119,11 +120,16 @@ const FEATURED_MODE_MINIGAME_MAP = {
 const recentMiniGameIds = [];
 
 function getGamePool(topic, fieldType) {
-  if (FEATURED_MODE_MINIGAME_MAP[fieldType]?.length) {
-    return FEATURED_MODE_MINIGAME_MAP[fieldType];
+  const rawPool = FEATURED_MODE_MINIGAME_MAP[fieldType]?.length
+    ? FEATURED_MODE_MINIGAME_MAP[fieldType]
+    : TOPIC_MINIGAME_MAP[topic] || TOPIC_MINIGAME_MAP._default;
+
+  const qualityPool = filterBoardReadyMinigames(rawPool);
+  if (qualityPool.length) {
+    return qualityPool;
   }
 
-  return TOPIC_MINIGAME_MAP[topic] || TOPIC_MINIGAME_MAP._default;
+  return filterBoardReadyMinigames(TOPIC_MINIGAME_MAP._default);
 }
 
 function pickMiniGameId(games) {

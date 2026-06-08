@@ -21,7 +21,7 @@ const FIELD_STYLE = {
   normal: { label: '.', title: 'Aufgabe', color: '#f2d9a2', deep: '#8c6330', icon: '*' }
 };
 
-const DIRECTION_MARKERS = [2, 6, 10, 14, 18, 22, 26, 30, 33];
+const DIRECTION_MARKERS = [2, 5, 8, 11, 14, 17, 19];
 
 const MOMENT_DECK = [
   { title: 'Blitzduell', text: 'Zwei Spieler antworten gleichzeitig.' },
@@ -136,14 +136,20 @@ export class BoardRenderer {
   _renderBoardStatic() {
     const fields = this.game.board.getAllFields();
     return `
-      ${this._renderDecor()}
-      ${this._renderPortalBridge(fields)}
-      ${this._renderPath(fields)}
-      ${this._renderDirectionMarkers(fields)}
+      ${this._renderBoardArtwork()}
       <g class="board-field-layer">
         ${fields.map((field) => this._renderFieldTile(field)).join('')}
       </g>
-      ${this._renderLandmarks()}
+      ${this._renderDirectionMarkers(fields)}
+    `;
+  }
+
+  _renderBoardArtwork() {
+    const image = BOARD_THEME.art?.boardBackdrop || 'assets/img/premium/watercolor-premium-board.png';
+    return `
+      <g class="board-artwork-layer" aria-hidden="true">
+        <image class="board-artwork-image" href="${this._escape(image)}" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}" preserveAspectRatio="xMidYMid slice"></image>
+      </g>
     `;
   }
 
@@ -220,7 +226,7 @@ export class BoardRenderer {
           const angle = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
           return `
             <g transform="translate(${midX} ${midY}) rotate(${angle})">
-              <path d="M-24 -14 L20 -14 L34 0 L20 14 L-24 14 L-12 0Z"></path>
+              <path d="M-28 -16 L24 -16 L39 0 L24 16 L-28 16 L-14 0Z"></path>
             </g>
           `;
         }).join('')}

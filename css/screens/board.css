@@ -32,7 +32,7 @@
 
 .board-map-frame {
   position: absolute;
-  inset: 0 338px 84px 0;
+  inset: 86px 338px 176px 0;
   z-index: 1;
   overflow: hidden;
   background:
@@ -129,9 +129,10 @@
 }
 
 .board-direction-markers path {
-  fill: #fff3c1;
-  stroke: rgba(111, 72, 31, 0.48);
-  stroke-width: 3;
+  fill: rgba(255, 244, 195, 0.96);
+  stroke: rgba(86, 57, 31, 0.66);
+  stroke-width: 4;
+  filter: drop-shadow(0 3px 3px rgba(55, 35, 18, 0.18));
 }
 
 .board-portal-bridge path {
@@ -814,9 +815,9 @@
 @media (max-width: 760px) {
   .board-map-frame {
     inset: 144px auto auto 50%;
-    width: 118vw;
+    width: 110vw;
     aspect-ratio: 1672 / 941;
-    transform: translateX(-48%);
+    transform: translateX(-50%);
   }
 
   .board-token-body {

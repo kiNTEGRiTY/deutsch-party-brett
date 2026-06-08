@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "coordinateSpace": [1672, 941],
+  "assets": [
+    {
+      "id": "board.aquarell.path.v1",
+      "domain": "board",
+      "role": "backdrop",
+      "src": "assets/img/premium/watercolor-premium-board.png",
+      "dimensions": [1672, 941],
+      "coordinateSpace": [1672, 941],
+      "status": "production",
+      "provenance": "premium-watercolor-derived",
+      "notes": "Primary board art. Board field coordinates are authored in this image coordinate space."
+    },
+    {
+      "id": "ui.start.aquarell.v1",
+      "domain": "ui",
+      "role": "start-background",
+      "src": "assets/img/premium/watercolor-premium-start.png",
+      "dimensions": [1672, 941],
+      "status": "production",
+      "provenance": "premium-watercolor-derived"
+    },
+    {
+      "id": "ui.setup.aquarell.v1",
+      "domain": "ui",
+      "role": "setup-background",
+      "src": "assets/img/premium/watercolor-premium-setup.png",
+      "dimensions": [1672, 941],
+      "status": "production",
+      "provenance": "premium-watercolor-derived"
+    },
+    {
+      "id": "minigame.table.aquarell.v1",
+      "domain": "minigames",
+      "role": "stage-background",
+      "src": "assets/img/premium/watercolor-premium-game-table.png",
+      "dimensions": [1672, 941],
+      "status": "production",
+      "provenance": "premium-watercolor-derived"
+    },
+    {
+      "id": "characters.original-cutouts.v1",
+      "domain": "characters",
+      "role": "player-tokens",
+      "src": "assets/img/premium/user-reference/cutouts/",
+      "status": "production",
+      "provenance": "wife-original-cutouts",
+      "items": [
+        "elephant",
+        "penguin",
+        "cat",
+        "dog",
+        "kangaroo",
+        "bear",
+        "rabbit",
+        "fox",
+        "raccoon",
+        "deer",
+        "bat"
+      ],
+      "notes": "Use for board tokens, avatars, setup choices, and small in-game portraits. Avoid hero-scale enlargement."
+    },
+    {
+      "id": "cards.word-crops.v1",
+      "domain": "cards",
+      "role": "word-card-crops",
+      "src": "assets/img/premium/user-reference/word-card-crops/",
+      "status": "handmade-reference",
+      "provenance": "wife-original-photos",
+      "notes": "Use in handmade card modes and as source material for polished derived card art. Do not treat raw crops as the only premium card system."
+    }
+  ],
+  "doNotPromoteAsPrimary": [
+    "assets/img/premium/generated-wife-style/",
+    "assets/img/premium/characters/",
+    "assets/img/premium/start-hero-forest.png",
+    "assets/img/premium/board-enchanted-backdrop.png",
+    "assets/img/**/*.heic"
+  ]
+}
