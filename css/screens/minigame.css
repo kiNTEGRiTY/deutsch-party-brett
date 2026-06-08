@@ -3688,6 +3688,18 @@
   gap: 8px;
 }
 
+.atelier-sort-challenge--articles {
+  gap: clamp(9px, 1.3vw, 14px);
+}
+
+.atelier-sort-goal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .atelier-sort-challenge .atelier-article-target,
 .atelier-sort-challenge .atelier-letter-target {
   width: clamp(70px, 9vw, 96px);
@@ -3696,6 +3708,40 @@
 
 .atelier-sort-challenge .atelier-card-choice {
   min-height: clamp(100px, 15vh, 138px);
+}
+
+.atelier-article-trays {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: min(520px, 100%);
+}
+
+.atelier-article-trays span {
+  display: grid;
+  place-items: center;
+  min-height: 31px;
+  border: 1.5px dashed rgba(72, 54, 35, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 250, 236, 0.58);
+  color: #65492f;
+  font-size: clamp(0.72rem, 1vw, 0.86rem);
+  font-weight: 950;
+}
+
+.atelier-card-choice.is-rejected {
+  opacity: 0.58;
+  filter: grayscale(0.25);
+}
+
+.atelier-sort-feedback {
+  min-height: 2.3em;
+  margin: 0;
+  color: #5d4430;
+  font-size: clamp(0.78rem, 1.06vw, 0.95rem);
+  font-weight: 850;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .atelier-sort-challenge .atelier-card-thumb span {
@@ -4775,6 +4821,83 @@
   gap: 8px;
 }
 
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-scene {
+  gap: 8px;
+  padding: clamp(10px, 1.4vw, 16px);
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-copy {
+  gap: 3px;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-copy h3 {
+  font-size: clamp(1.45rem, 2.35vw, 2.15rem);
+  line-height: 1;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-copy p {
+  max-width: 46ch;
+  font-size: clamp(0.78rem, 1.12vw, 0.95rem);
+  line-height: 1.12;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-challenge {
+  align-content: start;
+  gap: 7px;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-goal {
+  gap: 7px;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-challenge .atelier-article-target {
+  width: clamp(56px, 7vw, 76px);
+  font-size: clamp(1.2rem, 2vw, 1.75rem);
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-challenge .atelier-card-choice {
+  min-height: clamp(78px, 11vh, 104px) !important;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-card-thumb {
+  min-height: clamp(78px, 11vh, 104px);
+}
+
+@media (min-width: 861px) {
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-choice-grid--compact {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: min(760px, 100%);
+  }
+
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-challenge .atelier-card-choice,
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-card-thumb {
+    min-height: clamp(82px, 12vh, 112px) !important;
+  }
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-hunt-counter {
+  min-height: 30px;
+  padding: 4px 11px;
+  line-height: 1.05;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-hunt-counter small {
+  display: block;
+  font-size: 0.68rem;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-card-thumb span {
+  font-size: clamp(0.56rem, 0.72vw, 0.68rem) !important;
+  line-height: 0.94 !important;
+}
+
+.minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-feedback {
+  min-height: 1.5em;
+  font-size: clamp(0.72rem, 0.95vw, 0.88rem) !important;
+  line-height: 1.12 !important;
+  font-weight: 850 !important;
+}
+
 .minigame-game-area .atelier-card-thumb--hero {
   width: min(300px, 100%);
   min-height: clamp(210px, 36vh, 340px);
@@ -4799,6 +4922,15 @@
   .minigame-game-area .atelier-choice-grid,
   .minigame-game-area .atelier-choice-grid--wide {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-choice-grid--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-sort-challenge .atelier-card-choice,
+  .minigame-game-area[data-game="artikel-sortierband"] .atelier-card-thumb {
+    min-height: 86px !important;
   }
 }
 

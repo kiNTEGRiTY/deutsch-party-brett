@@ -59,6 +59,27 @@ function finish(done, correct, delay = 740) {
   setTimeout(() => done({ correct, partial: false, score: correct ? 100 : 0 }), delay);
 }
 
+function makeInteractionCleanup() {
+  const listeners = [];
+  const timers = [];
+  return {
+    on(target, type, handler, options) {
+      target.addEventListener(type, handler, options);
+      listeners.push([target, type, handler, options]);
+    },
+    timer(id) {
+      timers.push(id);
+      return id;
+    },
+    clear() {
+      listeners.forEach(([target, type, handler, options]) => target.removeEventListener(type, handler, options));
+      timers.forEach((id) => clearTimeout(id));
+      listeners.length = 0;
+      timers.length = 0;
+    }
+  };
+}
+
 function scene(container, { tone = 'clover', kicker, title, text, image = CARD_A, body }) {
   container.innerHTML = `
     <div class="atelier-game atelier-game--${esc(tone)}">
@@ -79,7 +100,7 @@ function thumb(card, cls = '') {
 }
 
 function cardButton(card, extraClass = '') {
-  return `<button class="atelier-card-choice ${extraClass}" type="button" data-id="${esc(card.id)}" data-answer="${esc(card.id)}">${thumb(card)}</button>`;
+  return `<button class="atelier-card-choice ${extraClass}" type="button" data-id="${esc(card.id)}" data-answer="${esc(card.id)}" data-article="${esc(card.article)}" aria-label="${esc(card.word)}, Artikel ${esc(card.article)}">${thumb(card)}</button>`;
 }
 
 function bindButtons(container, selector, answer, done) {
@@ -291,54 +312,98 @@ export const ArtikelSortierband = {
   directPlayDefaults: DEFAULTS,
   defaultRounds: 4,
   setup(container, task, done) {
-    const article = pick(['der', 'die', 'das']);
-    const targets = shuffle(CARDS.filter((card) => card.article === article)).slice(0, 3);
-    const distractors = shuffle(CARDS.filter((card) => card.article !== article)).slice(0, 4);
+    const cleanup = makeInteractionCleanup();
+    const difficulty = task?.difficulty || {};
+    const requestedTargets = Math.max(2, Math.min(4, Number(difficulty.answerOptions || 3)));
+    const availableArticles = ['der', 'die', 'das'].filter((entry) => CARDS.some((card) => card.article === entry));
+    const article = pick(availableArticles);
+    const articleCards = CARDS.filter((card) => card.article === article);
+    const targetCount = Math.min(requestedTargets, articleCards.length);
+    const failLimit = Math.max(2, 4 - Math.min(2, Number(difficulty.timePressure || 0)));
+    const targets = shuffle(articleCards).slice(0, targetCount);
+    const distractors = shuffle(CARDS.filter((card) => card.article !== article)).slice(0, Math.max(4, 7 - targetCount));
     const choices = shuffle([...targets, ...distractors]);
     let hits = 0;
     let misses = 0;
+    let finished = false;
+
+    const complete = (result) => {
+      if (finished) return;
+      finished = true;
+      container.querySelectorAll('.atelier-card-choice').forEach((entry) => { entry.disabled = true; });
+      cleanup.timer(setTimeout(() => done(result), 720));
+    };
 
     scene(container, {
       tone: 'red',
       kicker: 'Sortierband',
       title: `Sammle: ${article.toUpperCase()}`,
-      text: `Tippe nur die Karten mit diesem Artikel. ${targets.length} Treffer reichen.`,
+      text: `Tippe nur die Karten mit dem Artikel ${article}. Jede falsche Karte wird aussortiert.`,
       image: pick(choices).image,
       body: `
-        <div class="atelier-sort-challenge">
-          <div class="atelier-article-target">${esc(article)}</div>
-          <div class="atelier-hunt-counter"><span data-counter>0</span> / ${targets.length}</div>
+        <div class="atelier-sort-challenge atelier-sort-challenge--articles">
+          <div class="atelier-sort-goal">
+            <div class="atelier-article-target">${esc(article)}</div>
+            <div class="atelier-hunt-counter">
+              <strong><span data-counter>0</span> / ${targets.length}</strong>
+              <small><span data-misses>0</span> / ${failLimit} Fehler</small>
+            </div>
+          </div>
+          <div class="atelier-article-trays" aria-hidden="true">
+            <span>passt zu ${esc(article)}</span>
+            <span>aussortiert</span>
+          </div>
           <div class="atelier-choice-grid atelier-choice-grid--compact">${choices.map((card) => cardButton(card, 'atelier-card-choice--small')).join('')}</div>
+          <p class="atelier-sort-feedback" data-feedback>Vergleiche Wort und Artikel. Sammle zuerst sichere Treffer.</p>
         </div>
       `
     });
 
     const counter = container.querySelector('[data-counter]');
+    const missCounter = container.querySelector('[data-misses]');
+    const feedback = container.querySelector('[data-feedback]');
+
     container.querySelectorAll('.atelier-card-choice').forEach((button) => {
-      button.addEventListener('click', () => {
+      cleanup.on(button, 'click', () => {
         const card = CARDS.find((entry) => entry.id === button.dataset.id);
-        if (!card || button.disabled) return;
+        if (!card || button.disabled || finished) return;
+
         if (card.article === article) {
           button.disabled = true;
           button.classList.add('is-hit');
           hits += 1;
           if (counter) counter.textContent = String(hits);
+          if (feedback) feedback.textContent = `Treffer: ${article} ${card.word}.`;
           SoundManager.play('woodBlock');
           if (hits === targets.length) {
-            setTimeout(() => done({ correct: true, partial: misses > 0, score: Math.max(72, 100 - misses * 9) }), 760);
+            complete({
+              correct: true,
+              partial: misses > 0,
+              score: Math.max(72, 100 - misses * 9),
+              details: { article, hits, misses, targetCount: targets.length }
+            });
           }
           return;
         }
+
         misses += 1;
-        button.classList.add('is-miss');
+        button.disabled = true;
+        button.classList.add('is-miss', 'is-rejected');
+        if (missCounter) missCounter.textContent = String(misses);
+        if (feedback) feedback.textContent = `Aussortiert: ${card.word} braucht ${card.article}, nicht ${article}.`;
         SoundManager.play('failSoft');
-        setTimeout(() => button.classList.remove('is-miss'), 420);
-        if (misses >= 3) {
-          container.querySelectorAll('.atelier-card-choice').forEach((entry) => { entry.disabled = true; });
-          setTimeout(() => done({ correct: false, partial: hits > 0, score: hits * 22 }), 760);
+        if (misses >= failLimit) {
+          complete({
+            correct: false,
+            partial: hits > 0,
+            score: Math.round((hits / targets.length) * 68),
+            details: { article, hits, misses, targetCount: targets.length }
+          });
         }
       });
     });
+
+    return cleanup.clear;
   }
 };
 
