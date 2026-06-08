@@ -36,6 +36,8 @@ export class BoardRenderer {
     this.game = gameController;
     this.onMinigameNeeded = null;
     this.onMenuRequested = null;
+    this._movementPreview = null;
+    this._isResolvingMove = false;
   }
 
   render() {
@@ -45,9 +47,10 @@ export class BoardRenderer {
       return;
     }
 
-    const currentField = this.game.board.getField(currentPlayer.position);
-    const progress = Math.round((currentPlayer.position / (this.game.board.totalFields - 1)) * 100);
-    const nextField = this.game.board.getField(Math.min(currentPlayer.position + 1, this.game.board.totalFields - 1));
+    const currentPosition = this._getPlayerRenderPosition(currentPlayer);
+    const currentField = this.game.board.getField(currentPosition);
+    const progress = Math.round((currentPosition / (this.game.board.totalFields - 1)) * 100);
+    const nextField = this.game.board.getField(Math.min(currentPosition + 1, this.game.board.totalFields - 1));
 
     if (!this.container.querySelector('.board-shell')) {
       this.container.innerHTML = `
@@ -121,7 +124,7 @@ export class BoardRenderer {
   }
 
   _renderBoardDynamic(players, currentPlayer) {
-    const currentField = this.game.board.getField(currentPlayer.position);
+    const currentField = this.game.board.getField(this._getPlayerRenderPosition(currentPlayer));
     const currentPoint = this._projectField(currentField);
     return `
       <g class="board-current-target" transform="translate(${currentPoint.x} ${currentPoint.y})">
@@ -374,15 +377,16 @@ export class BoardRenderer {
 
     const dockStack = this.container.querySelector('.board-dock-stack');
     if (dockStack) {
+      const currentPosition = this._getPlayerRenderPosition(currentPlayer);
       dockStack.innerHTML = `
-        <span>Feld ${currentPlayer.position}/${this.game.board.totalFields - 1}</span>
+        <span>Feld ${currentPosition}/${this.game.board.totalFields - 1}</span>
         <strong>${this._fieldTitle(currentField)}</strong>
       `;
     }
   }
 
   _renderToken(player, currentPlayer) {
-    const field = this.game.board.getField(player.position);
+    const field = this.game.board.getField(this._getPlayerRenderPosition(player));
     const point = this._projectField(field);
     const active = currentPlayer.id === player.id;
     const offset = this._getTokenOffset(player);
@@ -431,8 +435,9 @@ export class BoardRenderer {
 
   _renderPlayerSlip(player, currentPlayer) {
     const totalSteps = this.game.board.totalFields - 1;
-    const progress = Math.round((player.position / totalSteps) * 100);
-    const field = this.game.board.getField(player.position);
+    const position = this._getPlayerRenderPosition(player);
+    const progress = Math.round((position / totalSteps) * 100);
+    const field = this.game.board.getField(position);
 
     return `
       <article class="board-player-slip ${player.id === currentPlayer.id ? 'is-current' : ''}" style="--player-accent:${player.color || '#b9563e'}">
@@ -440,7 +445,7 @@ export class BoardRenderer {
           ${player.getTokenHTML(38)}
           <div>
             <strong>${this._escape(player.name)}</strong>
-            <span>Feld ${player.position} · ${this._fieldTitle(field)}</span>
+            <span>Feld ${position} · ${this._fieldTitle(field)}</span>
           </div>
         </div>
         <div class="board-player-progress"><span style="width:${progress}%;"></span></div>
@@ -518,7 +523,9 @@ export class BoardRenderer {
   }
 
   _getTokenOffset(player) {
-    const sameField = this.game.getPlayers().filter((entry) => entry.position === player.position);
+    const playerPosition = this._getPlayerRenderPosition(player);
+    const sameField = this.game.getPlayers()
+      .filter((entry) => this._getPlayerRenderPosition(entry) === playerPosition);
     const index = sameField.findIndex((entry) => entry.id === player.id);
     return [
       { x: -25, y: 26 },
@@ -526,6 +533,13 @@ export class BoardRenderer {
       { x: -25, y: -24 },
       { x: 25, y: 26 }
     ][index] || { x: 0, y: 0 };
+  }
+
+  _getPlayerRenderPosition(player) {
+    if (this._movementPreview?.playerId === player?.id) {
+      return this._movementPreview.position;
+    }
+    return player?.position ?? 0;
   }
 
   _setupBoardActions() {
@@ -545,8 +559,10 @@ export class BoardRenderer {
     if (!diceButton || !diceEl) return;
 
     diceButton.addEventListener('click', async () => {
-      if (this.game.state !== 'playing' || diceEl.classList.contains('is-rolling')) return;
+      if (this.game.state !== 'playing' || this._isResolvingMove || diceEl.classList.contains('is-rolling')) return;
 
+      diceButton.disabled = true;
+      diceButton.classList.add('is-busy');
       diceEl.classList.add('is-rolling');
       SoundManager.play('diceRoll');
       if (dicePromptEl) dicePromptEl.textContent = 'Wuerfelt...';
@@ -555,37 +571,92 @@ export class BoardRenderer {
         diceEl.innerHTML = this._renderDiceDots(event.detail.value);
       };
 
-      window.addEventListener('dice:rolling', rollingHandler);
-      const value = await this.game.rollDice();
-      window.removeEventListener('dice:rolling', rollingHandler);
-      diceEl.classList.remove('is-rolling');
+      try {
+        window.addEventListener('dice:rolling', rollingHandler);
+        const value = await this.game.rollDice();
+        window.removeEventListener('dice:rolling', rollingHandler);
+        diceEl.classList.remove('is-rolling');
 
-      if (!value) {
-        if (dicePromptEl) dicePromptEl.textContent = 'Wuerfeln';
-        return;
+        if (!value) {
+          if (dicePromptEl) dicePromptEl.textContent = 'Wuerfeln';
+          return;
+        }
+
+        diceEl.innerHTML = this._renderDiceDots(value);
+        SoundManager.play('diceLand');
+        if (dicePromptEl) dicePromptEl.textContent = `Wurf: ${value}`;
+        await this._resolveMove(value);
+      } finally {
+        window.removeEventListener('dice:rolling', rollingHandler);
+        diceEl.classList.remove('is-rolling');
+        diceButton.classList.remove('is-busy');
+        diceButton.disabled = false;
       }
-
-      diceEl.innerHTML = this._renderDiceDots(value);
-      SoundManager.play('diceLand');
-      if (dicePromptEl) dicePromptEl.textContent = `Wurf: ${value}`;
-      await this._resolveMove(value);
     });
   }
 
   async _resolveMove(diceValue) {
-    SoundManager.play('moveStep', { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
-    this.game.movePlayer(diceValue);
-    const landedField = this.game.board.getField(this.game.getCurrentPlayer().position);
-    const result = this.game.resolveField(landedField);
-    SoundManager.play(landedField.type === 'portal' ? 'portal' : 'fieldLand');
-
-    if (result.action === 'minigame') {
-      this.onMinigameNeeded?.(result);
+    if (this._isResolvingMove) {
       return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 220));
-    this.render();
+    this._isResolvingMove = true;
+
+    try {
+      const player = this.game.getCurrentPlayer();
+      const startPosition = player.position;
+      const destination = this.game.board.getDestination(startPosition, diceValue);
+
+      await this._animateBoardMove(player, startPosition, destination, diceValue);
+
+      this.game.movePlayer(diceValue);
+      this._movementPreview = null;
+      this.render();
+
+      const landedField = this.game.board.getField(player.position);
+      const result = this.game.resolveField(landedField);
+      SoundManager.play(landedField.type === 'portal' ? 'portal' : 'fieldLand');
+
+      if (result.action === 'minigame') {
+        this.onMinigameNeeded?.(result);
+        return;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 220));
+      this.render();
+    } finally {
+      this._movementPreview = null;
+      this._isResolvingMove = false;
+    }
+  }
+
+  async _animateBoardMove(player, startPosition, destination, diceValue) {
+    const distance = Math.abs(destination - startPosition);
+    if (!player || distance === 0) {
+      return;
+    }
+
+    const direction = Math.sign(destination - startPosition);
+    const diceHelper = this.container.querySelector('#dice-helper');
+
+    for (let step = 1; step <= distance; step += 1) {
+      const position = startPosition + direction * step;
+      this._movementPreview = {
+        playerId: player.id,
+        position,
+        step,
+        totalSteps: distance
+      };
+
+      SoundManager.play('moveStep', { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
+      this.render();
+
+      if (diceHelper) {
+        diceHelper.textContent = `${player.name}: Schritt ${step}/${distance} zu Feld ${position}.`;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, step === distance ? 190 : 145));
+    }
   }
 
   update() {
