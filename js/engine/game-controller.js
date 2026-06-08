@@ -472,7 +472,7 @@ export class GameController {
         reward: { description: 'Schutz-Joker eingesetzt! Du bleibst stehen. 🛡️', items: [] }
       });
       this.completeTurn();
-      return { action: 'movement', blocked: true };
+      return { action: 'movement', blocked: true, oldPos, newPos: oldPos };
     }
     
     player.moveTo(newPos);
@@ -484,7 +484,7 @@ export class GameController {
 
     this._emit('reward', { player, reward: { description: effect.description, items: [] }});
     this.completeTurn();
-    return { action: 'movement', effect };
+    return { action: 'movement', effect, oldPos, newPos };
   }
 
   _handleTreasureField(player) {
@@ -513,6 +513,8 @@ export class GameController {
   }
 
   _handleTrapField(player, field) {
+    const oldPos = player.position;
+
     // Check for protection joker
     if (player.jokers.protection > 0) {
       player.useJoker('protection');
@@ -521,11 +523,10 @@ export class GameController {
         reward: { description: 'Schutz-Joker eingesetzt! Die Falle hat keine Wirkung. 🛡️', items: [] }
       });
       this.completeTurn();
-      return { action: 'trap', blocked: true };
+      return { action: 'trap', blocked: true, oldPos, newPos: oldPos };
     }
 
     const reward = grantReward(player, 'trapField');
-    const oldPos = player.position;
     const trapMove = Number.isFinite(field?.move) ? field.move : -3;
     const newPos = Math.max(0, player.position + trapMove);
     
@@ -544,7 +545,7 @@ export class GameController {
     this._emit('reward', { player, reward });
     
     this.completeTurn();
-    return { action: 'trap', reward, move: trapMove };
+    return { action: 'trap', reward, move: trapMove, oldPos, newPos };
   }
 
   _handlePortalField(player, field) {
@@ -569,7 +570,7 @@ export class GameController {
     this._emit('reward', { player, reward });
     
     this.completeTurn();
-    return { action: 'portal', targetId: newPos };
+    return { action: 'portal', targetId: newPos, oldPos, newPos };
   }
 
   _getTeamPartners(player) {

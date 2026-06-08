@@ -388,7 +388,7 @@ export class BoardRenderer {
   _renderToken(player, currentPlayer) {
     const field = this.game.board.getField(this._getPlayerRenderPosition(player));
     const point = this._projectField(field);
-    const active = currentPlayer.id === player.id;
+    const active = currentPlayer.id === player.id || this._movementPreview?.playerId === player.id;
     const offset = this._getTokenOffset(player);
     const size = active ? 82 : 70;
     const x = point.x + offset.x;
@@ -607,7 +607,7 @@ export class BoardRenderer {
       const startPosition = player.position;
       const destination = this.game.board.getDestination(startPosition, diceValue);
 
-      await this._animateBoardMove(player, startPosition, destination, diceValue);
+      await this._animateBoardMove(player, startPosition, destination, { diceValue, label: 'Schritt' });
 
       this.game.movePlayer(diceValue);
       this._movementPreview = null;
@@ -622,7 +622,9 @@ export class BoardRenderer {
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 220));
+      const animatedFieldEffect = await this._animateResolvedFieldEffect(player, landedField.id, result);
+
+      await new Promise((resolve) => setTimeout(resolve, animatedFieldEffect ? 120 : 220));
       this.render();
     } finally {
       this._movementPreview = null;
@@ -630,14 +632,78 @@ export class BoardRenderer {
     }
   }
 
-  async _animateBoardMove(player, startPosition, destination, diceValue) {
+  async _animateResolvedFieldEffect(player, landedPosition, result) {
+    if (!player || !result || result.blocked) {
+      return false;
+    }
+
+    const isAnimatedEffect = ['movement', 'trap', 'portal'].includes(result.action);
+    if (!isAnimatedEffect) {
+      return false;
+    }
+
+    const targetPosition = Number.isFinite(result.newPos)
+      ? result.newPos
+      : Number.isFinite(result.targetId)
+        ? result.targetId
+        : player.position;
+
+    if (!Number.isFinite(targetPosition) || targetPosition === landedPosition) {
+      return false;
+    }
+
+    if (result.action === 'portal') {
+      await this._animateBoardJump(player, landedPosition, targetPosition, 'Portal');
+      return true;
+    }
+
+    const isForward = targetPosition > landedPosition;
+    const label = result.action === 'trap'
+      ? 'Rueckweg'
+      : isForward
+        ? 'Bonusweg'
+        : 'Umweg';
+
+    this._movementPreview = { playerId: player.id, position: landedPosition };
+    this.render();
+    this._setDiceHelper(`${player.name}: ${label} startet auf Feld ${landedPosition}.`);
+    await new Promise((resolve) => setTimeout(resolve, 180));
+
+    await this._animateBoardMove(player, landedPosition, targetPosition, {
+      label,
+      diceValue: Math.abs(targetPosition - landedPosition),
+      stepDelay: result.action === 'trap' ? 175 : 150,
+      sound: result.action === 'trap' ? 'failSoft' : 'moveStep'
+    });
+
+    return true;
+  }
+
+  async _animateBoardJump(player, startPosition, destination, label = 'Sprung') {
+    this._movementPreview = { playerId: player.id, position: startPosition };
+    this.render();
+    this._setDiceHelper(`${player.name}: ${label} von Feld ${startPosition} zu Feld ${destination}.`);
+    SoundManager.play('portal');
+    await new Promise((resolve) => setTimeout(resolve, 240));
+
+    this._movementPreview = { playerId: player.id, position: destination };
+    this.render();
+    this._setDiceHelper(`${player.name}: angekommen auf Feld ${destination}.`);
+    await new Promise((resolve) => setTimeout(resolve, 320));
+  }
+
+  async _animateBoardMove(player, startPosition, destination, movement = {}) {
     const distance = Math.abs(destination - startPosition);
     if (!player || distance === 0) {
       return;
     }
 
+    const options = typeof movement === 'number' ? { diceValue: movement } : movement;
     const direction = Math.sign(destination - startPosition);
-    const diceHelper = this.container.querySelector('#dice-helper');
+    const diceValue = Number.isFinite(options.diceValue) ? options.diceValue : distance;
+    const label = options.label || 'Schritt';
+    const stepDelay = Number.isFinite(options.stepDelay) ? options.stepDelay : 145;
+    const sound = options.sound || 'moveStep';
 
     for (let step = 1; step <= distance; step += 1) {
       const position = startPosition + direction * step;
@@ -648,14 +714,19 @@ export class BoardRenderer {
         totalSteps: distance
       };
 
-      SoundManager.play('moveStep', { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
+      SoundManager.play(sound, { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
       this.render();
 
-      if (diceHelper) {
-        diceHelper.textContent = `${player.name}: Schritt ${step}/${distance} zu Feld ${position}.`;
-      }
+      this._setDiceHelper(`${player.name}: ${label} ${step}/${distance} zu Feld ${position}.`);
 
-      await new Promise((resolve) => setTimeout(resolve, step === distance ? 190 : 145));
+      await new Promise((resolve) => setTimeout(resolve, step === distance ? Math.max(190, stepDelay) : stepDelay));
+    }
+  }
+
+  _setDiceHelper(message) {
+    const diceHelper = this.container.querySelector('#dice-helper');
+    if (diceHelper) {
+      diceHelper.textContent = message;
     }
   }
 
