@@ -1704,9 +1704,13 @@
 }
 
 .kompositum-shell {
+  width: min(850px, 100%);
+  height: 100%;
+  min-height: 0;
   display: grid;
-  gap: 18px;
-  padding: clamp(18px, 4vw, 28px);
+  align-content: start;
+  gap: clamp(10px, 1.8vh, 16px);
+  padding: clamp(16px, 2.2vw, 24px);
   border-radius: 34px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 255, 0.92)),
@@ -1718,7 +1722,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -1729,11 +1733,11 @@
 }
 
 .kompositum-slot {
-  min-height: 86px;
+  min-height: clamp(62px, 9vh, 78px);
   display: grid;
   place-items: center;
   gap: 4px;
-  padding: 16px;
+  padding: 12px;
   border-radius: 24px;
   border: 3px dashed rgba(120, 123, 255, 0.32);
   background: rgba(255, 255, 255, 0.84);
@@ -1785,9 +1789,9 @@
 }
 
 .kompositum-tile {
-  min-width: 120px;
-  min-height: 64px;
-  padding: 14px 18px;
+  min-width: 112px;
+  min-height: 54px;
+  padding: 12px 16px;
   border: 0;
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 245, 255, 0.9));
@@ -1829,7 +1833,7 @@
 .kompositum-preview-card {
   display: grid;
   gap: 4px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-radius: 22px;
   font-weight: 900;
 }
@@ -1855,7 +1859,7 @@
   min-height: 0;
   display: none;
   gap: 5px;
-  padding: 15px 18px;
+  padding: 14px 16px;
   border-radius: 22px;
   font-weight: 900;
 }
@@ -1898,6 +1902,43 @@
   opacity: 0.58;
   transform: none;
   box-shadow: 0 8px 18px rgba(74, 74, 74, 0.08);
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] {
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-title {
+  font-size: clamp(2.1rem, 4.4vw, 3.15rem);
+  line-height: 0.94;
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-round-card {
+  gap: 8px;
+  padding: clamp(14px, 2vw, 20px);
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-prompt {
+  font-size: clamp(1.22rem, 2.4vw, 1.72rem);
+  line-height: 1.18;
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-secondary {
+  font-size: clamp(0.9rem, 1.3vw, 1rem);
+  line-height: 1.32;
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.minigame-game-area[data-game="kompositum-maschine"] .showcase-controls .btn {
+  width: 100%;
+  min-height: clamp(50px, 7vh, 58px);
+  padding: 10px 14px;
 }
 
 .taeusch-shell {

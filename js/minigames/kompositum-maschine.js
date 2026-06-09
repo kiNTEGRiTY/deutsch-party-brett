@@ -1,46 +1,46 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {
   Hundehaus: {
-    correct: 'Ein kleines Haus fuer einen Hund.',
-    decoys: ['Ein Hund, der ein Haus traegt.', 'Ein Haus voller Knochenmusik.']
+    correct: 'Ein kleines Haus für einen Hund.',
+    decoys: ['Ein Hund, der ein Haus trägt.', 'Ein Haus voller Knochenmusik.']
   },
   Apfelbaum: {
-    correct: 'Ein Baum, an dem Aepfel wachsen.',
-    decoys: ['Ein Apfel aus Holz.', 'Ein Baum fuer Saftmaschinen.']
+    correct: 'Ein Baum, an dem Äpfel wachsen.',
+    decoys: ['Ein Apfel aus Holz.', 'Ein Baum für Saftmaschinen.']
   },
   Schneemann: {
     correct: 'Eine Figur aus Schnee.',
     decoys: ['Ein Mann, der nur im Sommer friert.', 'Eine Schneekanone auf Beinen.']
   },
   Haustuer: {
-    correct: 'Die Tuer an einem Haus.',
-    decoys: ['Eine Tuer fuer Haustiere.', 'Eine Tuer, die bellen kann.']
+    correct: 'Die Tür an einem Haus.',
+    decoys: ['Eine Tür für Haustiere.', 'Eine Tür, die bellen kann.']
   },
   Bilderbuch: {
     correct: 'Ein Buch mit vielen Bildern.',
-    decoys: ['Ein Buch fuer Kameras.', 'Ein Bild, das lesen kann.']
+    decoys: ['Ein Buch für Kameras.', 'Ein Bild, das lesen kann.']
   },
   Wasserflasche: {
-    correct: 'Eine Flasche fuer Wasser.',
+    correct: 'Eine Flasche für Wasser.',
     decoys: ['Wasser in Form einer Flasche.', 'Eine Flasche, die schwimmen lernt.']
   },
   Kindergarten: {
     correct: 'Ein Ort, an dem Kinder betreut werden.',
-    decoys: ['Ein Garten nur fuer Schulkinder.', 'Ein Beet mit Spielzeug.']
+    decoys: ['Ein Garten nur für Schulkinder.', 'Ein Beet mit Spielzeug.']
   },
   Sonnenblume: {
     correct: 'Eine Blume, die wie eine Sonne aussieht.',
-    decoys: ['Ein Licht fuer Blumen.', 'Eine Blume aus Sonnenstrahlen.']
+    decoys: ['Ein Licht für Blumen.', 'Eine Blume aus Sonnenstrahlen.']
   },
   Schuhkarton: {
-    correct: 'Eine Kiste fuer Schuhe.',
+    correct: 'Eine Kiste für Schuhe.',
     decoys: ['Ein Karton, der Schuhe malt.', 'Ein Schuh aus Pappe.']
   },
   Taschenlampe: {
-    correct: 'Eine tragbare Lampe fuer die Hand.',
-    decoys: ['Eine Tasche, die leuchtet.', 'Eine Lampe fuer Schultaschen.']
+    correct: 'Eine tragbare Lampe für die Hand.',
+    decoys: ['Eine Tasche, die leuchtet.', 'Eine Lampe für Schultaschen.']
   }
 };
 
@@ -94,7 +94,7 @@ function buildMeaningEntry(item, resultWord) {
     correct: `Ein zusammengesetztes Nomen aus ${item.part1} und ${item.part2}.`,
     decoys: [
       `Ein einzelnes Wort ohne Verbindung zu ${item.part1}.`,
-      `Zwei Woerter, die in dieser Reihenfolge kein neues Nomen bilden.`
+      `Zwei Wörter, die in dieser Reihenfolge kein neues Nomen bilden.`
     ]
   };
 }
@@ -108,6 +108,22 @@ function pickRounds() {
       meanings: buildMeaningEntry(item, resultWord)
     };
   });
+}
+
+function safelySetPointerCapture(node, pointerId) {
+  try {
+    node.setPointerCapture?.(pointerId);
+  } catch {
+    // Synthetic test events and some interrupted touches do not have an active pointer.
+  }
+}
+
+function safelyReleasePointerCapture(node, pointerId) {
+  try {
+    node.releasePointerCapture?.(pointerId);
+  } catch {
+    // Ignore missing pointer capture; the drag cleanup below still runs.
+  }
 }
 
 export const KompositumMaschine = {
@@ -366,7 +382,7 @@ export const KompositumMaschine = {
         });
 
         tile.classList.remove('is-dragging');
-        tile.releasePointerCapture?.(event.pointerId);
+        safelyReleasePointerCapture(tile, event.pointerId);
         stopDragListeners();
 
         if (slot) {
@@ -392,7 +408,7 @@ export const KompositumMaschine = {
           startY: event.clientY
         };
         tile.classList.add('is-dragging');
-        tile.setPointerCapture?.(event.pointerId);
+        safelySetPointerCapture(tile, event.pointerId);
         SoundManager.play('whoosh');
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
@@ -420,17 +436,17 @@ export const KompositumMaschine = {
         <div class="kompositum-shell">
           <div class="kompositum-header">
             <div>
-              <div class="premium-kicker">Production Ready</div>
+              <div class="premium-kicker">Wortwerkstatt</div>
               <h3 class="glow-title showcase-title">Kompositum-Maschine</h3>
               <p class="showcase-secondary">Runde ${roundIndex + 1} / ${rounds.length}</p>
             </div>
-            <div class="showcase-status-pill">Score ${score}</div>
+            <div class="showcase-status-pill">Punkte ${score}</div>
           </div>
 
           <div id="kompositum-stage">
             <div class="showcase-round-card">
               <p class="showcase-prompt">Baue ein sinnvolles Kompositum aus zwei Wortbausteinen.</p>
-              <p class="showcase-secondary">Erst entsteht das neue Nomen, dann zaehlt die passende Bedeutung.</p>
+              <p class="showcase-secondary">Erst entsteht das neue Nomen, dann zählt die passende Bedeutung.</p>
             </div>
 
             <div class="kompositum-slots">
@@ -448,7 +464,7 @@ export const KompositumMaschine = {
 
             <div class="showcase-controls">
               <button class="btn btn-secondary" id="kompositum-reset" type="button">Neu bauen</button>
-              <button class="btn btn-primary" id="kompositum-check" type="button" disabled>Maschine pruefen</button>
+              <button class="btn btn-primary" id="kompositum-check" type="button" disabled>Maschine prüfen</button>
             </div>
           </div>
         </div>
