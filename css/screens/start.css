@@ -101,37 +101,72 @@
   fill: #edd1a0;
 }
 
-.start-preview-hill--top {
-  fill: rgba(177, 199, 145, 0.72);
+.start-preview-paper-texture {
+  pointer-events: none;
 }
 
-.start-preview-hill--bottom {
-  fill: rgba(135, 164, 100, 0.28);
+.start-preview-paper-wash {
+  fill: rgba(164, 184, 121, 0.24);
 }
 
-.start-preview-pond {
-  fill: rgba(115, 158, 164, 0.2);
+.start-preview-paper-wash--top {
+  fill: rgba(165, 190, 128, 0.3);
 }
 
-.start-preview-route polyline {
+.start-preview-paper-wash--bottom {
+  fill: rgba(118, 146, 84, 0.17);
+}
+
+.start-preview-paper-fiber {
   fill: none;
+  stroke: rgba(99, 68, 35, 0.09);
+  stroke-width: 4;
   stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
-.start-preview-route-shadow {
-  stroke: rgba(66, 44, 25, 0.2);
-  stroke-width: 92;
+.start-preview-route-band-shadow {
+  fill: rgba(64, 39, 19, 0.17);
 }
 
-.start-preview-route-earth {
-  stroke: rgba(116, 75, 39, 0.54);
-  stroke-width: 76;
+.start-preview-route-band-paper {
+  fill: rgba(244, 220, 166, 0.94);
+  stroke: rgba(106, 70, 34, 0.34);
+  stroke-width: 7;
 }
 
-.start-preview-route-gold {
-  stroke: rgba(239, 187, 83, 0.9);
-  stroke-width: 62;
+.start-preview-route-band-wash {
+  fill: rgba(255, 246, 206, 0.32);
+  stroke: rgba(255, 255, 255, 0.32);
+  stroke-width: 2;
+}
+
+.start-preview-connector-paper {
+  fill: rgba(198, 142, 73, 0.21);
+  stroke: rgba(117, 76, 35, 0.32);
+  stroke-width: 3.2;
+}
+
+.start-preview-connector-thread {
+  fill: none;
+  stroke: rgba(102, 65, 31, 0.26);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 17;
+}
+
+.start-preview-socket-shadow {
+  fill: rgba(58, 36, 18, 0.19);
+}
+
+.start-preview-socket-paper {
+  fill: rgba(255, 239, 190, 0.82);
+  stroke: color-mix(in srgb, var(--preview-accent, #c95845) 48%, #7d552d);
+  stroke-width: 5;
+}
+
+.start-preview-socket.is-endpoint .start-preview-socket-paper {
+  fill: rgba(255, 239, 177, 0.94);
+  stroke-width: 6;
 }
 
 .start-preview-arrow path {
@@ -141,7 +176,7 @@
 }
 
 .start-preview-field-shadow {
-  fill: rgba(54, 34, 18, 0.18);
+  fill: rgba(54, 34, 18, 0.2);
 }
 
 .start-preview-field-card {
@@ -171,6 +206,28 @@
 
 .start-preview-field.is-goal .start-preview-field-card {
   stroke-width: 5;
+}
+
+.start-preview-landmarks path {
+  fill: rgba(248, 219, 153, 0.95);
+  stroke: rgba(91, 57, 26, 0.64);
+  stroke-width: 6;
+}
+
+.start-preview-landmarks path:nth-of-type(2) {
+  fill: rgba(204, 119, 64, 0.94);
+}
+
+.start-preview-landmarks text {
+  fill: #4a2c16;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: 0;
+  paint-order: stroke;
+  stroke: rgba(255, 249, 229, 0.9);
+  stroke-linejoin: round;
+  stroke-width: 6px;
 }
 
 .start-preview-token.is-active {
@@ -629,12 +686,22 @@
   }
 
   .start-live-board {
-    display: none;
+    top: clamp(164px, 19vh, 180px);
+    right: clamp(10px, 3vw, 18px);
+    bottom: auto;
+    display: block;
+    width: min(48vw, 190px);
+    border-radius: 20px 24px 18px 26px;
+    opacity: 0.82;
+    transform: rotate(-2deg);
   }
 }
 
 @media (max-aspect-ratio: 4 / 5) {
   .start-live-board {
-    display: none;
+    top: clamp(164px, 19vh, 178px);
+    right: 10px;
+    display: block;
+    width: min(48vw, 190px);
   }
 }

@@ -7,6 +7,7 @@
   "scripts": {
     "start": "serve -s . -l tcp://0.0.0.0:${PORT:-4174}",
     "validate:board": "node scripts/validate-board-layout.mjs",
+    "validate:onboarding": "node scripts/validate-onboarding-art.mjs",
     "validate:minigames": "node scripts/validate-minigame-curation.mjs"
   },
   "dependencies": {

@@ -40,6 +40,7 @@ Use at minimum:
 
 - `node --check js/app.js` and any changed setup/start renderer file
 - `npm run validate:board` when a board preview or board import changes
+- `npm run validate:onboarding` when Start, Setup, or a board preview changes
 - `npm run validate:minigames` when direct-start routes or menu handoff changes
 - Playwright screenshot of Start desktop and mobile when Start changes
 - Playwright screenshot of Setup mobile step 1 and player selection when Setup changes

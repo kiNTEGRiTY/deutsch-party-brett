@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=board-field-surface-44';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=board-field-surface-44';
+import { Board } from '../engine/board.js?v=start-field-preview-45';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=start-field-preview-45';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
+import { renderCharacterAvatar } from './characters.js?v=start-field-preview-45';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -42,27 +42,35 @@ function fieldStyle(field) {
   return FIELD_STYLE[field.type] || FIELD_STYLE[FieldType.NORMAL];
 }
 
-function renderPath(fields) {
-  return fields.map((field) => `${field.x},${field.y}`).join(' ');
+function paperTilePath(width, height) {
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  return [
+    `M ${-halfWidth + 16} ${-halfHeight + 2}`,
+    `C ${-halfWidth + 32} ${-halfHeight - 7} ${halfWidth - 30} ${-halfHeight - 7} ${halfWidth - 15} ${-halfHeight + 4}`,
+    `C ${halfWidth + 4} ${-halfHeight + 18} ${halfWidth + 2} ${halfHeight - 19} ${halfWidth - 14} ${halfHeight - 6}`,
+    `C ${halfWidth - 31} ${halfHeight + 8} ${-halfWidth + 31} ${halfHeight + 8} ${-halfWidth + 14} ${halfHeight - 5}`,
+    `C ${-halfWidth - 3} ${halfHeight - 18} ${-halfWidth - 4} ${-halfHeight + 17} ${-halfWidth + 16} ${-halfHeight + 2}`,
+    'Z'
+  ].join(' ');
 }
 
 function renderField(field) {
   const style = fieldStyle(field);
   const isEndpoint = field.id === 0 || field.id === 35;
-  const width = isEndpoint ? 128 : 102;
-  const height = isEndpoint ? 72 : 60;
-  const radius = isEndpoint ? 22 : 18;
-  const x = -width / 2;
-  const y = -height / 2;
+  const width = isEndpoint ? 132 : 108;
+  const height = isEndpoint ? 74 : 64;
   const angle = Number.isFinite(field.angle) ? field.angle : 0;
   const label = field.displayValue || style.label;
+  const shape = paperTilePath(width, height);
+  const shine = paperTilePath(width - 14, height - 14);
 
   return `
     <g class="start-preview-field ${field.id === 35 ? 'is-goal' : ''}" transform="translate(${field.x} ${field.y})">
       <g transform="rotate(${angle})">
-        <rect class="start-preview-field-shadow" x="${x + 6}" y="${y + 8}" width="${width}" height="${height}" rx="${radius}"></rect>
-        <rect class="start-preview-field-card" x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="${style.fill}" stroke="${style.edge}"></rect>
-        <rect class="start-preview-field-shine" x="${x + 8}" y="${y + 7}" width="${width - 16}" height="${height - 14}" rx="${Math.max(10, radius - 6)}"></rect>
+        <path class="start-preview-field-shadow" d="${shape}" transform="translate(6 8)"></path>
+        <path class="start-preview-field-card" d="${shape}" fill="${style.fill}" stroke="${style.edge}"></path>
+        <path class="start-preview-field-shine" d="${shine}"></path>
       </g>
       <text class="start-preview-field-label ${isEndpoint ? 'is-endpoint' : ''}" y="${isEndpoint ? 10 : 8}" text-anchor="middle">${escapeHtml(label)}</text>
     </g>
@@ -123,20 +131,106 @@ function renderTokens(fields, step) {
   }).join('');
 }
 
-function buildMarkup(fields, step) {
-  const pathPoints = renderPath(fields);
+function renderRouteBand(from, to) {
+  const midX = (from.x + to.x) / 2;
+  const midY = (from.y + to.y) / 2;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.max(70, Math.hypot(dx, dy) + 24);
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
+  return `
+    <g class="start-preview-route-band" transform="translate(${midX} ${midY}) rotate(${angle})">
+      <rect class="start-preview-route-band-shadow" x="${-length / 2}" y="-45" width="${length}" height="90" rx="45"></rect>
+      <rect class="start-preview-route-band-paper" x="${-length / 2}" y="-38" width="${length}" height="76" rx="38"></rect>
+      <rect class="start-preview-route-band-wash" x="${-length / 2 + 12}" y="-24" width="${Math.max(28, length - 24)}" height="48" rx="24"></rect>
+    </g>
+  `;
+}
+
+function renderFieldConnector(from, to) {
+  const midX = (from.x + to.x) / 2;
+  const midY = (from.y + to.y) / 2;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.max(34, Math.hypot(dx, dy) - 58);
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+  return `
+    <g class="start-preview-connector" transform="translate(${midX} ${midY}) rotate(${angle})">
+      <rect class="start-preview-connector-paper" x="${-length / 2}" y="-15" width="${length}" height="30" rx="15"></rect>
+      <path class="start-preview-connector-thread" d="M ${-length / 2 + 11} 0 H ${length / 2 - 11}"></path>
+    </g>
+  `;
+}
+
+function renderFieldSocket(field) {
+  const style = fieldStyle(field);
+  const isEndpoint = field.id === 0 || field.id === 35;
+  const width = isEndpoint ? 152 : 124;
+  const height = isEndpoint ? 86 : 74;
+  const angle = Number.isFinite(field.angle) ? field.angle : 0;
+  const shape = paperTilePath(width, height);
+
+  return `
+    <g class="start-preview-socket ${isEndpoint ? 'is-endpoint' : ''}" transform="translate(${field.x} ${field.y}) rotate(${angle})" style="--preview-accent:${style.edge};">
+      <path class="start-preview-socket-shadow" d="${shape}" transform="translate(0 8)"></path>
+      <path class="start-preview-socket-paper" d="${shape}"></path>
+    </g>
+  `;
+}
+
+function renderPaperTexture() {
+  return `
+    <g class="start-preview-paper-texture" aria-hidden="true">
+      <path class="start-preview-paper-wash start-preview-paper-wash--top" d="M0 232C196 176 334 184 498 216C662 248 760 172 922 198C1084 224 1200 178 1360 196C1494 212 1578 186 1672 154V0H0Z"></path>
+      <path class="start-preview-paper-wash start-preview-paper-wash--bottom" d="M0 783C166 740 330 736 502 772C672 808 788 744 960 766C1130 788 1244 720 1410 744C1536 762 1608 740 1672 710V941H0Z"></path>
+      <path class="start-preview-paper-fiber" d="M102 104C294 78 476 116 660 92C840 68 1034 106 1220 78C1374 55 1515 76 1626 48"></path>
+      <path class="start-preview-paper-fiber" d="M46 844C228 806 414 846 594 820C780 792 944 842 1138 808C1308 778 1476 802 1634 760"></path>
+      <path class="start-preview-paper-fiber" d="M134 464C320 430 476 470 650 444C820 418 978 468 1158 436C1328 406 1470 434 1588 398"></path>
+    </g>
+  `;
+}
+
+function renderLandmarks() {
+  return `
+    <g class="start-preview-landmarks" aria-hidden="true">
+      <g transform="translate(191 526)">
+        <path d="M-92 -25H58L84 0L58 25H-92L-70 0Z"></path>
+        <text y="8" text-anchor="middle">START</text>
+      </g>
+      <g transform="translate(1328 96)">
+        <path d="M-116 -24H116L96 31H-96Z"></path>
+        <path d="M-74 -24L-48 -62L-12 -24ZM-18 -24L18 -76L54 -24ZM50 -24L76 -62L102 -24Z"></path>
+        <text y="13" text-anchor="middle">ZIEL</text>
+      </g>
+    </g>
+  `;
+}
+
+function renderRouteSurface(fields) {
+  return `
+    <g class="start-preview-route-surface" aria-hidden="true">
+      <g class="start-preview-route-band-layer">
+        ${fields.slice(0, -1).map((field, index) => renderRouteBand(field, fields[index + 1])).join('')}
+      </g>
+      <g class="start-preview-connector-layer">
+        ${fields.slice(0, -1).map((field, index) => renderFieldConnector(field, fields[index + 1])).join('')}
+      </g>
+      <g class="start-preview-socket-layer">
+        ${fields.map((field) => renderFieldSocket(field)).join('')}
+      </g>
+    </g>
+  `;
+}
+
+function buildMarkup(fields, step) {
   return `
     <svg class="start-live-board-svg" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" role="img" aria-label="${escapeHtml(BOARD_THEME.worldLabel || BOARD_THEME.name)}">
       <rect class="start-preview-paper" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}"></rect>
-      <path class="start-preview-hill start-preview-hill--top" d="M0 218C188 151 360 166 520 192C684 220 760 126 932 150C1080 171 1178 100 1322 127C1464 154 1558 122 1672 72V0H0Z"></path>
-      <path class="start-preview-hill start-preview-hill--bottom" d="M0 842C176 780 350 782 520 826C684 870 792 802 960 822C1118 841 1258 772 1408 804C1532 831 1608 801 1672 774V941H0Z"></path>
-      <ellipse class="start-preview-pond" cx="835" cy="585" rx="170" ry="58"></ellipse>
-      <g class="start-preview-route">
-        <polyline class="start-preview-route-shadow" points="${pathPoints}"></polyline>
-        <polyline class="start-preview-route-earth" points="${pathPoints}"></polyline>
-        <polyline class="start-preview-route-gold" points="${pathPoints}"></polyline>
-      </g>
+      ${renderPaperTexture()}
+      ${renderLandmarks()}
+      ${renderRouteSurface(fields)}
       ${renderDirectionMarkers(fields)}
       <g class="start-preview-fields">
         ${fields.map((field) => renderField(field)).join('')}

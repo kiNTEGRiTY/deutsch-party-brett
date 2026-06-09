@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=board-field-surface-44';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=start-field-preview-45';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
-import { SoundManager } from './sound-manager.js?v=board-field-surface-44';
+import { renderCharacterAvatar } from './characters.js?v=start-field-preview-45';
+import { SoundManager } from './sound-manager.js?v=start-field-preview-45';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
