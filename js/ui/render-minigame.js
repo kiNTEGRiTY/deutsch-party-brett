@@ -397,6 +397,7 @@ export class MinigameRenderer {
       '.rollen-shell',
       '.word-type-sort-game',
       '.article-choice-game',
+      '.article-cannon-game',
       '.case-choice-game',
       '.noun-hunter-game',
       '.rhyme-match-game',
