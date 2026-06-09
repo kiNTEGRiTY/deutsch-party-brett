@@ -10,6 +10,7 @@ export const BOARD_READY_MINIGAME_IDS = Object.freeze([
   'artikel-invaders',
   'wort-tetris-stapel',
   'wortarten-sprunglauf',
+  'schneeball-wortschlacht',
   'artikel-gate-runner',
   'silben-beat-surfer',
   'satz-jetpack',

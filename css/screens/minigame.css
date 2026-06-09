@@ -10717,6 +10717,8 @@
   }
 
   .snow-target {
+    left: var(--mobile-x, var(--x));
+    top: var(--mobile-y, var(--y));
     min-width: 96px;
     min-height: 48px;
     padding: 7px 9px;

@@ -28,6 +28,21 @@ const WORD_TYPES = [
   { word: 'leise', type: 'Adjektiv', hint: 'Wie ist etwas?' }
 ];
 
+const SNOW_TARGET_POSITIONS = [
+  { x: 18, y: 35, mobileX: 25, mobileY: 25 },
+  { x: 37, y: 31, mobileX: 73, mobileY: 25 },
+  { x: 61, y: 30, mobileX: 25, mobileY: 34 },
+  { x: 82, y: 34, mobileX: 73, mobileY: 34 },
+  { x: 25, y: 51, mobileX: 25, mobileY: 43 },
+  { x: 48, y: 48, mobileX: 73, mobileY: 43 },
+  { x: 70, y: 50, mobileX: 25, mobileY: 52 },
+  { x: 88, y: 57, mobileX: 73, mobileY: 52 },
+  { x: 34, y: 68, mobileX: 25, mobileY: 61 },
+  { x: 58, y: 66, mobileX: 73, mobileY: 61 },
+  { x: 76, y: 72, mobileX: 54, mobileY: 70 },
+  { x: 45, y: 80, mobileX: 73, mobileY: 70 }
+];
+
 const ARTICLES = [
   { word: 'Hund', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/hund.jpg' },
   { word: 'Sonne', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/sonne.jpg' },
@@ -420,7 +435,7 @@ export const SchneeballWortschlacht = {
   description: 'Ego-Shooter-Gefühl ohne Gewalt: nur die passenden Wortarten mit Schneebällen treffen.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
-  usesInternalTimer: true,
+  usesInternalTimer: false,
   directPlayDefaults: DIRECT_DEFAULTS,
   defaultRounds: 8,
   mascotIndex: 1,
@@ -429,20 +444,22 @@ export const SchneeballWortschlacht = {
     SoundManager.play('gameStart');
     const cleanup = makeCleanupBag();
     const targetType = pick(['Nomen', 'Verb', 'Adjektiv']);
-    const total = Math.max(7, roundCount(task, 8));
+    const requestedCorrect = roundCount(task, 8);
+    const correctTargets = shuffle(WORD_TYPES.filter((item) => item.type === targetType)).slice(0, requestedCorrect);
+    const targetGoal = correctTargets.length;
     const targets = shuffle([
-      ...shuffle(WORD_TYPES.filter((item) => item.type === targetType)).slice(0, 5),
+      ...correctTargets,
       ...shuffle(WORD_TYPES.filter((item) => item.type !== targetType)).slice(0, 7)
     ]).slice(0, 12);
     let hits = 0;
     let misses = 0;
-    let remainingCorrect = targets.filter((target) => target.type === targetType).length;
+    let remainingCorrect = targetGoal;
     let done = false;
 
     const finish = () => {
       if (done) return;
       done = true;
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(hits, Math.min(total, hits + remainingCorrect), misses)), 680));
+      cleanup.timer(setTimeout(() => onComplete(resultFrom(hits, targetGoal, misses)), 680));
     };
 
     container.innerHTML = `
@@ -450,13 +467,13 @@ export const SchneeballWortschlacht = {
         ${buildHud({
           kicker: 'Schneeball-Arena',
           title: `Triff nur: ${targetType}`,
-          status: `Treffer ${hits}/${Math.min(total, remainingCorrect)}`
+          status: `Treffer ${hits}/${targetGoal}`
         })}
         <div class="snow-arena">
           <div class="snow-crosshair"></div>
           <div class="snow-horizon"></div>
           ${targets.map((target, index) => `
-            <button class="snow-target snow-target--${index % 5}" type="button" data-type="${escapeHtml(target.type)}" style="--x:${8 + (index * 17) % 82}%; --y:${18 + (index * 23) % 58}%;">
+            <button class="snow-target snow-target--${index % 5}" type="button" data-type="${escapeHtml(target.type)}" style="--x:${SNOW_TARGET_POSITIONS[index].x}%; --y:${SNOW_TARGET_POSITIONS[index].y}%; --mobile-x:${SNOW_TARGET_POSITIONS[index].mobileX}%; --mobile-y:${SNOW_TARGET_POSITIONS[index].mobileY}%;">
               <span>${escapeHtml(target.word)}</span>
               <small>${escapeHtml(target.type)}</small>
             </button>
@@ -488,12 +505,11 @@ export const SchneeballWortschlacht = {
           misses += 1;
           cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 460));
         }
-        if (hudStatus) hudStatus.textContent = `Treffer ${hits}/${Math.min(total, hits + remainingCorrect)}`;
-        if (hits >= total || remainingCorrect <= 0) finish();
+        if (hudStatus) hudStatus.textContent = `Treffer ${hits}/${targetGoal}`;
+        if (hits >= targetGoal || remainingCorrect <= 0) finish();
       });
     });
 
-    cleanup.timer(setTimeout(finish, 26000));
     return () => cleanup.clear();
   }
 };
