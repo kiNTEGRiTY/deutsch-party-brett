@@ -66,6 +66,8 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - exercise one correct action and one wrong or miss state when the game supports both
 - complete the round and verify the result screen reports the expected score
 - for games promoted into board flow, verify they do not auto-complete before the first player action and that any timer is either clearly external or deliberately internal
+- internal timers must be visible in the game HUD and must not begin before the
+  first player action unless the shell shows an explicit external countdown
 - confirm the first screenshot is already playable: target, real game material, and the main answer/action controls are visible without scrolling
 - search visible German UI text for ASCII transliterations such as `waehlen`, `koennen`, `Maedchen`, or `Woerter`
 - when touching direct-play menus, scan desktop and mobile screenshots for English placeholders, ASCII transliterations, oversized first-viewport controls, and horizontal overflow

@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=field-first-board-37';
+import { SoundManager } from '../ui/sound-manager.js?v=labyrinth-timer-38';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {

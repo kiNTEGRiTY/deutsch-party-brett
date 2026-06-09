@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=field-first-board-37';
-import { renderCharacterAvatar } from '../ui/characters.js?v=field-first-board-37';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=field-first-board-37';
+import { SoundManager } from '../ui/sound-manager.js?v=labyrinth-timer-38';
+import { renderCharacterAvatar } from '../ui/characters.js?v=labyrinth-timer-38';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=labyrinth-timer-38';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -217,6 +217,10 @@ function uniqueWords(words) {
 
 function wordTypeConfigForTopic(topic) {
   return WORD_TYPE_CONFIG.find((entry) => entry.topic === topic || entry.key === topic || entry.label.toLowerCase() === topic);
+}
+
+function wordTypeLabelForTask(task) {
+  return wordTypeConfigForTopic(task?.topic)?.label || null;
 }
 
 function makeWordTypeItem(word, config) {
@@ -828,10 +832,18 @@ export const WortLabyrinthJagd = {
   setup(container, task, onComplete) {
     SoundManager.play('gameStart');
     const cleanup = makeCleanupBag();
-    const targetType = WORD_TYPE_LABELS[Math.floor(Math.random() * WORD_TYPE_LABELS.length)];
-    const targetWords = shuffle(WORD_TYPES.filter((entry) => entry.type === targetType)).slice(0, 6);
-    const decoyWords = shuffle(WORD_TYPES.filter((entry) => entry.type !== targetType)).slice(0, 6);
-    const tokens = shuffle([...targetWords, ...decoyWords]).map((entry, index) => ({
+    const deck = buildWordTypeDeck(task);
+    const usedWords = new Set();
+    const targetType = wordTypeLabelForTask(task) || pick(WORD_TYPE_LABELS);
+    const targetGoal = clamp(Number(task.partyConfig?.rounds || task.rounds || 5), 4, 6);
+    const decoyCount = MAZE_WORD_SPOTS.length - targetGoal;
+    const targetWords = Array.from({ length: targetGoal }, () => takeWordTypeItem(deck, targetType, usedWords)).filter(Boolean);
+    const decoyTypes = shuffle(WORD_TYPE_LABELS.filter((type) => type !== targetType));
+    const decoyWords = Array.from({ length: decoyCount }, (_, index) => {
+      const decoyType = decoyTypes[index % decoyTypes.length] || pick(WORD_TYPE_LABELS.filter((type) => type !== targetType));
+      return takeWordTypeItem(deck, decoyType, usedWords);
+    }).filter(Boolean);
+    const tokens = shuffle([...targetWords, ...decoyWords]).slice(0, MAZE_WORD_SPOTS.length).map((entry, index) => ({
       ...entry,
       id: `maze-token-${index}`,
       x: MAZE_WORD_SPOTS[index][0],
@@ -842,6 +854,8 @@ export const WortLabyrinthJagd = {
     let score = 0;
     let misses = 0;
     let done = false;
+    let timerStarted = false;
+    let remainingSeconds = clamp(Number(task.timerSeconds || task.partyConfig?.timeLimitSec || DIRECT_DEFAULTS.solo_arcade.timeLimitSec), 18, 60);
 
     const targetCount = tokens.filter((token) => token.type === targetType).length;
     const cellHtml = MAZE_MAP.map((row, y) => [...row].map((cell, x) => `
@@ -853,7 +867,7 @@ export const WortLabyrinthJagd = {
         ${buildHud({
           kicker: 'Labyrinth',
           title: `Sammle: ${targetType}`,
-          status: `0/${targetCount} · Pfeile oder Buttons`
+          status: `0/${targetCount} · Timer startet beim ersten Zug`
         })}
         <div class="maze-stage">
           <div class="maze-grid">
@@ -878,11 +892,15 @@ export const WortLabyrinthJagd = {
       </div>
     `;
 
-    const finish = () => {
+    const finish = ({ timeout = false } = {}) => {
       if (done) return;
       done = true;
       SoundManager.play(score >= targetCount ? 'finish' : 'failSoft');
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(score, targetCount, misses)), 560));
+      cleanup.timer(setTimeout(() => onComplete({
+        ...resultFrom(score, targetCount, misses),
+        timeout,
+        details: { score, misses, targetCount, targetType }
+      }), 560));
     };
 
     const update = () => {
@@ -892,11 +910,32 @@ export const WortLabyrinthJagd = {
         playerEl.style.setProperty('--r', String(player.y + 1));
       }
       const hudStatus = container.querySelector('.arcade-hud em');
-      if (hudStatus) hudStatus.textContent = `${score}/${targetCount} · Fehler ${misses}`;
+      if (hudStatus) {
+        const timerText = timerStarted ? `Zeit ${remainingSeconds}s` : 'Timer startet beim ersten Zug';
+        hudStatus.textContent = `${score}/${targetCount} · ${timerText} · Fehler ${misses}`;
+      }
+    };
+
+    const startTimer = () => {
+      if (timerStarted || done) return;
+      timerStarted = true;
+      update();
+      cleanup.timer(setInterval(() => {
+        if (done) return;
+        remainingSeconds -= 1;
+        update();
+        if (remainingSeconds > 0 && remainingSeconds <= 5) {
+          SoundManager.play('tick');
+        }
+        if (remainingSeconds <= 0) {
+          finish({ timeout: true });
+        }
+      }, 1000));
     };
 
     const move = (dx, dy) => {
       if (done) return;
+      startTimer();
       const next = { x: player.x + dx, y: player.y + dy };
       if (MAZE_MAP[next.y]?.[next.x] === '#') {
         SoundManager.play('uiClick');
@@ -961,7 +1000,6 @@ export const WortLabyrinthJagd = {
       move(vector[0], vector[1]);
     });
 
-    cleanup.timer(setTimeout(finish, 36000));
     return () => cleanup.clear();
   }
 };

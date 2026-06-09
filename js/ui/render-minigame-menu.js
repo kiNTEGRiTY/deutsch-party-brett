@@ -1,9 +1,9 @@
 import {
   getCuratedDirectPlayGroups,
   getMinigame
-} from '../minigames/minigame-registry.js?v=field-first-board-37';
-import { renderCharacterAvatar } from './characters.js?v=field-first-board-37';
-import { SoundManager } from './sound-manager.js?v=field-first-board-37';
+} from '../minigames/minigame-registry.js?v=labyrinth-timer-38';
+import { renderCharacterAvatar } from './characters.js?v=labyrinth-timer-38';
+import { SoundManager } from './sound-manager.js?v=labyrinth-timer-38';
 
 function difficultyLabelFromSettings(settings) {
   const complexity = Number(settings?.difficulty?.languageComplexity ?? 2);

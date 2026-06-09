@@ -1,6 +1,6 @@
 import { getTopicsForLevel } from '../learning/topic-registry.js';
 import { AXIS_META } from '../learning/difficulty.js';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=field-first-board-37';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=labyrinth-timer-38';
 
 const MAX_PLAYERS = 4;
 

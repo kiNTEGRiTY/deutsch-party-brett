@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=field-first-board-37';
+import { SoundManager } from '../ui/sound-manager.js?v=labyrinth-timer-38';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
