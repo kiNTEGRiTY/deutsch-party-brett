@@ -1,9 +1,9 @@
 import {
   getCuratedDirectPlayGroups,
   getMinigame
-} from '../minigames/minigame-registry.js?v=minigame-menu-mobile-46';
-import { renderCharacterAvatar } from './characters.js?v=minigame-menu-mobile-46';
-import { SoundManager } from './sound-manager.js?v=minigame-menu-mobile-46';
+} from '../minigames/minigame-registry.js?v=start-fullscreen-47';
+import { renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
+import { SoundManager } from './sound-manager.js?v=start-fullscreen-47';
 
 function difficultyLabelFromSettings(settings) {
   const complexity = Number(settings?.difficulty?.languageComplexity ?? 2);

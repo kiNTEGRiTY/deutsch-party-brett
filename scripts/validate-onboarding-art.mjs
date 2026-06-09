@@ -46,7 +46,11 @@ if (!startPreview.includes("import { Board }")) {
   '.start-preview-route-band-paper',
   '.start-preview-connector-paper',
   '.start-preview-socket-paper',
-  '.start-preview-landmarks'
+  '.start-preview-landmarks',
+  '.start-live-board',
+  'aspect-ratio: 16 / 9',
+  'width: min(74vw, 1090px)',
+  'width: calc(100vw - 24px)'
 ].forEach((token) => {
   if (!startCss.includes(token)) {
     fail(`start.css is missing field-first preview style "${token}".`);
@@ -58,7 +62,9 @@ if (!startPreview.includes("import { Board }")) {
   '.start-preview-route-earth',
   '.start-preview-route-gold',
   '.start-preview-hill',
-  '.start-preview-pond'
+  '.start-preview-pond',
+  'width: min(38vw, 560px)',
+  'width: min(48vw, 190px)'
 ].forEach((token) => {
   if (startCss.includes(token)) {
     fail(`start.css must not style old scenic or duplicate route token "${token}".`);

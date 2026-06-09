@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=minigame-menu-mobile-46';
+import { SoundManager } from '../ui/sound-manager.js?v=start-fullscreen-47';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {

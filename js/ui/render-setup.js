@@ -1,6 +1,6 @@
 import { getTopicsForLevel } from '../learning/topic-registry.js';
 import { AXIS_META } from '../learning/difficulty.js';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=minigame-menu-mobile-46';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
 
 const MAX_PLAYERS = 4;
 
