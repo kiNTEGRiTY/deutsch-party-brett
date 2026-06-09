@@ -13,6 +13,7 @@ const SAFE_CENTER_BOUNDS = {
   maxY: 660
 };
 const MAX_SEGMENT_LENGTH = 180;
+const MIN_SEGMENT_LENGTH = 70;
 
 const failures = [];
 
@@ -67,6 +68,9 @@ function assertBoardGeometry() {
     if (segmentLength > MAX_SEGMENT_LENGTH) {
       fail(`Path segment ${index}-${index + 1} is too long (${segmentLength.toFixed(1)}px).`);
     }
+    if (segmentLength < MIN_SEGMENT_LENGTH) {
+      fail(`Path segment ${index}-${index + 1} is too short (${segmentLength.toFixed(1)}px); fields will read as patched-on clutter.`);
+    }
   }
 
   for (let left = 0; left < STANDARD_BOARD_LAYOUT.length - 1; left += 1) {
@@ -99,12 +103,25 @@ function assertFunctionFirstRendering() {
     fail('render-board.js must not place fields over an external board image.');
   }
 
-  if (!renderer.includes('_renderPath(fields)') || !renderer.includes('board-field-layer')) {
-    fail('render-board.js must draw the route and field layer from the same field list.');
+  if (renderer.includes('board-main-path') || renderer.includes('path-gold')) {
+    fail('render-board.js must not draw a separate decorative path under the fields.');
   }
 
-  if (!layout.includes('single sequential route') || !layout.includes('no branch art')) {
-    fail('board-layouts.js must document the single-route invariant.');
+  if (
+    !renderer.includes('_renderFieldRouteBackground(fields)') ||
+    !renderer.includes('board-field-socket-layer') ||
+    !renderer.includes('board-field-connector-layer') ||
+    !renderer.includes('board-field-layer')
+  ) {
+    fail('render-board.js must draw sockets, connectors, and playable fields from the same field list.');
+  }
+
+  if (
+    !layout.includes('single sequential route') ||
+    !layout.includes('no branch art') ||
+    !layout.includes('no decorative trail')
+  ) {
+    fail('board-layouts.js must document the field-first single-route invariant.');
   }
 }
 
@@ -119,4 +136,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Board layout validation passed: ${EXPECTED_FIELD_COUNT} fields, one route, no backdrop image.`);
+console.log(`Board layout validation passed: ${EXPECTED_FIELD_COUNT} field-first slots, one route, no backdrop image.`);

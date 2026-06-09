@@ -1,47 +1,48 @@
 /**
- * Board Layouts - function-first board geometry.
+ * Board Layouts - field-first 16:9 board geometry.
  *
- * The board background is authored around these 36 slots. Keep this as a
- * single sequential route: no branch art, no dead-end scenery, no second path.
+ * The board background is authored from these 36 slots. Keep this as a
+ * single sequential route: no branch art, no dead-end scenery, no second path,
+ * and no decorative trail that is not made from real fields.
  */
 
 const FUNCTIONAL_FIELD_POINTS = [
-  { x: 150, y: 625 },
-  { x: 285, y: 625 },
-  { x: 420, y: 625 },
-  { x: 555, y: 625 },
-  { x: 690, y: 625 },
-  { x: 825, y: 625 },
-  { x: 960, y: 625 },
-  { x: 1095, y: 625 },
-  { x: 1230, y: 620 },
-  { x: 1370, y: 570 },
-  { x: 1490, y: 505 },
-  { x: 1510, y: 435 },
-  { x: 1420, y: 385 },
-  { x: 1295, y: 385 },
-  { x: 1160, y: 385 },
-  { x: 1025, y: 385 },
-  { x: 890, y: 385 },
-  { x: 755, y: 385 },
-  { x: 620, y: 385 },
-  { x: 485, y: 385 },
-  { x: 350, y: 385 },
-  { x: 215, y: 385 },
-  { x: 150, y: 315 },
-  { x: 220, y: 245 },
-  { x: 350, y: 220 },
-  { x: 485, y: 220 },
-  { x: 620, y: 220 },
-  { x: 755, y: 220 },
-  { x: 890, y: 220 },
-  { x: 1025, y: 220 },
-  { x: 1160, y: 220 },
-  { x: 1295, y: 220 },
-  { x: 1430, y: 220 },
-  { x: 1475, y: 155 },
-  { x: 1305, y: 145 },
-  { x: 1135, y: 145 }
+  { x: 191, y: 625 },
+  { x: 318, y: 625 },
+  { x: 445, y: 625 },
+  { x: 572, y: 625 },
+  { x: 699, y: 625 },
+  { x: 826, y: 625 },
+  { x: 953, y: 625 },
+  { x: 1079, y: 625 },
+  { x: 1206, y: 610 },
+  { x: 1338, y: 560 },
+  { x: 1451, y: 500 },
+  { x: 1470, y: 420 },
+  { x: 1385, y: 355 },
+  { x: 1267, y: 355 },
+  { x: 1141, y: 355 },
+  { x: 1014, y: 355 },
+  { x: 887, y: 355 },
+  { x: 760, y: 355 },
+  { x: 633, y: 355 },
+  { x: 506, y: 355 },
+  { x: 379, y: 355 },
+  { x: 252, y: 355 },
+  { x: 191, y: 285 },
+  { x: 191, y: 205 },
+  { x: 257, y: 170 },
+  { x: 370, y: 170 },
+  { x: 483, y: 170 },
+  { x: 595, y: 170 },
+  { x: 708, y: 170 },
+  { x: 821, y: 170 },
+  { x: 934, y: 170 },
+  { x: 1047, y: 170 },
+  { x: 1159, y: 170 },
+  { x: 1272, y: 170 },
+  { x: 1385, y: 170 },
+  { x: 1498, y: 170 }
 ];
 
 function angleAt(index, points) {
@@ -52,10 +53,10 @@ function angleAt(index, points) {
 }
 
 export const BOARD_THEME = {
-  id: 'funktionaler-feldweg',
-  name: 'Feldweg',
-  worldLabel: '36-Felder-Weg zum Festpavillon',
-  subtitle: 'Ein einzelner durchgehender Brettweg: jedes sichtbare Spielelement ist ein Feld.',
+  id: 'feld-first-festweg',
+  name: 'Feldzug',
+  worldLabel: '36 Felder bis zum Festpavillon',
+  subtitle: 'Ein durchgehendes 16:9-Brett: Die Route entsteht aus echten Spielfeldern.',
   art: {
     boardBackdrop: null,
     startHero: 'assets/img/premium/watercolor-premium-start.png'

@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=setup-mobile-36';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=field-first-board-37';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=setup-mobile-36';
-import { SoundManager } from './sound-manager.js?v=setup-mobile-36';
+import { renderCharacterAvatar } from './characters.js?v=field-first-board-37';
+import { SoundManager } from './sound-manager.js?v=field-first-board-37';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -59,11 +59,6 @@ export class BoardRenderer {
             <div class="board-map-art board-map-art--paper" aria-hidden="true"></div>
             <svg class="board-playfield" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Deutsch Party Brett Spielzustand">
               <defs>
-                <linearGradient id="boardPathPremium" x1="0" x2="1" y1="0" y2="1">
-                  <stop offset="0" stop-color="#ffe9a8"></stop>
-                  <stop offset="0.5" stop-color="#d8a74c"></stop>
-                  <stop offset="1" stop-color="#8f5b24"></stop>
-                </linearGradient>
                 <linearGradient id="boardPaperPremium" x1="0" x2="1" y1="0" y2="1">
                   <stop offset="0" stop-color="#f7e8c2"></stop>
                   <stop offset="0.58" stop-color="#ecd09a"></stop>
@@ -161,8 +156,8 @@ export class BoardRenderer {
         <ellipse class="board-pond board-pond--outer" cx="835" cy="585" rx="170" ry="58"></ellipse>
         <ellipse class="board-pond board-pond--inner" cx="835" cy="585" rx="118" ry="34"></ellipse>
         ${this._renderSceneryTrees()}
-        ${this._renderPath(fields)}
         ${this._renderBoardLandmarks()}
+        ${this._renderFieldRouteBackground(fields)}
       </g>
     `;
   }
@@ -189,13 +184,13 @@ export class BoardRenderer {
   _renderBoardLandmarks() {
     return `
       <g class="board-landmarks" aria-hidden="true">
-        <g class="landmark-start" transform="translate(146 552)">
+        <g class="landmark-start" transform="translate(190 552)">
           <path d="M-76 18H76L58-42H-56Z"></path>
           <text y="6" text-anchor="middle">START</text>
         </g>
-        <g class="landmark-goal" transform="translate(1135 133)">
-          <path d="M-124 58H124V2L82-14L40 2L0-30L-40 2L-82-14L-124 2Z"></path>
-          <path d="M-142 2L-82-48L-24 2ZM-50 2L0-60L52 2ZM52 2L82-48L142 2Z"></path>
+        <g class="landmark-goal" transform="translate(1492 118)">
+          <path d="M-98 52H98V0L64-14L31 0L0-28L-31 0L-64-14L-98 0Z"></path>
+          <path d="M-113 0L-64-45L-19 0ZM-40 0L0-56L42 0ZM42 0L64-45L113 0Z"></path>
           <text y="24" text-anchor="middle">ZIEL</text>
         </g>
       </g>
@@ -251,16 +246,66 @@ export class BoardRenderer {
     `;
   }
 
-  _renderPath(fields) {
-    const points = fields.map((field) => `${field.x},${field.y}`).join(' ');
+  _renderFieldRouteBackground(fields) {
     return `
-      <g class="board-main-path" aria-hidden="true">
-        <polyline class="path-shadow" points="${points}"></polyline>
-        <polyline class="path-earth" points="${points}"></polyline>
-        <polyline class="path-gold" points="${points}"></polyline>
-        <polyline class="path-stitched" points="${points}"></polyline>
+      <g class="board-field-route-background" aria-hidden="true">
+        <g class="board-field-connector-layer">
+          ${fields.slice(0, -1).map((field, index) => this._renderFieldConnector(field, fields[index + 1])).join('')}
+        </g>
+        <g class="board-field-socket-layer">
+          ${fields.map((field) => this._renderFieldSocket(field)).join('')}
+        </g>
       </g>
     `;
+  }
+
+  _renderFieldConnector(from, to) {
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const length = Math.max(34, Math.hypot(dx, dy) - 78);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    return `
+      <g class="field-connector" transform="translate(${midX} ${midY}) rotate(${angle})">
+        <rect class="field-connector-shadow" x="${-length / 2}" y="-16" width="${length}" height="32" rx="16"></rect>
+        <rect class="field-connector-paper" x="${-length / 2}" y="-12" width="${length}" height="24" rx="12"></rect>
+        <path class="field-connector-thread" d="M ${-length / 2 + 13} 0 H ${length / 2 - 13}"></path>
+      </g>
+    `;
+  }
+
+  _renderFieldSocket(field) {
+    const style = this._fieldStyle(field);
+    const isStart = field.id === 0;
+    const isFinish = field.id === this.game.board.totalFields - 1;
+    const width = isStart || isFinish ? 158 : 128;
+    const height = isStart || isFinish ? 86 : 78;
+    const angle = Number.isFinite(field.angle) ? field.angle : 0;
+    const shape = this._paperTilePath(width, height);
+
+    return `
+      <g class="field-socket ${isStart ? 'is-start' : ''} ${isFinish ? 'is-finish' : ''}" transform="translate(${field.x} ${field.y}) rotate(${angle})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
+        <path class="field-socket-shadow" d="${shape}" transform="translate(0 9)"></path>
+        <path class="field-socket-wash" d="${shape}"></path>
+        <path class="field-socket-paper" d="${shape}"></path>
+        <path class="field-socket-grain" d="M ${-width * 0.28} ${-height * 0.12} C ${-width * 0.08} ${-height * 0.23} ${width * 0.16} ${-height * 0.2} ${width * 0.32} ${-height * 0.07}"></path>
+      </g>
+    `;
+  }
+
+  _paperTilePath(width, height) {
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+    return [
+      `M ${-halfWidth + 18} ${-halfHeight + 2}`,
+      `C ${-halfWidth + 36} ${-halfHeight - 8} ${halfWidth - 33} ${-halfHeight - 7} ${halfWidth - 16} ${-halfHeight + 5}`,
+      `C ${halfWidth + 5} ${-halfHeight + 21} ${halfWidth + 3} ${halfHeight - 22} ${halfWidth - 15} ${halfHeight - 7}`,
+      `C ${halfWidth - 34} ${halfHeight + 9} ${-halfWidth + 34} ${halfHeight + 8} ${-halfWidth + 15} ${halfHeight - 5}`,
+      `C ${-halfWidth - 4} ${halfHeight - 21} ${-halfWidth - 5} ${-halfHeight + 19} ${-halfWidth + 18} ${-halfHeight + 2}`,
+      'Z'
+    ].join(' ');
   }
 
   _renderDirectionMarkers(fields) {
@@ -296,16 +341,17 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
-    const tileWidth = isStart || isFinish ? 152 : 124;
-    const tileHeight = isStart || isFinish ? 84 : 74;
-    const tileRadius = isStart || isFinish ? 24 : 21;
-    const tileX = -tileWidth / 2;
-    const tileY = -tileHeight / 2;
-    const badgeX = isStart || isFinish ? -42 : -38;
-    const badgeY = isStart || isFinish ? -30 : -25;
-    const indexX = isStart || isFinish ? 42 : 38;
-    const indexY = isStart || isFinish ? -30 : -25;
+    const tileWidth = isStart || isFinish ? 138 : 108;
+    const tileHeight = isStart || isFinish ? 76 : 64;
+    const badgeX = isStart || isFinish ? -36 : -31;
+    const badgeY = isStart || isFinish ? -26 : -22;
+    const indexX = isStart || isFinish ? 36 : 31;
+    const indexY = isStart || isFinish ? -26 : -22;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
+    const shadowShape = this._paperTilePath(tileWidth, tileHeight);
+    const washShape = this._paperTilePath(tileWidth + 8, tileHeight + 8);
+    const bodyShape = this._paperTilePath(tileWidth, tileHeight);
+    const glazeShape = this._paperTilePath(tileWidth - 14, tileHeight - 14);
     const className = [
       'board-field-node',
       `board-field-node--${field.type}`,
@@ -318,10 +364,10 @@ export class BoardRenderer {
     return `
       <g class="${className}" transform="translate(${field.x} ${field.y})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
         <g class="field-shape" transform="rotate(${angle})">
-          <rect class="field-shadow" x="${tileX}" y="${tileY + 7}" width="${tileWidth}" height="${tileHeight}" rx="${tileRadius}"></rect>
-          <rect class="field-wash" x="${tileX - 4}" y="${tileY - 4}" width="${tileWidth + 8}" height="${tileHeight + 8}" rx="${tileRadius + 4}"></rect>
-          <rect class="field-body" x="${tileX}" y="${tileY}" width="${tileWidth}" height="${tileHeight}" rx="${tileRadius}"></rect>
-          <rect class="field-glaze" x="${tileX + 7}" y="${tileY + 7}" width="${tileWidth - 14}" height="${tileHeight - 14}" rx="${Math.max(10, tileRadius - 5)}"></rect>
+          <path class="field-shadow" d="${shadowShape}" transform="translate(0 7)"></path>
+          <path class="field-wash" d="${washShape}"></path>
+          <path class="field-body" d="${bodyShape}"></path>
+          <path class="field-glaze" d="${glazeShape}"></path>
         </g>
         <circle class="field-type-dot" cx="${badgeX}" cy="${badgeY}" r="${isStart || isFinish ? 13 : 10}"></circle>
         <text class="field-icon" x="${badgeX}" y="${badgeY}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>

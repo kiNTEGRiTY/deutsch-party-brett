@@ -16,7 +16,7 @@
         "css/screens/board.css",
         "scripts/validate-board-layout.mjs"
       ],
-      "notes": "Primary board art is rendered from the playable field route. The board must remain one 36-field route with background, route, slots, labels, and tokens sharing the same coordinate list."
+      "notes": "Primary board art is rendered from the playable field route. The board must remain one 36-field route with background sockets, short connectors, labels, and tokens sharing the same coordinate list."
     },
     {
       "id": "board.functional-fields.v1",

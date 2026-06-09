@@ -127,33 +127,54 @@
   opacity: 0.72;
 }
 
-.board-main-path polyline {
+.board-field-route-background {
+  pointer-events: none;
+}
+
+.board-field-connector-layer .field-connector-shadow {
+  fill: rgba(65, 42, 23, 0.16);
+}
+
+.board-field-connector-layer .field-connector-paper {
+  fill: rgba(244, 212, 151, 0.88);
+  stroke: rgba(124, 82, 42, 0.34);
+  stroke-width: 3;
+}
+
+.board-field-connector-layer .field-connector-thread {
   fill: none;
+  stroke: rgba(255, 250, 222, 0.82);
+  stroke-width: 5;
   stroke-linecap: round;
-  stroke-linejoin: round;
+  stroke-dasharray: 2 20;
 }
 
-.board-main-path .path-shadow {
-  stroke: rgba(65, 42, 23, 0.18);
-  stroke-width: 92;
+.board-field-socket-layer .field-socket-shadow {
+  fill: rgba(58, 36, 18, 0.18);
 }
 
-.board-main-path .path-earth {
-  stroke: rgba(116, 75, 39, 0.54);
-  stroke-width: 76;
-}
-
-.board-main-path .path-gold {
-  stroke: url(#boardPathPremium);
-  stroke-width: 62;
-  opacity: 0.86;
-}
-
-.board-main-path .path-stitched {
-  stroke: rgba(255, 252, 232, 0.8);
-  stroke-width: 7;
-  stroke-dasharray: 2 29;
+.board-field-socket-layer .field-socket-wash {
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 24%, #fff0bc);
   opacity: 0.76;
+}
+
+.board-field-socket-layer .field-socket-paper {
+  fill: rgba(255, 239, 192, 0.72);
+  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 42%, #7d552d);
+  stroke-width: 4.5;
+}
+
+.board-field-socket-layer .field-socket-grain {
+  fill: none;
+  stroke: rgba(255, 252, 229, 0.46);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.board-field-socket-layer .field-socket.is-start .field-socket-paper,
+.board-field-socket-layer .field-socket.is-finish .field-socket-paper {
+  fill: rgba(255, 239, 177, 0.86);
+  stroke-width: 5.5;
 }
 
 .board-direction-markers path {
@@ -190,7 +211,6 @@
 
 .board-field-node .field-shadow {
   fill: rgba(54, 34, 18, 0.17);
-  transform: none;
 }
 
 .board-field-node .field-wash {
@@ -1048,8 +1068,8 @@
     right: auto;
     bottom: auto;
     left: 50%;
-    width: min(110vw, 820px);
-    height: min(61.875vw, 461px);
+    width: min(118vw, 820px);
+    height: min(66.375vw, 461px);
     transform: translateX(-50%);
   }
 
@@ -1122,7 +1142,7 @@
     display: grid;
     left: 8px;
     right: 8px;
-    top: calc(52px + min(61.875vw, 461px) + 8px);
+    top: calc(52px + min(66.375vw, 461px) + 8px);
     bottom: auto;
     width: auto;
     gap: 6px;
@@ -1293,12 +1313,12 @@
 @media (max-width: 420px) and (max-height: 720px) {
   .board-playfield {
     top: 48px;
-    width: min(110vw, 820px);
-    height: min(61.875vw, 461px);
+    width: min(116vw, 820px);
+    height: min(65.25vw, 461px);
   }
 
   .board-context-dock {
-    top: calc(48px + min(61.875vw, 461px) + 6px);
+    top: calc(48px + min(65.25vw, 461px) + 6px);
   }
 
   .board-player-rail {
@@ -1316,12 +1336,12 @@
 
 @media (min-width: 421px) and (max-width: 760px) {
   .board-playfield {
-    width: min(108vw, 820px);
-    height: min(60.75vw, 461px);
+    width: min(116vw, 820px);
+    height: min(65.25vw, 461px);
   }
 
   .board-context-dock {
-    top: calc(52px + min(60.75vw, 461px) + 8px);
+    top: calc(52px + min(65.25vw, 461px) + 8px);
   }
 }
 

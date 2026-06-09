@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=setup-mobile-36';
-import { renderCharacterAvatar } from '../ui/characters.js?v=setup-mobile-36';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=setup-mobile-36';
+import { SoundManager } from '../ui/sound-manager.js?v=field-first-board-37';
+import { renderCharacterAvatar } from '../ui/characters.js?v=field-first-board-37';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=field-first-board-37';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
