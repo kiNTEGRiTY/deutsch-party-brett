@@ -10,7 +10,7 @@ const SAFE_CENTER_BOUNDS = {
   minX: 110,
   maxX: VIEWBOX.width - 110,
   minY: 120,
-  maxY: 660
+  maxY: 720
 };
 const MAX_SEGMENT_LENGTH = 180;
 const MIN_SEGMENT_LENGTH = 70;
@@ -113,7 +113,10 @@ function assertFunctionFirstRendering() {
     'route-band',
     'board-field-connector-layer',
     'field-connector',
-    'paper-fiber'
+    'paper-fiber',
+    'board-field-socket-layer',
+    'field-socket',
+    '_renderFieldSocket'
   ].forEach((token) => {
     if (renderer.includes(token) || boardCss.includes(token)) {
       fail(`Board rendering must not use old road/connector token "${token}"; the background must be field tiles first.`);
@@ -138,10 +141,9 @@ function assertFunctionFirstRendering() {
     !renderer.includes('_renderFunctionalFieldBackground(fields)') ||
     !renderer.includes('board-field-built-background') ||
     !renderer.includes('board-field-join-layer') ||
-    !renderer.includes('board-field-socket-layer') ||
     !renderer.includes('board-field-layer')
   ) {
-    fail('render-board.js must draw field-built background, join markers, sockets, and playable fields from the same field list.');
+    fail('render-board.js must draw field-built background, join markers, and playable fields from the same field list.');
   }
 
   [
@@ -179,4 +181,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Board layout validation passed: ${EXPECTED_FIELD_COUNT} field-first slots, one route, no backdrop image.`);
+console.log(`Board layout validation passed: ${EXPECTED_FIELD_COUNT} field-first slots, one route, no backdrop image, no socket patch layer.`);

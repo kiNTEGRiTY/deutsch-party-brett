@@ -189,9 +189,6 @@ export class BoardRenderer {
         <g class="board-field-join-layer">
           ${fields.slice(0, -1).map((field, index) => this._renderFieldJoin(field, fields[index + 1], index)).join('')}
         </g>
-        <g class="board-field-socket-layer">
-          ${fields.map((field) => this._renderFieldSocket(field)).join('')}
-        </g>
       </g>
     `;
   }
@@ -220,25 +217,6 @@ export class BoardRenderer {
         <path class="field-join-shadow" d="${tabPath}" transform="translate(0 5)"></path>
         <path class="field-join-paper" d="${tabPath}"></path>
         <path class="field-join-arrow" d="M -10 -8 L 8 0 L -10 8"></path>
-      </g>
-    `;
-  }
-
-  _renderFieldSocket(field) {
-    const style = this._fieldStyle(field);
-    const isStart = field.id === 0;
-    const isFinish = field.id === this.game.board.totalFields - 1;
-    const width = isStart || isFinish ? 214 : 168;
-    const height = isStart || isFinish ? 118 : 104;
-    const angle = Number.isFinite(field.angle) ? field.angle : 0;
-    const shape = this._paperTilePath(width, height);
-
-    return `
-      <g class="field-socket ${isStart ? 'is-start' : ''} ${isFinish ? 'is-finish' : ''}" transform="translate(${field.x} ${field.y}) rotate(${angle})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
-        <path class="field-socket-shadow" d="${shape}" transform="translate(0 9)"></path>
-        <path class="field-socket-wash" d="${shape}"></path>
-        <path class="field-socket-paper" d="${shape}"></path>
-        <path class="field-socket-grain" d="M ${-width * 0.28} ${-height * 0.12} C ${-width * 0.08} ${-height * 0.23} ${width * 0.16} ${-height * 0.2} ${width * 0.32} ${-height * 0.07}"></path>
       </g>
     `;
   }
@@ -289,12 +267,12 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
-    const tileWidth = isStart || isFinish ? 154 : 118;
-    const tileHeight = isStart || isFinish ? 86 : 72;
-    const badgeX = isStart || isFinish ? -42 : -34;
-    const badgeY = isStart || isFinish ? -29 : -25;
-    const indexX = isStart || isFinish ? 42 : 34;
-    const indexY = isStart || isFinish ? -29 : -25;
+    const tileWidth = isStart || isFinish ? 212 : 146;
+    const tileHeight = isStart || isFinish ? 112 : 90;
+    const badgeX = isStart || isFinish ? -62 : -48;
+    const badgeY = isStart || isFinish ? -38 : -30;
+    const indexX = isStart || isFinish ? 62 : 48;
+    const indexY = isStart || isFinish ? -38 : -30;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const shadowShape = this._paperTilePath(tileWidth, tileHeight);
     const washShape = this._paperTilePath(tileWidth + 8, tileHeight + 8);
