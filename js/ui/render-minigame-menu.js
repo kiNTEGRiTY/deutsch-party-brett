@@ -34,7 +34,8 @@ function titleizeTopic(topic) {
     konzentration: 'Konzentration',
     zeitformen: 'Zeitformen',
     fehlerkorrektur: 'Fehlerkorrektur',
-    zusammengesetzte_nomen: 'Komposita'
+    zusammengesetzte_nomen: 'Komposita',
+    grammatik: 'Grammatik'
   };
 
   return labels[topic] || topic;
@@ -60,6 +61,10 @@ function buildBaseConfig(game, settings) {
     playerNames: ['Spieler 1', 'Spieler 2'],
     custom: {}
   };
+}
+
+function directModeLabel(mode) {
+  return mode === 'turn_based' ? 'Reihum' : 'Solo';
 }
 
 function isStandardField(key) {
@@ -91,10 +96,10 @@ export class MinigameMenuRenderer {
             <div>
               <div class="premium-kicker">Kuratierte Auswahl</div>
               <h2 class="glow-title minigame-menu-title">Direkt spielen</h2>
-              <p class="minigame-menu-subtitle">Aktuell ist keine kuratierte Premium-Auswahl verfuegbar.</p>
+              <p class="minigame-menu-subtitle">Aktuell ist keine kuratierte Premium-Auswahl verfügbar.</p>
             </div>
             <div class="showcase-controls">
-              <button class="btn btn-secondary" id="btn-minigame-back" type="button">Zurueck</button>
+              <button class="btn btn-secondary" id="btn-minigame-back" type="button">Zurück</button>
             </div>
           </div>
         </div>
@@ -134,7 +139,7 @@ export class MinigameMenuRenderer {
             </div>
           </div>
           <div class="showcase-controls">
-            <button class="btn btn-secondary" id="btn-minigame-back" type="button">Zurueck</button>
+            <button class="btn btn-secondary" id="btn-minigame-back" type="button">Zurück</button>
             <button class="btn btn-primary" id="btn-minigame-launch" type="button">Jetzt starten</button>
           </div>
         </div>
@@ -155,9 +160,9 @@ export class MinigameMenuRenderer {
                       <div class="minigame-card-body">
                         <span class="minigame-card-kicker">${group.label} · ${game.topics?.slice(0, 2).map(titleizeTopic).join(' · ') || 'Deutsch'}</span>
                         <strong>${game.name_de}</strong>
-                        <span class="minigame-card-desc">${game.description || 'Direkt startbares Sprachspiel mit Solo und Turn-Based.'}</span>
+                        <span class="minigame-card-desc">${game.description || 'Direkt startbares Sprachspiel für Solo- und Reihum-Runden.'}</span>
                         <div class="minigame-card-footer">
-                          <span>${gameConfig.mode === 'turn_based' ? 'Turn Based' : 'Solo Arcade'}</span>
+                          <span>${directModeLabel(gameConfig.mode)}</span>
                           <span>${gameConfig.rounds} Runden</span>
                         </div>
                       </div>
@@ -171,9 +176,9 @@ export class MinigameMenuRenderer {
           <section class="minigame-settings premium-panel">
             <div class="minigame-settings-top">
               <div>
-                <div class="premium-kicker">Settings</div>
+                <div class="premium-kicker">Einstellungen</div>
                 <h3 class="glow-title">${selectedGame.name_de}</h3>
-                <p class="minigame-menu-subtitle">${groupByGameId.get(selectedGame.id)?.description || 'Der Direktstart nutzt dieselbe Runtime wie spaetere Party- und Cup-Modi.'}</p>
+                <p class="minigame-menu-subtitle">${groupByGameId.get(selectedGame.id)?.description || 'Der Direktstart nutzt dieselbe Runtime wie spätere Party- und Cup-Modi.'}</p>
               </div>
               <div class="premium-badges">
                 ${groupByGameId.get(selectedGame.id) ? `<span class="premium-badge">${groupByGameId.get(selectedGame.id).label}</span>` : ''}
@@ -196,8 +201,8 @@ export class MinigameMenuRenderer {
               <label class="setting-field">
                 <span>Spielmodus</span>
                 <select data-setting="mode">
-                  <option value="solo_arcade" ${config.mode === 'solo_arcade' ? 'selected' : ''}>Solo Arcade</option>
-                  <option value="turn_based" ${config.mode === 'turn_based' ? 'selected' : ''}>Turn Based</option>
+                  <option value="solo_arcade" ${config.mode === 'solo_arcade' ? 'selected' : ''}>Solo</option>
+                  <option value="turn_based" ${config.mode === 'turn_based' ? 'selected' : ''}>Reihum</option>
                 </select>
               </label>
 
@@ -255,7 +260,7 @@ export class MinigameMenuRenderer {
 
             <div class="minigame-settings-actions">
               <button class="btn btn-secondary" data-launch-mode="solo_arcade" type="button">Solo starten</button>
-              <button class="btn btn-primary" data-launch-mode="turn_based" type="button">Turn Based starten</button>
+              <button class="btn btn-primary" data-launch-mode="turn_based" type="button">Reihum starten</button>
             </div>
           </section>
         </div>

@@ -3021,6 +3021,8 @@
   min-width: 148px;
   min-height: 46px;
   padding: 10px 16px;
+  font-size: 1.02rem;
+  line-height: 1;
   border-radius: 999px !important;
   box-shadow: 0 4px 0 rgba(72, 54, 35, 0.18) !important;
 }
@@ -3151,16 +3153,39 @@
   }
 
   .variety-menu-shell .showcase-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: stretch;
+    gap: 8px;
   }
 
   .variety-menu-shell .showcase-controls .btn,
   .variety-menu-shell .minigame-settings-actions .btn {
     width: 100% !important;
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 10px;
+    font-size: 0.95rem;
   }
 }
 
 @media (max-width: 720px) {
+  .atelier-menu-showcase {
+    gap: 8px;
+    min-height: 66px;
+    margin-top: 10px;
+  }
+
+  .atelier-menu-photo {
+    width: clamp(70px, 22vw, 92px);
+    border-radius: 12px 9px 14px 10px;
+  }
+
+  .atelier-menu-showcase strong {
+    width: 56px;
+    font-size: 1.55rem;
+  }
+
   .motion-drum-row {
     grid-template-columns: 1fr;
     justify-items: center;

@@ -508,7 +508,7 @@ const DIRECT_PLAY_CURATION = Object.freeze([
   {
     id: 'party-signature',
     label: 'Party & Performance',
-    description: 'Die staerksten Social- und Showdown-Modi im Direktstart.',
+    description: 'Die stärksten Social- und Showdown-Modi im Direktstart.',
     gameIds: [
       'kompositum-maschine',
       'rollen-sprechen',

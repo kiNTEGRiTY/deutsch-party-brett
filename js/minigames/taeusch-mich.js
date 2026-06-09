@@ -10,7 +10,7 @@ const PAIRS = [
 
 export const TaeuschMich = {
   id: 'taeusch-mich',
-  name_de: 'Taeusch Mich',
+  name_de: 'Täusch Mich',
   description: 'Verdeckte Rollen, knappe Hinweise und danach ein sauberer Verrats-Vote.',
   topics: ['wortschatz', 'lesen', 'satzbau'],
   supportsDirectPlay: true,
@@ -50,7 +50,7 @@ export const TaeuschMich = {
         <div class="taeusch-shell">
           <div class="showcase-round-card">
             <div class="premium-kicker">Hinweisphase vorbei</div>
-            <h3 class="glow-title showcase-title">Wer ist der Taeuscher?</h3>
+            <h3 class="glow-title showcase-title">Wer ist der Täuscher?</h3>
             <p class="showcase-secondary">Tippt auf die Person, die das andere Wort bekommen hat.</p>
           </div>
           <div class="showcase-score-grid">
@@ -84,7 +84,7 @@ export const TaeuschMich = {
           <div class="showcase-round-card">
             <div class="premium-kicker">Social Deduction</div>
             <h3 class="glow-title showcase-title">Hinweisrunde</h3>
-            <p class="showcase-prompt">Jede Person gibt jetzt einen Hinweis. Keine direkten Synonyme, keine kompletten Saetze aus dem Lehrbuch.</p>
+            <p class="showcase-prompt">Jede Person gibt jetzt einen Hinweis. Keine direkten Synonyme, keine kompletten Sätze aus dem Lehrbuch.</p>
             <p class="showcase-secondary">Crew-Wort: <strong>${pair.crewWord}</strong> | Sonderwort: <strong>${pair.imposterWord}</strong></p>
           </div>
           <div class="showcase-badge-row">
@@ -115,7 +115,7 @@ export const TaeuschMich = {
           <div class="showcase-round-card">
             <div class="premium-kicker">Geheime Rollenanzeige</div>
             <h3 class="glow-title showcase-title">${player.name}</h3>
-            <p class="showcase-secondary">Geraet weitergeben. Nur diese Person schaut jetzt hin.</p>
+            <p class="showcase-secondary">Gerät weitergeben. Nur diese Person schaut jetzt hin.</p>
           </div>
           <div class="showcase-controls">
             <button class="btn btn-primary btn-lg" id="taeusch-show-secret" type="button">Rolle zeigen</button>
@@ -127,9 +127,9 @@ export const TaeuschMich = {
         container.innerHTML = `
           <div class="taeusch-shell">
             <div class="taeusch-secret-card ${revealIndex === imposterIndex ? 'is-imposter' : 'is-crew'}">
-              <span>Geheimes Wort fuer ${player.name}</span>
+              <span>Geheimes Wort für ${player.name}</span>
               <strong>${secretWord}</strong>
-              <p>Gib spaeter nur einen knappen Hinweis. Nicht zu direkt.</p>
+              <p>Gib später nur einen knappen Hinweis. Nicht zu direkt.</p>
             </div>
             <div class="showcase-controls">
               <button class="btn btn-secondary" id="taeusch-hide-secret" type="button">Verstanden</button>
@@ -148,7 +148,7 @@ export const TaeuschMich = {
       <div class="taeusch-shell">
         <div class="showcase-round-card">
           <div class="premium-kicker">Production Ready</div>
-          <h3 class="glow-title showcase-title">Taeusch Mich</h3>
+          <h3 class="glow-title showcase-title">Täusch Mich</h3>
           <p class="showcase-prompt">Alle bekommen ein geheimes Wort. Eine Person bekommt ein anderes. Danach wird geblufft und gevotet.</p>
           <p class="showcase-secondary">${players.length} Personen sind in der Runde.</p>
         </div>

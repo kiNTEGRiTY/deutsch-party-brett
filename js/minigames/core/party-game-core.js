@@ -198,8 +198,8 @@ export function getPlayerScoreRows(players, scoreMap) {
 }
 
 export function getModeLabel(mode) {
-  if (mode === 'turn_based') return 'Turn Based';
-  return 'Solo Arcade';
+  if (mode === 'turn_based') return 'Reihum';
+  return 'Solo';
 }
 
 export function getScoringLabel(mode) {

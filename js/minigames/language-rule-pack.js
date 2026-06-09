@@ -90,7 +90,7 @@ export const SynonymFlucht = createRuleGame({
   buildRounds: ({ config }) => pickPreparedRounds(SYNONYM_SETS, config.rounds),
   getPrompt({ round }) {
     return {
-      prompt: `Nenne ein Synonym fuer "${round.seed}".`,
+      prompt: `Nenne ein Synonym für "${round.seed}".`,
       secondary: 'Kein Gegenteil, kein beliebiger Nachbarbegriff.',
       placeholder: 'Synonym eingeben...',
       badges: ['Wortschatz', `Basiswort ${round.seed}`]
@@ -147,7 +147,7 @@ export const GegensatzZwang = createRuleGame({
 export const VerbotenerBuchstabe = createRuleGame({
   id: 'verbotener-buchstabe',
   name_de: 'Verbotener Buchstabe',
-  description: 'Liefere passende Woerter, ohne den verbotenen Buchstaben zu benutzen.',
+  description: 'Liefere passende Wörter, ohne den verbotenen Buchstaben zu benutzen.',
   topics: ['wortschatz', 'rechtschreibung'],
   kicker: 'Constraint',
   defaultRounds: 4,
@@ -186,7 +186,7 @@ export const VerbotenerBuchstabe = createRuleGame({
 export const FuenfSecTriple = createRuleGame({
   id: 'fuenf-sec-triple',
   name_de: '5-Sec-Triple',
-  description: 'Drei gueltige Begriffe in einem Atemzug liefern.',
+  description: 'Drei gültige Begriffe in einem Atemzug liefern.',
   topics: ['wortschatz', 'lesen', 'verben'],
   kicker: 'Burst',
   inputType: 'list',
@@ -213,7 +213,7 @@ export const FuenfSecTriple = createRuleGame({
     const requiredCount = Number(config.custom.requiredCount || 3);
     const values = normalizeList(input.value);
     if (values.length !== requiredCount) {
-      return invalid(`Genau ${requiredCount} Antworten noetig.`, Array.isArray(input.value) ? input.value.join(', ') : '');
+      return invalid(`Genau ${requiredCount} Antworten nötig.`, Array.isArray(input.value) ? input.value.join(', ') : '');
     }
 
     const uniqueValues = [...new Set(values)];
@@ -233,21 +233,21 @@ export const FuenfSecTriple = createRuleGame({
 export const WortMorph = createRuleGame({
   id: 'wort-morph',
   name_de: 'Wort-Morph',
-  description: 'Aendere ein Wort minimal und lande auf einem echten Treffer.',
+  description: 'Ändere ein Wort minimal und lande auf einem echten Treffer.',
   topics: ['wortbildung', 'rechtschreibung', 'wortschatz'],
   kicker: 'Morph',
   defaultRounds: 4,
   defaultCustom: { lives: 3, maxDistance: 1 },
   settingsFields: [
-    { type: 'number', key: 'maxDistance', label: 'Max. Aenderung', min: 1, max: 2, defaultValue: 1 }
+    { type: 'number', key: 'maxDistance', label: 'Max. Änderung', min: 1, max: 2, defaultValue: 1 }
   ],
   directPlayDefaults: SHARED_TURN_DEFAULTS,
   maxPointsPerTurn: 2,
   buildRounds: ({ config }) => pickPreparedRounds(MORPH_SETS, config.rounds),
   getPrompt({ round, config }) {
     return {
-      prompt: `Forme aus "${round.seed}" ein neues Wort mit hoechstens ${config.custom.maxDistance || 1} Aenderung.`,
-      secondary: 'Nur echte Treffer aus dem Morph-Pool zaehlen.',
+      prompt: `Forme aus "${round.seed}" ein neues Wort mit höchstens ${config.custom.maxDistance || 1} Änderung.`,
+      secondary: 'Nur echte Treffer aus dem Morph-Pool zählen.',
       placeholder: 'Neues Wort...',
       badges: ['Levenshtein', `Startwort ${round.seed}`]
     };
@@ -266,7 +266,7 @@ export const WortMorph = createRuleGame({
 
     const distance = levenshteinDistance(round.seed, accepted);
     if (distance > Number(config.custom.maxDistance || 1)) {
-      return invalid('Zu viele Aenderungen fuer diese Runde.', rawValue);
+      return invalid('Zu viele Änderungen für diese Runde.', rawValue);
     }
 
     return valid(accepted, 2, `Morph sitzt. Distanz ${distance}.`);
@@ -286,7 +286,7 @@ export const VerbOnly = createRuleGame({
   getPrompt({ round }) {
     return {
       prompt: round.prompt,
-      secondary: 'Nur Verben zaehlen in dieser Runde.',
+      secondary: 'Nur Verben zählen in dieser Runde.',
       placeholder: 'Verb eingeben...',
       badges: ['Verben', 'Keine Nomen']
     };
@@ -309,7 +309,7 @@ export const VerbOnly = createRuleGame({
 export const SubstantivOnly = createRuleGame({
   id: 'substantiv-only',
   name_de: 'Substantiv-Only',
-  description: 'Nur Nomen zaehlen. Alles andere kostet den Zug.',
+  description: 'Nur Nomen zählen. Alles andere kostet den Zug.',
   topics: ['nomen', 'wortschatz'],
   kicker: 'Word Type',
   defaultRounds: 4,
@@ -319,9 +319,9 @@ export const SubstantivOnly = createRuleGame({
   getPrompt({ round }) {
     return {
       prompt: round.prompt,
-      secondary: 'Nur Nomen zaehlen in dieser Runde.',
+      secondary: 'Nur Nomen zählen in dieser Runde.',
       placeholder: 'Nomen eingeben...',
-      badges: ['Nomen', 'Sauber gross denken']
+      badges: ['Nomen', 'Sauber groß denken']
     };
   },
   validateInput({ round, input }) {
@@ -352,7 +352,7 @@ export const DoppelKategorie = createRuleGame({
   getPrompt({ round }) {
     return {
       prompt: round.prompt,
-      secondary: 'Nur Woerter, die beide Filter treffen, zaehlen.',
+      secondary: 'Nur Wörter, die beide Filter treffen, zählen.',
       placeholder: 'Passendes Wort...',
       badges: [round.leftLabel, round.rightLabel]
     };
@@ -387,7 +387,7 @@ export const WortKette = createRuleGame({
     return {
       prompt: `Letztes Wort: "${round.seed}". Finde ein neues Wort mit "${lastLetter}" am Anfang.`,
       secondary: 'Das neue Wort muss den Anschluss sauber halten.',
-      placeholder: 'Naechstes Wort...',
+      placeholder: 'Nächstes Wort...',
       badges: ['Kette', `Start ${lastLetter}`]
     };
   },
@@ -405,7 +405,7 @@ export const WortKette = createRuleGame({
 
     const accepted = findAcceptedWord(round, candidate);
     if (!accepted) {
-      return invalid('Kein passender Kettenzug fuer diese Runde.', rawValue);
+      return invalid('Kein passender Kettenzug für diese Runde.', rawValue);
     }
 
     return valid(accepted, 1, 'Kette steht.');
