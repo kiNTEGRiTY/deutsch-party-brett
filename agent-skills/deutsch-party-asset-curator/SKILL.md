@@ -38,7 +38,8 @@ Read these first:
 3. If the asset is missing from the manifest, add it before using it in production UI.
 4. Keep board coordinates in the `1672 x 941` coordinate space.
 5. Avoid style mixing. One screen should not combine handmade cutouts, generic generated characters, and unrelated fantasy art.
-6. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
+6. Board-launched minigames should preserve the active player's original cutout identity in the shell, so the handoff still feels like a board turn instead of a generic worksheet.
+7. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
 
 ## Output
 

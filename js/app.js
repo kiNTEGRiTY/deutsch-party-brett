@@ -149,9 +149,16 @@ class App {
         id: player.id,
         name: player.name,
         colorIndex: player.colorIndex,
-        avatarId: player.avatarId
+        avatarId: player.avatarId,
+        avatarName: player.avatarName,
+        position: player.position
       })),
       currentPlayerId: this.gameController.getCurrentPlayer()?.id ?? null,
+      field: resolvedRequest.field ? {
+        id: resolvedRequest.field.id,
+        title: resolvedRequest.field.focusTitle || resolvedRequest.field.type || '',
+        subtitle: resolvedRequest.field.focusSubtitle || ''
+      } : null,
       exitOptions: {
         backLabel: 'Zum Brett',
         onBack: () => this._abortMinigame(resolvedRequest.mode, Screens.BOARD),

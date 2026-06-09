@@ -8,6 +8,7 @@ import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigame
 import { createDirectTask, generateTask } from '../learning/task-generator.js?v=game-feel-cutouts-30';
 import { BOARD_THEME } from '../engine/board-layouts.js?v=game-feel-cutouts-30';
 import { SoundManager } from './sound-manager.js?v=game-feel-cutouts-30';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=game-feel-cutouts-30';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
 
 export class MinigameRenderer {
@@ -93,6 +94,8 @@ export class MinigameRenderer {
     const useExternalTimer = task.timerSeconds > 0 && !minigame.usesInternalTimer;
     const exitOptions = runtimeContext.exitOptions || {};
     const shellContext = this._getShellContext(runtimeContext, exitOptions, mode);
+    const boardPlayerCard = this._renderBoardPlayerCard(task, runtimeContext, 'sidebar');
+    const boardStagePlayerCard = this._renderBoardPlayerCard(task, runtimeContext, 'stage');
     const titleClassName = minigame.name_de.length > 14
       ? 'minigame-title minigame-title--compact'
       : 'minigame-title';
@@ -126,6 +129,7 @@ export class MinigameRenderer {
                 <p class="minigame-subtitle">${theme.subtitle}</p>
               </div>
             </div>
+            ${boardPlayerCard}
             ${this._renderMissionTrail(topicLabel)}
             <div class="minigame-meta">
               <span class="mission-chip">Thema: ${topicLabel}</span>
@@ -160,6 +164,7 @@ export class MinigameRenderer {
                 ` : `<div class="mission-chip">${shellContext.untimedLabel}</div>`}
               </div>
             </div>
+            ${boardStagePlayerCard}
             <div id="minigame-game-area" class="minigame-game-area"></div>
           </section>
         </div>
@@ -504,6 +509,64 @@ export class MinigameRenderer {
       stageTitle: 'Aufgabenblatt',
       untimedLabel: 'Freies Spiel'
     };
+  }
+
+  _renderBoardPlayerCard(task, runtimeContext = {}, placement = 'sidebar') {
+    if (runtimeContext.source !== 'board') {
+      return '';
+    }
+
+    const player = this._getCurrentPlayer(task);
+    if (!player) {
+      return '';
+    }
+
+    const characterIndex = this._getCharacterIndexForPlayer(player);
+    const field = runtimeContext.field || {};
+    const fieldTitle = field.title ? this._escape(field.title) : 'Brettfeld';
+    const fieldSubtitle = field.subtitle ? ` · ${this._escape(field.subtitle)}` : '';
+    const fieldNumber = Number.isFinite(field.id) ? `Feld ${field.id}` : 'Brettaufgabe';
+    const playerName = this._escape(player.name || `Spieler ${Number(player.id) + 1 || 1}`);
+    const avatarName = player.avatarName || CHARACTERS[characterIndex]?.name_de || 'Spielfigur';
+    const placementClass = placement === 'stage'
+      ? ' minigame-player-card--stage'
+      : ' minigame-player-card--sidebar';
+
+    return `
+      <div class="minigame-player-card${placementClass}" aria-label="Aktiver Spieler der Brettaufgabe">
+        <div class="minigame-player-avatar">${renderCharacterAvatar(characterIndex, 58)}</div>
+        <div class="minigame-player-copy">
+          <span>Am Zug</span>
+          <strong>${playerName}</strong>
+          <small>${this._escape(avatarName)} · ${this._escape(fieldNumber)} · ${fieldTitle}${fieldSubtitle}</small>
+        </div>
+      </div>
+    `;
+  }
+
+  _getCurrentPlayer(task) {
+    const players = Array.isArray(task.players) ? task.players : [];
+    if (!players.length) {
+      return null;
+    }
+
+    const currentPlayerId = task.currentPlayerId;
+    return players.find((player) => player.id === currentPlayerId) || players[0] || null;
+  }
+
+  _getCharacterIndexForPlayer(player = {}) {
+    if (Number.isFinite(player.colorIndex)) {
+      return player.colorIndex;
+    }
+
+    if (player.avatarId) {
+      const avatarIndex = CHARACTERS.findIndex((character) => character.id === player.avatarId);
+      if (avatarIndex >= 0) {
+        return avatarIndex;
+      }
+    }
+
+    return Number.isFinite(player.id) ? player.id : 0;
   }
 
   _getTopicLabel(topic) {
