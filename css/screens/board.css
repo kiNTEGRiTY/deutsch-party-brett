@@ -1073,7 +1073,40 @@
   }
 
   .board-player-rail {
+    left: 10px;
+    right: 10px;
+    bottom: 102px;
+    display: flex;
+    gap: 6px;
+    min-height: 50px;
+    overflow-x: auto;
+    padding: 0 2px 4px;
+    scrollbar-width: none;
+  }
+
+  .board-player-rail::-webkit-scrollbar {
     display: none;
+  }
+
+  .board-player-slip {
+    flex: 0 0 min(176px, calc(50% - 3px));
+    min-width: 154px;
+    max-width: 188px;
+    padding: 5px 8px 5px 5px;
+    border-radius: 10px;
+  }
+
+  .board-player-head .char-token {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .board-player-head strong {
+    font-size: 0.72rem;
+  }
+
+  .board-player-head span {
+    font-size: 0.6rem;
   }
 
   .board-progress-chip {
