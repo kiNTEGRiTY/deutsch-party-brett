@@ -46,6 +46,7 @@ Use at minimum:
 - Playwright desktop screenshot
 - Playwright mobile screenshot
 - a board-task generator sample when task selection changes
+- for dice-flow changes, click the dice in the board debug route and verify rolling state, final value, token movement, landing feedback, and console cleanliness
 
 ## Output
 

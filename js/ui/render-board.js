@@ -27,7 +27,7 @@ const MOMENT_DECK = [
   { title: 'Blitzduell', text: 'Zwei Spieler antworten gleichzeitig.' },
   { title: 'Jokerzug', text: 'Ein Hinweis, Tausch oder Bonus kann retten.' },
   { title: 'Teamruf', text: 'Die Gruppe darf einen kurzen Tipp geben.' },
-  { title: 'Risiko', text: 'Mehr Punkte oder ein Rueckschritt.' }
+  { title: 'Risiko', text: 'Mehr Punkte oder ein Rückschritt.' }
 ];
 
 export class BoardRenderer {
@@ -89,7 +89,7 @@ export class BoardRenderer {
           <aside class="board-context-dock" aria-label="Spielinformationen">
             <section class="board-panel board-panel--field"></section>
             <section class="board-panel board-panel--moments">
-              <span class="board-panel-kicker">Naechste Momente</span>
+              <span class="board-panel-kicker">Nächste Momente</span>
               <div class="board-moment-list"></div>
             </section>
           </aside>
@@ -101,7 +101,8 @@ export class BoardRenderer {
           <footer class="board-action-dock">
             <button id="dice-roll-button" class="board-dice-button" type="button">
               <span class="board-dice-copy">
-                <strong id="dice-prompt">${iconDice(20)} Wuerfeln</strong>
+                <span class="board-dice-kicker">Würfelzug</span>
+                <strong id="dice-prompt">${iconDice(20)} Würfeln</strong>
                 <small id="dice-helper"></small>
               </span>
               <span class="board-dice" id="dice" aria-hidden="true">${this._renderDiceDots(this.game.dice?.value || 1)}</span>
@@ -373,7 +374,7 @@ export class BoardRenderer {
 
     const diceHelper = this.container.querySelector('#dice-helper');
     if (diceHelper) {
-      diceHelper.textContent = `${currentPlayer.name} zieht die Figur auf dem klaren Weg weiter.`;
+      diceHelper.textContent = `${currentPlayer.name} zieht die Figur weiter.`;
     }
 
     const dockStack = this.container.querySelector('.board-dock-stack');
@@ -512,14 +513,14 @@ export class BoardRenderer {
   }
 
   _fieldPrompt(field) {
-    if (!field) return 'Naechster Spielmoment.';
-    if (field.id === 0) return 'Wuerfeln und die erste Aufgabe oeffnen.';
+    if (!field) return 'Nächster Spielmoment.';
+    if (field.id === 0) return 'Würfeln und die erste Aufgabe öffnen.';
     if (field.id === this.game.board.totalFields - 1) return 'Wer hier landet, erreicht das Finale.';
-    if (field.type === 'movement') return field.move > 0 ? `${field.move} Felder vor.` : `${Math.abs(field.move || 0)} Felder zurueck.`;
-    if (field.type === 'trap') return `Risiko: ${Math.abs(field.move || 0)} Felder zurueck oder Aufgabe retten.`;
-    if (field.type === 'reward') return field.rewardMode === 'extra_turn' ? 'Sofort noch einmal wuerfeln.' : 'Muenzen, Sterne oder einen Joker einsammeln.';
+    if (field.type === 'movement') return field.move > 0 ? `${field.move} Felder vor.` : `${Math.abs(field.move || 0)} Felder zurück.`;
+    if (field.type === 'trap') return `Risiko: ${Math.abs(field.move || 0)} Felder zurück oder Aufgabe retten.`;
+    if (field.type === 'reward') return field.rewardMode === 'extra_turn' ? 'Sofort noch einmal würfeln.' : 'Münzen, Sterne oder einen Joker einsammeln.';
     if (field.type === 'portal') return `Sprung direkt zu Feld ${field.portalPairId}.`;
-    if (field.portalRole === 'return') return `Dieses Feld verbindet zurueck zu Feld ${field.portalPairId}.`;
+    if (field.portalRole === 'return') return `Dieses Feld verbindet zurück zu Feld ${field.portalPairId}.`;
     return field.focusPrompt || 'Deutsch-Aufgabe starten.';
   }
 
@@ -566,7 +567,7 @@ export class BoardRenderer {
       diceButton.classList.add('is-busy');
       diceEl.classList.add('is-rolling');
       SoundManager.play('diceRoll');
-      if (dicePromptEl) dicePromptEl.textContent = 'Wuerfelt...';
+      if (dicePromptEl) dicePromptEl.textContent = 'Würfelt...';
 
       const rollingHandler = (event) => {
         diceEl.innerHTML = this._renderDiceDots(event.detail.value);
@@ -579,7 +580,7 @@ export class BoardRenderer {
         diceEl.classList.remove('is-rolling');
 
         if (!value) {
-          if (dicePromptEl) dicePromptEl.textContent = 'Wuerfeln';
+          if (dicePromptEl) dicePromptEl.textContent = 'Würfeln';
           return;
         }
 
@@ -708,7 +709,7 @@ export class BoardRenderer {
 
     const isForward = targetPosition > landedPosition;
     const label = result.action === 'trap'
-      ? 'Rueckweg'
+      ? 'Rückweg'
       : isForward
         ? 'Bonusweg'
         : 'Umweg';

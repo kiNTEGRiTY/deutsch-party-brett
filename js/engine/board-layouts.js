@@ -36,7 +36,7 @@ export const BOARD_THEME = {
     boardBackdrop: 'assets/img/premium/watercolor-premium-board.png',
     startHero: 'assets/img/premium/watercolor-premium-start.png'
   },
-  interactions: ['Wuerfeln', 'Ziehen', 'Deutschaufgabe', 'Belohnung'],
+  interactions: ['Würfeln', 'Ziehen', 'Deutschaufgabe', 'Belohnung'],
   values: ['Klarheit', 'Miteinander', 'Sorgfalt']
 };
 
