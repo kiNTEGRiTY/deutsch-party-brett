@@ -398,6 +398,7 @@ export class MinigameRenderer {
       '.word-type-sort-game',
       '.article-choice-game',
       '.case-choice-game',
+      '.noun-hunter-game',
       '.rhyme-match-game',
       '.syllable-counter-game',
       '.sentence-order-game',
