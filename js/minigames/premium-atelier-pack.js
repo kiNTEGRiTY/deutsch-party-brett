@@ -14,33 +14,33 @@ const CARDS = [
   ['hund', 'Hund', 'der', 1, 'H', CARD_A, 18, 18, '2% 12%', 'bellt und wedelt'],
   ['sonne', 'Sonne', 'die', 2, 'S', CARD_A, 39, 18, '34% 12%', 'scheint hell'],
   ['stift', 'Stift', 'der', 1, 'S', CARD_A, 61, 18, '66% 12%', 'schreibt oder malt'],
-  ['mann', 'Mann', 'der', 1, 'M', CARD_A, 82, 18, '98% 12%', 'traegt eine Brille'],
-  ['schmetterling', 'Schmetterling', 'der', 3, 'S', CARD_A, 18, 69, '2% 88%', 'hat bunte Fluegel'],
+  ['mann', 'Mann', 'der', 1, 'M', CARD_A, 82, 18, '98% 12%', 'trägt eine Brille'],
+  ['schmetterling', 'Schmetterling', 'der', 3, 'S', CARD_A, 18, 69, '2% 88%', 'hat bunte Flügel'],
   ['schere', 'Schere', 'die', 2, 'S', CARD_A, 39, 69, '34% 88%', 'schneidet Papier'],
-  ['maedchen', 'Maedchen', 'das', 2, 'M', CARD_A, 61, 69, '66% 88%', 'traegt einen gelben Rock'],
+  ['maedchen', 'Mädchen', 'das', 2, 'M', CARD_A, 61, 69, '66% 88%', 'trägt einen gelben Rock'],
   ['katze', 'Katze', 'die', 2, 'K', CARD_A, 82, 69, '98% 88%', 'hat Schnurrhaare'],
   ['stuhl', 'Stuhl', 'der', 1, 'S', CARD_B, 18, 18, '2% 12%', 'darauf sitzt man'],
   ['baum', 'Baum', 'der', 1, 'B', CARD_B, 39, 18, '34% 12%', 'hat Stamm und Krone'],
   ['junge', 'Junge', 'der', 2, 'J', CARD_B, 61, 18, '66% 12%', 'steht in blauer Kleidung'],
   ['apfel', 'Apfel', 'der', 2, 'A', CARD_B, 82, 18, '98% 12%', 'ist rot und rund'],
-  ['frau', 'Frau', 'die', 1, 'F', CARD_B, 18, 69, '2% 88%', 'traegt einen roten Rock'],
+  ['frau', 'Frau', 'die', 1, 'F', CARD_B, 18, 69, '2% 88%', 'trägt einen roten Rock'],
   ['fisch', 'Fisch', 'der', 1, 'F', CARD_B, 39, 69, '34% 88%', 'schwimmt im Wasser'],
-  ['blume', 'Blume', 'die', 2, 'B', CARD_B, 61, 69, '66% 88%', 'hat Bluete und Blaetter'],
-  ['haus', 'Haus', 'das', 1, 'H', CARD_B, 82, 69, '98% 88%', 'hat Dach und Tuer']
+  ['blume', 'Blume', 'die', 2, 'B', CARD_B, 61, 69, '66% 88%', 'hat Blüte und Blätter'],
+  ['haus', 'Haus', 'das', 1, 'H', CARD_B, 82, 69, '98% 88%', 'hat Dach und Tür']
 ].map(([id, word, article, syllables, letter, image, x, y, crop, clue]) => ({ id, word, article, syllables, letter, image, x, y, crop, clue }));
 
 const ANIMAL_SPOTS = [
-  ['elefant', 'Elefant', 16, 13, 'grosses Tier mit Ruessel'],
-  ['pinguin', 'Pinguin', 48, 11, 'schwarz-weisses Tier oben in der Mitte'],
+  ['elefant', 'Elefant', 16, 13, 'großes Tier mit Rüssel'],
+  ['pinguin', 'Pinguin', 48, 11, 'schwarz-weißes Tier oben in der Mitte'],
   ['katze', 'Katze', 80, 12, 'Tier mit Schnurrhaaren oben rechts'],
   ['hund', 'Hund', 18, 34, 'Tier mit langem Ohr links'],
-  ['kaenguru', 'Kaenguru', 51, 35, 'Tier mit langem Schwanz in der Mitte'],
-  ['baer', 'Baer', 80, 35, 'sitzendes Tier auf dem Zettel rechts'],
+  ['kaenguru', 'Känguru', 51, 35, 'Tier mit langem Schwanz in der Mitte'],
+  ['baer', 'Bär', 80, 35, 'sitzendes Tier auf dem Zettel rechts'],
   ['hase', 'Hase', 18, 56, 'Tier mit langen Ohren links'],
   ['fuchs', 'Fuchs', 51, 61, 'orangefarbenes Tier in der Mitte'],
-  ['waschbaer', 'Waschbaer', 81, 61, 'Tier mit Maske und Ringelschwanz'],
+  ['waschbaer', 'Waschbär', 81, 61, 'Tier mit Maske und Ringelschwanz'],
   ['reh', 'Reh', 18, 84, 'geflecktes Tier unten links'],
-  ['fledermaus', 'Fledermaus', 51, 88, 'haengt unten kopfueber']
+  ['fledermaus', 'Fledermaus', 51, 88, 'hängt unten kopfüber']
 ].map(([id, word, x, y, clue]) => ({ id, word, x, y, clue }));
 
 function shuffle(list) {
@@ -194,7 +194,7 @@ export const ArtikelStempelstudio = {
     scene(container, {
       tone: 'red',
       kicker: 'Stempel',
-      title: `Artikel fuer ${target.word}`,
+      title: `Artikel für ${target.word}`,
       text: 'Setze den passenden Stempel auf die Karte.',
       image: target.image,
       body: `<div class="atelier-stamp-layout">${thumb(target, 'atelier-card-thumb--large')}<div class="atelier-stamp-pad">${['der', 'die', 'das'].map((a) => `<button class="atelier-stamp" data-answer="${a}" type="button">${a}</button>`).join('')}</div></div>`
@@ -218,7 +218,7 @@ export const SilbenKlatschkarten = {
       tone: 'gold',
       kicker: 'Silben',
       title: `Wie viele Silben hat ${target.word}?`,
-      text: 'Sprich das Wort und waehle die Klatschzahl.',
+      text: 'Sprich das Wort und wähle die Klatschzahl.',
       image: target.image,
       body: `<div class="atelier-center-card">${thumb(target, 'atelier-card-thumb--large')}</div><div class="atelier-number-row">${[1, 2, 3, 4].map((n) => `<button data-answer="${n}" type="button">${'Klatsch '.repeat(n).trim()}<strong>${n}</strong></button>`).join('')}</div>`
     });
@@ -252,7 +252,7 @@ export const AnfangsbuchstabenLupe = {
 export const KartenlupeWortfang = {
   id: 'kartenlupe-wortfang',
   name_de: 'Kartenlupe-Wortfang',
-  description: 'Ein echter Kartenausschnitt wird gross betrachtet, dann muss das Wort sitzen.',
+  description: 'Ein echter Kartenausschnitt wird groß betrachtet, dann muss das Wort sitzen.',
   topics: ['lesen', 'wortschatz', 'konzentration'],
   supportsDirectPlay: true,
   directPlayDefaults: DEFAULTS,
@@ -577,14 +577,14 @@ export const AlphabetKartenreihe = {
 export const FigurenSatztheater = {
   id: 'figuren-satztheater',
   name_de: 'Figuren-Satztheater',
-  description: 'Originalfigur ansehen und den grammatisch sauberen Satz waehlen.',
+  description: 'Originalfigur ansehen und den grammatisch sauberen Satz wählen.',
   topics: ['satzbau', 'lesen', 'grammatik'],
   supportsDirectPlay: true,
   directPlayDefaults: DEFAULTS,
   defaultRounds: 4,
   setup(container, task, done) {
     const set = pick([
-      { c: 0, a: 'Der Elefant haelt ein Kleeblatt.', w: ['Die Elefant haelt ein Kleeblatt.', 'Das Elefant haelt ein Kleeblatt.'] },
+      { c: 0, a: 'Der Elefant hält ein Kleeblatt.', w: ['Die Elefant hält ein Kleeblatt.', 'Das Elefant hält ein Kleeblatt.'] },
       { c: 1, a: 'Der Pinguin steht oben auf dem Blatt.', w: ['Die Pinguin steht oben.', 'Der Pinguin stehen oben.'] },
       { c: 7, a: 'Der Fuchs sitzt in der Mitte.', w: ['Die Fuchs sitzt in der Mitte.', 'Der Fuchs sitzen in der Mitte.'] }
     ]);
@@ -592,7 +592,7 @@ export const FigurenSatztheater = {
       tone: 'red',
       kicker: 'Satztheater',
       title: 'Welche Zeile ist sauber?',
-      text: 'Die Figur gibt den Satz vor. Waehle die korrekte Fassung.',
+      text: 'Die Figur gibt den Satz vor. Wähle die korrekte Fassung.',
       image: ANIMALS,
       body: `<div class="atelier-theater"><div class="atelier-theater-figure">${renderCharacterAvatar(set.c, 128)}</div><div class="atelier-theater-options">${shuffle([set.a, ...set.w]).map((line) => `<button type="button" data-answer="${esc(line)}">${esc(line)}</button>`).join('')}</div></div>`
     });
@@ -603,7 +603,7 @@ export const FigurenSatztheater = {
 export const WortkartenDomino = {
   id: 'wortkarten-domino',
   name_de: 'Wortkarten-Domino',
-  description: 'Wortkarten nach Anfangslaut und Laenge als Domino legen.',
+  description: 'Wortkarten nach Anfangslaut und Länge als Domino legen.',
   topics: ['alphabet', 'rechtschreibung', 'wortschatz'],
   supportsDirectPlay: true,
   directPlayDefaults: DEFAULTS,
@@ -614,7 +614,7 @@ export const WortkartenDomino = {
       tone: 'violet',
       kicker: 'Domino',
       title: 'Lege die S-Karten',
-      text: 'Alle Woerter beginnen mit S. Tippe sie von kurz und knapp bis lang.',
+      text: 'Alle Wörter beginnen mit S. Tippe sie von kurz und knapp bis lang.',
       body: `<div class="atelier-domino-track">${chain.map((_, i) => `<span data-slot="${i}"></span>`).join('')}</div><div class="atelier-sort-grid">${shuffle(chain).map((item) => `<button type="button" data-id="${item.id}">${thumb(item)}</button>`).join('')}</div>`
     });
     bindSequence(container, '.atelier-sort-grid button', chain, 'id', done);

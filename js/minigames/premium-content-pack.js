@@ -22,17 +22,17 @@ const OBJECTS = [
   { id: 'sonne', word: 'Sonne', article: 'die', clue: 'Der gelbe Kreis mit Strahlen.', image: WORD_CARD_A, x: 37, y: 14, topics: ['nomen', 'artikel', 'wortschatz'] },
   { id: 'stift', word: 'Stift', article: 'der', clue: 'Damit kann man schreiben oder malen.', image: WORD_CARD_A, x: 62, y: 13, topics: ['nomen', 'rechtschreibung', 'wortschatz'] },
   { id: 'mann', word: 'Mann', article: 'der', clue: 'Die Figur mit Brille und blauer Kleidung.', image: WORD_CARD_A, x: 86, y: 15, topics: ['nomen', 'artikel'] },
-  { id: 'schmetterling', word: 'Schmetterling', article: 'der', clue: 'Das Tier mit bunten Fluegeln.', image: WORD_CARD_A, x: 12, y: 64, topics: ['nomen', 'wortschatz'] },
+  { id: 'schmetterling', word: 'Schmetterling', article: 'der', clue: 'Das Tier mit bunten Flügeln.', image: WORD_CARD_A, x: 12, y: 64, topics: ['nomen', 'wortschatz'] },
   { id: 'schere', word: 'Schere', article: 'die', clue: 'Damit schneidet man Papier.', image: WORD_CARD_A, x: 37, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'maedchen', word: 'Mädchen', article: 'das', clue: 'Die kleine Figur mit gelbem Rock.', image: WORD_CARD_A, x: 62, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'katze', word: 'Katze', article: 'die', clue: 'Das Tier mit Schnurrhaaren und langem Schwanz.', image: WORD_CARD_A, x: 86, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'stuhl', word: 'Stuhl', article: 'der', clue: 'Darauf kann man sitzen.', image: WORD_CARD_B, x: 10, y: 13, topics: ['nomen', 'wortschatz'] },
-  { id: 'baum', word: 'Baum', article: 'der', clue: 'Er hat Stamm, Aeste und gruene Blaetter.', image: WORD_CARD_B, x: 36, y: 12, topics: ['nomen', 'artikel'] },
+  { id: 'baum', word: 'Baum', article: 'der', clue: 'Er hat Stamm, Äste und grüne Blätter.', image: WORD_CARD_B, x: 36, y: 12, topics: ['nomen', 'artikel'] },
   { id: 'junge', word: 'Junge', article: 'der', clue: 'Die kleine Figur in blauer Kleidung.', image: WORD_CARD_B, x: 62, y: 13, topics: ['nomen', 'artikel'] },
-  { id: 'apfel', word: 'Apfel', article: 'der', clue: 'Das rote Obst mit gruenem Blatt.', image: WORD_CARD_B, x: 87, y: 13, topics: ['nomen', 'artikel'] },
+  { id: 'apfel', word: 'Apfel', article: 'der', clue: 'Das rote Obst mit grünem Blatt.', image: WORD_CARD_B, x: 87, y: 13, topics: ['nomen', 'artikel'] },
   { id: 'frau', word: 'Frau', article: 'die', clue: 'Die Figur mit rotem Rock.', image: WORD_CARD_B, x: 10, y: 63, topics: ['nomen', 'artikel'] },
   { id: 'fisch', word: 'Fisch', article: 'der', clue: 'Das Tier schwimmt im Wasser.', image: WORD_CARD_B, x: 36, y: 63, topics: ['nomen', 'wortschatz'] },
-  { id: 'blume', word: 'Blume', article: 'die', clue: 'Sie hat eine rote Bluete und gruene Blaetter.', image: WORD_CARD_B, x: 62, y: 63, topics: ['nomen', 'artikel'] },
+  { id: 'blume', word: 'Blume', article: 'die', clue: 'Sie hat eine rote Blüte und grüne Blätter.', image: WORD_CARD_B, x: 62, y: 63, topics: ['nomen', 'artikel'] },
   { id: 'haus', word: 'Haus', article: 'das', clue: 'Darin kann eine Familie wohnen.', image: WORD_CARD_B, x: 87, y: 63, topics: ['nomen', 'artikel'] }
 ];
 
@@ -53,7 +53,7 @@ const STORY_SETS = [
     panels: [
       { text: 'Der Baum steht in der Mitte.', crop: '36% 12%' },
       { text: 'Der Apfel ist rot.', crop: '87% 13%' },
-      { text: 'Die Blume waechst.', crop: '62% 63%' },
+      { text: 'Die Blume wächst.', crop: '62% 63%' },
       { text: 'Das Haus ist am Ziel.', crop: '87% 63%' }
     ]
   },
@@ -71,10 +71,10 @@ const STORY_SETS = [
 
 const COMPOUNDS = [
   { left: 'Papier', right: 'Boot', answer: 'Papierboot', meaning: 'ein kleines gefaltetes Boot' },
-  { left: 'Haus', right: 'Tuer', answer: 'Haustuer', meaning: 'die Tuer eines Hauses' },
-  { left: 'Blumen', right: 'Vase', answer: 'Blumenvase', meaning: 'ein Gefaess fuer Blumen' },
+  { left: 'Haus', right: 'Tür', answer: 'Haustür', meaning: 'die Tür eines Hauses' },
+  { left: 'Blumen', right: 'Vase', answer: 'Blumenvase', meaning: 'ein Gefäß für Blumen' },
   { left: 'Schreib', right: 'Tisch', answer: 'Schreibtisch', meaning: 'ein Tisch zum Arbeiten' },
-  { left: 'Schluessel', right: 'Bund', answer: 'Schluesselbund', meaning: 'mehrere Schluessel zusammen' },
+  { left: 'Schlüssel', right: 'Bund', answer: 'Schlüsselbund', meaning: 'mehrere Schlüssel zusammen' },
   { left: 'Wasser', right: 'Farbe', answer: 'Wasserfarbe', meaning: 'Farbe zum Malen mit Wasser' },
   { left: 'Buch', right: 'Seite', answer: 'Buchseite', meaning: 'ein Blatt in einem Buch' },
   { left: 'Spiel', right: 'Figur', answer: 'Spielfigur', meaning: 'eine Figur auf dem Brett' }
@@ -83,10 +83,10 @@ const COMPOUNDS = [
 const DIALOGUES = [
   {
     characterIndex: 7,
-    role: 'Erzaehlerin',
-    line: 'Der Weg fuehrt ueber den Fluss. Was sagt die Figur passend?',
-    answer: 'Ich gehe vorsichtig ueber die Bruecke.',
-    options: ['Ich gehe vorsichtig ueber die Bruecke.', 'Gestern sind der Bruecke laut.', 'Die Bruecke gehen schnell.']
+    role: 'Erzählerin',
+    line: 'Der Weg führt über den Fluss. Was sagt die Figur passend?',
+    answer: 'Ich gehe vorsichtig über die Brücke.',
+    options: ['Ich gehe vorsichtig über die Brücke.', 'Gestern sind der Brücke laut.', 'Die Brücke gehen schnell.']
   },
   {
     characterIndex: 1,
@@ -104,7 +104,7 @@ const DIALOGUES = [
   },
   {
     characterIndex: 8,
-    role: 'Zeitwaechter',
+    role: 'Zeitwächter',
     line: 'Die Uhr zeigt den Start. Welche Verbform passt?',
     answer: 'Wir beginnen jetzt.',
     options: ['Wir beginnen jetzt.', 'Wir begann jetzt.', 'Wir beginnst jetzt.']
@@ -176,7 +176,7 @@ function objectOptions(target, key = 'word') {
 export const BildwortGalerie = {
   id: 'bildwort-galerie',
   name_de: 'Bildwort-Galerie',
-  description: 'Hochwertige Bildobjekte erkennen und das passende Wort waehlen.',
+  description: 'Hochwertige Bildobjekte erkennen und das passende Wort wählen.',
   topics: ['wortschatz', 'lesen', 'nomen'],
   supportsDirectPlay: true,
   directPlayDefaults: DIRECT_DEFAULTS,
@@ -191,7 +191,7 @@ export const BildwortGalerie = {
     scene(container, {
       tone: 'gold',
       kicker: 'Bildgalerie',
-      title: 'Welches Wort gehoert zum Bild?',
+      title: 'Welches Wort gehört zum Bild?',
       text: target.clue,
       image,
       body: `
@@ -274,7 +274,7 @@ export const ArtikelBildjagd = {
       tone: 'ochre',
       kicker: 'Artikelbild',
       title: `Welcher Artikel passt zu ${target.word}?`,
-      text: 'Sieh genau auf das markierte Objekt und waehle der, die oder das.',
+      text: 'Sieh genau auf das markierte Objekt und wähle der, die oder das.',
       image,
       body: `
         <div class="premium-image-stage">

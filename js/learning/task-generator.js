@@ -51,17 +51,17 @@ const TOPIC_MINIGAME_MAP = {
   adjektive:      ['wortarten-sprunglauf', 'wortarten-band', 'wortarten-orchester', 'wortfunkeln', 'satz-flickwerk', 'sentence-stacker', 'word-type-sort', 'adjective-painter', 'word-balance', 'bubble-burst'],
   artikel:        ['artikel-stempelstudio', 'artikel-sortierband', 'artikel-bildjagd', 'artikel-atelier', 'artikel-atelier', 'article-choice', 'article-cannon', 'gender-sort'],
   satzbau:        ['figuren-satztheater', 'satz-storyboard', 'dialog-spotlight', 'satz-flickwerk', 'satz-kompass', 'satz-kompass', 'sentence-stacker', 'sentence-stacker', 'sentence-order', 'sentence-train', 'word-stacker', 'sentence-scramble', 'sentence-bridge', 'sentence-architect', 'sentence-symphony'],
-  satzarten:      ['article-choice'],
-  lueckentexte:   ['fill-blanks', 'missing-letter'],
+  satzarten:      ['satz-kompass', 'figuren-satztheater', 'satz-storyboard'],
+  lueckentexte:   ['satz-flickwerk', 'satz-kompass', 'fehlerlupe'],
   rechtschreibung:['anfangsbuchstaben-lupe', 'anfangspaar-jagd', 'wortkarten-domino', 'buchstaben-magneten', 'fehlerlupe', 'spelling-detective', 'word-meteorites', 'lie-detector', 'anagram-blast', 'missing-letter', 'word-search-swipe', 'double-letter', 'capital-detective', 'mirror-word', 'letter-drop', 'word-star', 'slingshot-spelling', 'secret-agent-code', 'vowel-vacuum', 'word-puzzle-3x3', 'word-pyramid', 'spelling-bee-de', 'word-balloon', 'verbotener-buchstabe', 'wort-morph', 'forbidden_letter_trap', 'word_ending', 'word_length_hunt'],
   fehlerkorrektur:['fehlerlupe', 'spelling-detective', 'lie-detector', 'double-letter', 'capital-detective', 'grammar-ghost'],
-  gross_klein:    ['case-choice', 'capital-detective'],
+  gross_klein:    ['anfangsbuchstaben-lupe', 'fehlerlupe'],
   reime:          ['reim-memory-aquarell', 'reimwerk', 'reim-battle', 'rhyme-match', 'rhyme-memory', 'fill-the-poem', 'rhyme-rider'],
   lesen:          ['karten-klick-labor', 'kartenlupe-wortfang', 'wortkarten-blitzwahl', 'tierblatt-spurensuche', 'tiernamen-bingo', 'karten-memory-duo', 'alphabet-kartenreihe', 'anfangspaar-jagd', 'figuren-satztheater', 'wimmelbild-detektiv', 'satz-storyboard', 'dialog-spotlight', 'bildwort-galerie', 'satz-flickwerk', 'satz-kompass', 'wortfunkeln', 'scrap-hunt', 'scrap-hunt', 'fill-blanks', 'word-meteorites', 'cryptogram', 'hidden-object', 'adjective-painter', 'difference-detective', 'speed-flash', 'emoji-translator', 'word-clock', 'sentence-sense', 'story-builder', 'reading-race', 'comic-strip', 'german-idiom', 'password-crack', 'secret-agent-code', 'logic-ladder', 'sentence-sniper', 'idiom-island', 'proverb-path', 'detective-adventure', 'kitchen-chaos', 'sentence-symphony', 'dialogue-duel', 'mystery-box', 'definition-reverse'],
   wortschatz:     ['karten-klick-labor', 'kartenlupe-wortfang', 'wortkarten-blitzwahl', 'tierblatt-spurensuche', 'tiernamen-bingo', 'karten-memory-duo', 'artikel-sortierband', 'bildwort-galerie', 'wimmelbild-detektiv', 'kompositum-atelier', 'reim-memory-aquarell', 'wortfunkeln', 'reimwerk', 'scrap-hunt', 'scrap-hunt', 'word-type-sort', 'word-ninja', 'teakettle-detective', 'cryptogram', 'word-balance', 'memory-chain', 'hidden-object', 'synonym-snap', 'word-chain', 'hot-cold', 'opposite-racer', 'number-words', 'category-blitz', 'emoji-translator', 'definition-match', 'compound-meaning', 'german-idiom', 'word-chess', 'logic-ladder', 'mad-libs-de', 'word-match-fast', 'synonym-bridge', 'antonym-arch', 'word-detective', 'category-cannon', 'crossword-mini', 'detective-adventure', 'grammar-rpg', 'kitchen-chaos', 'word-alchemy', 'mystery-box', 'wort-stau', 'definition-reverse', 'synonym-flucht', 'gegensatz-zwang', 'doppel-kategorie', 'wort-kette', 'fuenf-sec-triple', 'verbotener-buchstabe', 'word_ending', 'word_length_hunt', 'forbidden_letter_trap', 'prefix_duel', 'suffix_duel'],
   silben:         ['silben-klatschkarten', 'silben-trommel', 'silbenstrom', 'syllable-fishing', 'syllable-fishing', 'syllable-counter', 'syllable-dj', 'syllable-stomp', 'silben-reflex', 'silben-tetris'],
   zeitformen:     ['verb-takt', 'time-machine', 'verb-pulse', 'tense-switcher', 'verb-forms', 'tense-tornado', 'time-traveler'],
-  satzzeichen:    ['punctuation-catcher', 'comma-king'],
+  satzzeichen:    ['fehlerlupe', 'satz-kompass'],
   zusammengesetzte_nomen: ['kompositum-atelier', 'compound-builder', 'compound-chain', 'split-the-word', 'compound-meaning', 'kompositum-maschine'],
   grammatik:      ['figuren-satztheater', 'dialog-spotlight', 'satz-storyboard', 'satz-flickwerk', 'wortarten-band', 'satz-kompass', 'verb-takt', 'fehlerlupe', 'sentence-stacker', 'preposition-world', 'verb-pulse', 'comma-king', 'question-word-match', 'modal-verb', 'adjective-endings', 'prefix-postfix', 'case-solver', 'grammar-ghost', 'prefix-power', 'suffix-sun', 'grammar-maze', 'detective-adventure', 'grammar-rpg', 'sentence-architect', 'sentence-symphony', 'time-traveler', 'dialogue-duel'],
   konzentration:  ['karten-klick-labor', 'kartenlupe-wortfang', 'wortkarten-blitzwahl', 'tierblatt-spurensuche', 'tiernamen-bingo', 'karten-memory-duo', 'wimmelbild-detektiv', 'reim-memory-aquarell', 'silben-trommel', 'scrap-hunt', 'memory-chain', 'abc-bubbles', 'word-labyrinth', 'speed-flash', 'color-words', 'mirror-word', 'letter-drop', 'word-puzzle-3x3', 'letter-bounce', 'grammar-rpg', 'mystery-box'],
@@ -69,7 +69,7 @@ const TOPIC_MINIGAME_MAP = {
   wortarten:      ['wortarten-sprunglauf', 'wortarten-band', 'wortarten-orchester', 'sentence-stacker', 'word-type-sort', 'word-ninja', 'whack-a-noun', 'bubble-burst', 'word-avalanche', 'word-chess', 'blitz-quiz', 'gravity-sort', 'mad-libs-de', 'tap-the-type', 'gender-gym', 'article-ace', 'word-fishing', 'suffix-sun', 'kitchen-chaos', 'mystery-box', 'verb-only', 'substantiv-only'],
   wortbildung:    ['buchstaben-magneten', 'word-alchemy', 'wort-evolution', 'silben-tetris', 'wort-schrumpfung', 'kompositum-maschine', 'wort-morph', 'word_ending', 'prefix_duel', 'suffix_duel'],
   // Default fallback
-  _default:       ['article-choice']
+  _default:       ['artikel-stempelstudio', 'karten-klick-labor', 'wortarten-sprunglauf']
 };
 
 const TOPIC_ALIASES = {
@@ -87,41 +87,19 @@ const FEATURED_MODE_MINIGAME_MAP = {
     'satz-storyboard',
     'dialog-spotlight',
     'buchstaben-magneten',
-    'word-meteorites',
-    'word-type-sort',
-    'wort-stau',
-    'reim-battle',
-    'buchstaben-duell',
-    'definition-reverse',
-    'anagramm-kampf',
-    'synonym-flucht',
-    'gegensatz-zwang',
-    'verbotener-buchstabe',
-    'wort-morph',
-    'wort-kette',
-    'fuenf-sec-triple',
-    'prefix_duel',
-    'suffix_duel'
+    'artikel-invaders',
+    'wortarten-sprunglauf',
+    'silben-beat-surfer',
+    'grammatik-bossfight'
   ],
   team: [
-    'wort-stau',
-    'kompositum-maschine',
-    'rollen-sprechen',
-    'taeusch-mich',
-    'dramatischer-monolog',
-    'reim-battle',
     'wimmelbild-detektiv',
     'satz-storyboard',
-    'synonym-flucht',
-    'gegensatz-zwang',
-    'verbotener-buchstabe',
-    'wort-morph',
-    'verb-only',
-    'substantiv-only',
-    'wort-kette',
-    'fuenf-sec-triple',
-    'prefix_duel',
-    'suffix_duel'
+    'dialog-spotlight',
+    'figuren-satztheater',
+    'kompositum-atelier',
+    'wortarten-orchester',
+    'reimwerk'
   ]
 };
 
@@ -175,7 +153,7 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
       .map((candidate) => normalizeTopicId(candidate))
       .filter((candidate) => TOPIC_MINIGAME_MAP[candidate]);
     if (validTopics.length === 0) {
-      // Fallback to article choice
+      // Fallback to a premium article task.
       validTopics.push('artikel');
     }
     topic = validTopics[Math.floor(Math.random() * validTopics.length)];

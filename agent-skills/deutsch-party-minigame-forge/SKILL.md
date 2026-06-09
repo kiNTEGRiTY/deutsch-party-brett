@@ -36,6 +36,7 @@ A board-ready minigame needs:
 - Promote a game into `BOARD_READY_MINIGAME_IDS` only after code review and runtime verification.
 - Keep `QUARANTINED_MINIGAME_IDS` out of board-launched task pools.
 - Prefer improving fewer games deeply over keeping hundreds of shallow modules.
+- When shrinking or expanding board-ready IDs, audit every `TOPIC_MINIGAME_MAP` topic so each active setup topic still resolves to at least one board-ready game or a deliberate premium fallback.
 
 ## Rewrite Workflow
 
