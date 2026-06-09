@@ -49,6 +49,8 @@ Before reporting a curation change:
 
 - Run `node --check js/minigames/quality-gate.js`.
 - Run `node --check js/learning/task-generator.js`.
+- Run `npm run validate:routing` to sample every setup topic through
+  `generateTask(...)` across normal, challenge, and team board field modes.
 - Sample every topic in `js/learning/topic-registry.js` through
   `generateTask(..., explicitTopic)` and confirm the chosen mini-game is
   board-ready.

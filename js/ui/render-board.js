@@ -153,7 +153,7 @@ export class BoardRenderer {
         <rect class="board-paper-sheet" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}"></rect>
         ${this._renderPaperTexture()}
         ${this._renderBoardLandmarks()}
-        ${this._renderFieldRouteBackground(fields)}
+        ${this._renderFunctionalFieldBackground(fields)}
       </g>
     `;
   }
@@ -163,9 +163,6 @@ export class BoardRenderer {
       <g class="board-paper-texture" aria-hidden="true">
         <path class="paper-wash paper-wash--top" d="M0 232C196 176 334 184 498 216C662 248 760 172 922 198C1084 224 1200 178 1360 196C1494 212 1578 186 1672 154V0H0Z"></path>
         <path class="paper-wash paper-wash--bottom" d="M0 783C166 740 330 736 502 772C672 808 788 744 960 766C1130 788 1244 720 1410 744C1536 762 1608 740 1672 710V941H0Z"></path>
-        <path class="paper-fiber" d="M102 104C294 78 476 116 660 92C840 68 1034 106 1220 78C1374 55 1515 76 1626 48"></path>
-        <path class="paper-fiber" d="M46 844C228 806 414 846 594 820C780 792 944 842 1138 808C1308 778 1476 802 1634 760"></path>
-        <path class="paper-fiber" d="M134 464C320 430 476 470 650 444C820 418 978 468 1158 436C1328 406 1470 434 1588 398"></path>
       </g>
     `;
   }
@@ -186,14 +183,11 @@ export class BoardRenderer {
     `;
   }
 
-  _renderFieldRouteBackground(fields) {
+  _renderFunctionalFieldBackground(fields) {
     return `
-      <g class="board-field-route-background" aria-hidden="true">
-        <g class="board-route-band-layer">
-          ${fields.slice(0, -1).map((field, index) => this._renderRouteBand(field, fields[index + 1])).join('')}
-        </g>
-        <g class="board-field-connector-layer">
-          ${fields.slice(0, -1).map((field, index) => this._renderFieldConnector(field, fields[index + 1])).join('')}
+      <g class="board-field-built-background" aria-hidden="true">
+        <g class="board-field-join-layer">
+          ${fields.slice(0, -1).map((field, index) => this._renderFieldJoin(field, fields[index + 1], index)).join('')}
         </g>
         <g class="board-field-socket-layer">
           ${fields.map((field) => this._renderFieldSocket(field)).join('')}
@@ -202,35 +196,30 @@ export class BoardRenderer {
     `;
   }
 
-  _renderRouteBand(from, to) {
+  _renderFieldJoin(from, to, index) {
     const midX = (from.x + to.x) / 2;
     const midY = (from.y + to.y) / 2;
     const dx = to.x - from.x;
     const dy = to.y - from.y;
-    const length = Math.max(76, Math.hypot(dx, dy) + 30);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const width = index % 3 === 0 ? 62 : 54;
+    const height = index % 2 === 0 ? 38 : 34;
+    const style = this._fieldStyle(to);
+    const tabPath = [
+      `M ${-width / 2 + 8} ${-height / 2}`,
+      `H ${width / 2 - 12}`,
+      `L ${width / 2 + 10} 0`,
+      `L ${width / 2 - 12} ${height / 2}`,
+      `H ${-width / 2 + 8}`,
+      `L ${-width / 2 - 6} 0`,
+      'Z'
+    ].join(' ');
 
     return `
-      <g class="route-band" transform="translate(${midX} ${midY}) rotate(${angle})">
-        <rect class="route-band-shadow" x="${-length / 2}" y="-51" width="${length}" height="102" rx="51"></rect>
-        <rect class="route-band-paper" x="${-length / 2}" y="-44" width="${length}" height="88" rx="44"></rect>
-        <rect class="route-band-wash" x="${-length / 2 + 14}" y="-28" width="${Math.max(28, length - 28)}" height="56" rx="28"></rect>
-      </g>
-    `;
-  }
-
-  _renderFieldConnector(from, to) {
-    const midX = (from.x + to.x) / 2;
-    const midY = (from.y + to.y) / 2;
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    const length = Math.max(40, Math.hypot(dx, dy) - 66);
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-    return `
-      <g class="field-connector" transform="translate(${midX} ${midY}) rotate(${angle})">
-        <rect class="field-connector-paper" x="${-length / 2}" y="-19" width="${length}" height="38" rx="19"></rect>
-        <path class="field-connector-thread" d="M ${-length / 2 + 13} 0 H ${length / 2 - 13}"></path>
+      <g class="field-join" transform="translate(${midX} ${midY}) rotate(${angle})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
+        <path class="field-join-shadow" d="${tabPath}" transform="translate(0 5)"></path>
+        <path class="field-join-paper" d="${tabPath}"></path>
+        <path class="field-join-arrow" d="M -10 -8 L 8 0 L -10 8"></path>
       </g>
     `;
   }
@@ -239,8 +228,8 @@ export class BoardRenderer {
     const style = this._fieldStyle(field);
     const isStart = field.id === 0;
     const isFinish = field.id === this.game.board.totalFields - 1;
-    const width = isStart || isFinish ? 178 : 146;
-    const height = isStart || isFinish ? 98 : 90;
+    const width = isStart || isFinish ? 214 : 168;
+    const height = isStart || isFinish ? 118 : 104;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const shape = this._paperTilePath(width, height);
 
@@ -300,12 +289,12 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
-    const tileWidth = isStart || isFinish ? 138 : 108;
-    const tileHeight = isStart || isFinish ? 76 : 64;
-    const badgeX = isStart || isFinish ? -36 : -31;
-    const badgeY = isStart || isFinish ? -26 : -22;
-    const indexX = isStart || isFinish ? 36 : 31;
-    const indexY = isStart || isFinish ? -26 : -22;
+    const tileWidth = isStart || isFinish ? 154 : 118;
+    const tileHeight = isStart || isFinish ? 86 : 72;
+    const badgeX = isStart || isFinish ? -42 : -34;
+    const badgeY = isStart || isFinish ? -29 : -25;
+    const indexX = isStart || isFinish ? 42 : 34;
+    const indexY = isStart || isFinish ? -29 : -25;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const shadowShape = this._paperTilePath(tileWidth, tileHeight);
     const washShape = this._paperTilePath(tileWidth + 8, tileHeight + 8);

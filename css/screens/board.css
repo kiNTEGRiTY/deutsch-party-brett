@@ -67,12 +67,11 @@
 
 .board-map-art--paper::before {
   background:
-    url("../../assets/img/premium/user-reference/word-card-crops/hund.jpg") 7% 77% / 136px auto no-repeat,
-    url("../../assets/img/premium/user-reference/word-card-crops/baum.jpg") 91% 72% / 126px auto no-repeat,
-    url("../../assets/img/premium/user-reference/word-card-crops/sonne.jpg") 60% 86% / 118px auto no-repeat,
-    url("../../assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg") 52% 50% / 900px auto no-repeat;
-  mix-blend-mode: multiply;
-  opacity: 0.105;
+    linear-gradient(90deg, rgba(93, 64, 35, 0.035) 1px, transparent 1px) 0 0 / 46px 100%,
+    linear-gradient(0deg, rgba(255, 250, 226, 0.2), rgba(78, 49, 24, 0.035)),
+    radial-gradient(ellipse at 18% 76%, rgba(106, 151, 89, 0.12), transparent 28%),
+    radial-gradient(ellipse at 84% 28%, rgba(81, 143, 166, 0.1), transparent 24%);
+  opacity: 0.8;
 }
 
 .board-map-art--paper::after {
@@ -110,65 +109,46 @@
   fill: rgba(118, 146, 84, 0.18);
 }
 
-.paper-fiber {
-  fill: none;
-  stroke: rgba(99, 68, 35, 0.09);
-  stroke-width: 4;
-  stroke-linecap: round;
-}
-
-.board-route-band-layer .route-band-shadow {
-  fill: rgba(64, 39, 19, 0.18);
-}
-
-.board-route-band-layer .route-band-paper {
-  fill: rgba(244, 220, 166, 0.96);
-  stroke: rgba(106, 70, 34, 0.34);
-  stroke-width: 7;
-}
-
-.board-route-band-layer .route-band-wash {
-  fill: rgba(255, 246, 206, 0.34);
-  stroke: rgba(255, 255, 255, 0.34);
-  stroke-width: 2;
-}
-
-.board-field-route-background {
+.board-field-built-background {
   pointer-events: none;
 }
 
-.board-field-connector-layer .field-connector-paper {
-  fill: rgba(198, 142, 73, 0.22);
-  stroke: rgba(117, 76, 35, 0.34);
-  stroke-width: 3.5;
-}
-
-.board-field-connector-layer .field-connector-thread {
-  fill: none;
-  stroke: rgba(102, 65, 31, 0.28);
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-dasharray: 1 18;
-}
-
-.board-field-socket-layer .field-socket-shadow {
+.board-field-join-layer .field-join-shadow {
   fill: rgba(58, 36, 18, 0.2);
 }
 
+.board-field-join-layer .field-join-paper {
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 22%, #ffe9aa);
+  stroke: rgba(98, 62, 29, 0.46);
+  stroke-width: 3.5;
+}
+
+.board-field-join-layer .field-join-arrow {
+  fill: none;
+  stroke: color-mix(in srgb, var(--field-deep, #7d552d) 74%, #3b2818);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.board-field-socket-layer .field-socket-shadow {
+  fill: rgba(58, 36, 18, 0.23);
+}
+
 .board-field-socket-layer .field-socket-wash {
-  fill: color-mix(in srgb, var(--field-accent, #ef705d) 30%, #fff0bc);
-  opacity: 0.86;
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 34%, #fff0bc);
+  opacity: 0.9;
 }
 
 .board-field-socket-layer .field-socket-paper {
-  fill: rgba(255, 239, 190, 0.86);
-  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 48%, #7d552d);
-  stroke-width: 5.5;
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 15%, #fff1bf);
+  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 54%, #7d552d);
+  stroke-width: 6.2;
 }
 
 .board-field-socket-layer .field-socket-grain {
   fill: none;
-  stroke: rgba(255, 252, 229, 0.46);
+  stroke: rgba(255, 252, 229, 0.56);
   stroke-width: 4;
   stroke-linecap: round;
 }
@@ -212,18 +192,18 @@
 }
 
 .board-field-node .field-shadow {
-  fill: rgba(54, 34, 18, 0.2);
+  fill: rgba(54, 34, 18, 0.22);
 }
 
 .board-field-node .field-wash {
-  fill: color-mix(in srgb, var(--field-accent, #ef705d) 38%, transparent);
-  opacity: 0.56;
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 42%, transparent);
+  opacity: 0.62;
 }
 
 .board-field-node .field-body {
-  fill: rgba(255, 240, 199, 0.88);
-  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 64%, #6f4a24);
-  stroke-width: 3.8;
+  fill: rgba(255, 244, 207, 0.94);
+  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 68%, #6f4a24);
+  stroke-width: 4.4;
 }
 
 .board-field-node .field-glaze {
@@ -1050,11 +1030,11 @@
 @media (max-width: 760px) {
   .board-map-art--paper::before {
     background:
-      url("../../assets/img/premium/user-reference/word-card-crops/hund.jpg") 10% 66% / 88px auto no-repeat,
-      url("../../assets/img/premium/user-reference/word-card-crops/baum.jpg") 92% 64% / 84px auto no-repeat,
-      url("../../assets/img/premium/user-reference/word-card-crops/sonne.jpg") 58% 83% / 84px auto no-repeat,
-      url("../../assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg") 50% 61% / 440px auto no-repeat;
-    opacity: 0.115;
+      linear-gradient(90deg, rgba(93, 64, 35, 0.035) 1px, transparent 1px) 0 0 / 34px 100%,
+      linear-gradient(0deg, rgba(255, 250, 226, 0.2), rgba(78, 49, 24, 0.035)),
+      radial-gradient(ellipse at 18% 76%, rgba(106, 151, 89, 0.12), transparent 28%),
+      radial-gradient(ellipse at 84% 28%, rgba(81, 143, 166, 0.1), transparent 24%);
+    opacity: 0.74;
   }
 
   .board-map-frame {

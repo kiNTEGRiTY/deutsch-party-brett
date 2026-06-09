@@ -7,7 +7,7 @@ import {
   BOARD_QUARANTINED_MINIGAME_IDS,
   BOARD_READY_MINIGAME_IDS
 } from '../js/minigames/quality-gate.js';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -19,6 +19,16 @@ const failures = [];
 
 function fail(message) {
   failures.push(message);
+}
+
+function collectJsFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = resolve(dir, entry.name);
+    if (entry.isDirectory()) {
+      return collectJsFiles(path);
+    }
+    return entry.isFile() && path.endsWith('.js') ? [path] : [];
+  });
 }
 
 function assertPremiumDirectGame(game, source) {
@@ -118,6 +128,13 @@ if (!menuRenderer.includes('getCuratedDirectPlayGroups')) {
 
   if (premiumContentPack.includes(token)) {
     fail(`Premium content games must not fall back to generic board/backdrop image "${token}".`);
+  }
+});
+
+collectJsFiles(resolve(rootDir, 'js')).forEach((filePath) => {
+  const source = readFileSync(filePath, 'utf8');
+  if (source.includes('game-feel-8')) {
+    fail(`JavaScript module still references stale cache token game-feel-8: ${filePath.replace(`${rootDir}/`, '')}.`);
   }
 });
 

@@ -94,6 +94,7 @@ function assertBoardGeometry() {
 function assertFunctionFirstRendering() {
   const renderer = readFileSync(resolve(rootDir, 'js/ui/render-board.js'), 'utf8');
   const layout = readFileSync(resolve(rootDir, 'js/engine/board-layouts.js'), 'utf8');
+  const boardCss = readFileSync(resolve(rootDir, 'css/screens/board.css'), 'utf8');
 
   if (BOARD_THEME.art?.boardBackdrop) {
     fail('BOARD_THEME.art.boardBackdrop must stay empty; the board must be drawn from field geometry.');
@@ -106,6 +107,18 @@ function assertFunctionFirstRendering() {
   if (renderer.includes('board-main-path') || renderer.includes('path-gold')) {
     fail('render-board.js must not draw a separate decorative path under the fields.');
   }
+
+  [
+    'board-route-band-layer',
+    'route-band',
+    'board-field-connector-layer',
+    'field-connector',
+    'paper-fiber'
+  ].forEach((token) => {
+    if (renderer.includes(token) || boardCss.includes(token)) {
+      fail(`Board rendering must not use old road/connector token "${token}"; the background must be field tiles first.`);
+    }
+  });
 
   [
     'board-hill',
@@ -122,13 +135,28 @@ function assertFunctionFirstRendering() {
   });
 
   if (
-    !renderer.includes('_renderFieldRouteBackground(fields)') ||
-    !renderer.includes('board-route-band-layer') ||
+    !renderer.includes('_renderFunctionalFieldBackground(fields)') ||
+    !renderer.includes('board-field-built-background') ||
+    !renderer.includes('board-field-join-layer') ||
     !renderer.includes('board-field-socket-layer') ||
-    !renderer.includes('board-field-connector-layer') ||
     !renderer.includes('board-field-layer')
   ) {
-    fail('render-board.js must draw route bands, sockets, connectors, and playable fields from the same field list.');
+    fail('render-board.js must draw field-built background, join markers, sockets, and playable fields from the same field list.');
+  }
+
+  [
+    'word-card-crops',
+    'contact-sheet',
+    'watercolor-premium-board',
+    'board-enchanted-backdrop'
+  ].forEach((token) => {
+    if (boardCss.includes(token)) {
+      fail(`board.css must not use backdrop/collage token "${token}" behind the board fields.`);
+    }
+  });
+
+  if (/board-map-art--paper::before[\s\S]{0,500}url\(/.test(boardCss)) {
+    fail('board.css must not place image backdrops behind the field-built board.');
   }
 
   if (
