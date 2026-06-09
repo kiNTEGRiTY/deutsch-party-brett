@@ -1,29 +1,29 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 const CATEGORY_BANK = {
   nomen: [
-    { label: 'Tiere', accepted: ['Hund', 'Katze', 'Pferd', 'Biber', 'Loewe', 'Hase', 'Fuchs', 'Ziege'] },
+    { label: 'Tiere', accepted: ['Hund', 'Katze', 'Pferd', 'Biber', 'Löwe', 'Hase', 'Fuchs', 'Ziege'] },
     { label: 'Dinge im Schulranzen', accepted: ['Heft', 'Stift', 'Radiergummi', 'Lineal', 'Buch', 'Mappe', 'Schere'] }
   ],
   verben: [
-    { label: 'Bewegungsverben', accepted: ['laufen', 'springen', 'rennen', 'kriechen', 'huepfen', 'tanzen', 'klettern'] },
-    { label: 'Leise Aktionen', accepted: ['fluestern', 'schleichen', 'lauschen', 'tippen', 'blinzeln', 'winken'] }
+    { label: 'Bewegungsverben', accepted: ['laufen', 'springen', 'rennen', 'kriechen', 'hüpfen', 'tanzen', 'klettern'] },
+    { label: 'Leise Aktionen', accepted: ['flüstern', 'schleichen', 'lauschen', 'tippen', 'blinzeln', 'winken'] }
   ],
   adjektive: [
-    { label: 'Gefuehle', accepted: ['froh', 'traurig', 'mutig', 'nervoes', 'stolz', 'ruhig', 'aufgeregt'] },
+    { label: 'Gefühle', accepted: ['froh', 'traurig', 'mutig', 'nervös', 'stolz', 'ruhig', 'aufgeregt'] },
     { label: 'Wetter', accepted: ['windig', 'sonnig', 'neblig', 'regnerisch', 'warm', 'kalt'] }
   ],
   lesen: [
-    { label: 'Woerter aus Abenteuerbuechern', accepted: ['Schatz', 'Karte', 'Burg', 'Drache', 'Fluss', 'Portal', 'Bruecke'] },
-    { label: 'Woerter aus Maerchen', accepted: ['Krone', 'Hexe', 'Spiegel', 'Schloss', 'Kutsche', 'Wald', 'Zauber'] }
+    { label: 'Wörter aus Abenteuerbüchern', accepted: ['Schatz', 'Karte', 'Burg', 'Drache', 'Fluss', 'Portal', 'Brücke'] },
+    { label: 'Wörter aus Märchen', accepted: ['Krone', 'Hexe', 'Spiegel', 'Schloss', 'Kutsche', 'Wald', 'Zauber'] }
   ],
   wortschatz: [
     { label: 'Alles zum Camping', accepted: ['Zelt', 'Lampe', 'Rucksack', 'Feuer', 'Karte', 'Seil', 'Tasse', 'Schlafsack'] },
-    { label: 'Dinge in der Kueche', accepted: ['Topf', 'Pfanne', 'Loeffel', 'Teller', 'Tasse', 'Mixer', 'Schale'] }
+    { label: 'Dinge in der Küche', accepted: ['Topf', 'Pfanne', 'Löffel', 'Teller', 'Tasse', 'Mixer', 'Schale'] }
   ],
   _default: [
     { label: 'Nomen im Alltag', accepted: ['Haus', 'Auto', 'Baum', 'Lampe', 'Tasche', 'Ball', 'Fenster', 'Stuhl'] },
-    { label: 'Verben fuer Bewegung', accepted: ['laufen', 'springen', 'drehen', 'schieben', 'tanzen', 'gehen'] }
+    { label: 'Verben für Bewegung', accepted: ['laufen', 'springen', 'drehen', 'schieben', 'tanzen', 'gehen'] }
   ]
 };
 
@@ -43,7 +43,7 @@ function chooseCategory(topic) {
 export const WortStau = {
   id: 'wort-stau',
   name_de: 'Wort-Stau',
-  description: 'Unter Zeitdruck moeglichst viele saubere Treffer in einer Kategorie liefern.',
+  description: 'Unter Zeitdruck möglichst viele saubere Treffer in einer Kategorie liefern.',
   topics: ['wortschatz', 'lesen', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -242,7 +242,7 @@ export const WortStau = {
         </div>
 
         <div class="word-stau-entry">
-          <input id="wort-stau-input" class="solve-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Naechstes Wort...">
+          <input id="wort-stau-input" class="solve-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Nächstes Wort...">
           <button class="btn btn-secondary" id="wort-stau-submit" type="button">Wort rein</button>
         </div>
 

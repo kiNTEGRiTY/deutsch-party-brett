@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -20,7 +20,7 @@ const SYLLABLE_ITEMS = [
   { word: 'Abenteuer', beats: 4 }
 ];
 
-const MAGNET_WORDS = ['Feder', 'Wiese', 'Blume', 'Karte', 'Bruecke', 'Wolke'];
+const MAGNET_WORDS = ['Feder', 'Wiese', 'Blume', 'Karte', 'Brücke', 'Wolke'];
 
 const SORT_ITEMS = [
   { word: 'laufen', type: 'Verb' },
@@ -105,7 +105,7 @@ function renderScene(container, { tone, kicker, title, text, body }) {
 export const SilbenTrommel = {
   id: 'silben-trommel',
   name_de: 'Silben-Trommel',
-  description: 'Silben als echte Trommelschlaege zaehlen.',
+  description: 'Silben als echte Trommelschläge zählen.',
   topics: ['silben', 'konzentration'],
   supportsDirectPlay: true,
   directPlayDefaults: DIRECT_DEFAULTS,
@@ -149,8 +149,8 @@ export const SilbenTrommel = {
             <strong>Trommeln</strong>
           </button>
           <div class="motion-actions">
-            <button class="motion-light-btn" type="button" data-reset>Zurueck</button>
-            <button class="motion-primary-btn" type="button" data-check>Pruefen</button>
+            <button class="motion-light-btn" type="button" data-reset>Zurück</button>
+            <button class="motion-primary-btn" type="button" data-check>Prüfen</button>
           </div>
         </div>
       `
@@ -245,7 +245,7 @@ export const BuchstabenMagneten = {
 export const WortartenBand = {
   id: 'wortarten-band',
   name_de: 'Wortarten-Band',
-  description: 'Ein laufendes Sortierband fuer Nomen, Verben und Adjektive.',
+  description: 'Ein laufendes Sortierband für Nomen, Verben und Adjektive.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
   directPlayDefaults: DIRECT_DEFAULTS,
@@ -272,8 +272,8 @@ export const WortartenBand = {
     renderScene(container, {
       tone: 'red',
       kicker: 'Sortierband',
-      title: 'Wohin gehoert das Wort?',
-      text: 'Das Band laeuft weiter, wenn die Wortart stimmt.',
+      title: 'Wohin gehört das Wort?',
+      text: 'Das Band läuft weiter, wenn die Wortart stimmt.',
       body: `
         <div class="motion-progress">${items.map(() => '<span></span>').join('')}</div>
         <div class="motion-conveyor">
@@ -417,7 +417,7 @@ export const SatzFlickwerk = {
       tone: 'ochre',
       kicker: 'Flickwerk',
       title: 'Setze den Satz zusammen',
-      text: 'Der richtige Flicken schliesst die Luecke sauber.',
+      text: 'Der richtige Flicken schließt die Lücke sauber.',
       body: `
         <div class="motion-sentence">
           <span>${escapeHtml(item.before)}</span>

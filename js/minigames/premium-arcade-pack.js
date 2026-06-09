@@ -1,5 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
-import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+import { renderCharacterAvatar } from '../ui/characters.js?v=content-card-material-50';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -27,6 +28,21 @@ const WORD_TYPES = [
   { word: 'leise', type: 'Adjektiv', hint: 'Wie ist etwas?' }
 ];
 
+const SNOW_TARGET_POSITIONS = [
+  { x: 18, y: 35, mobileX: 25, mobileY: 25 },
+  { x: 37, y: 31, mobileX: 73, mobileY: 25 },
+  { x: 61, y: 30, mobileX: 25, mobileY: 34 },
+  { x: 82, y: 34, mobileX: 73, mobileY: 34 },
+  { x: 25, y: 51, mobileX: 25, mobileY: 43 },
+  { x: 48, y: 48, mobileX: 73, mobileY: 43 },
+  { x: 70, y: 50, mobileX: 25, mobileY: 52 },
+  { x: 88, y: 57, mobileX: 73, mobileY: 52 },
+  { x: 34, y: 68, mobileX: 25, mobileY: 61 },
+  { x: 58, y: 66, mobileX: 73, mobileY: 61 },
+  { x: 76, y: 72, mobileX: 54, mobileY: 70 },
+  { x: 45, y: 80, mobileX: 73, mobileY: 70 }
+];
+
 const ARTICLES = [
   { word: 'Hund', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/hund.jpg' },
   { word: 'Sonne', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/sonne.jpg' },
@@ -34,7 +50,7 @@ const ARTICLES = [
   { word: 'Mann', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/mann.jpg' },
   { word: 'Schmetterling', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/schmetterling.jpg' },
   { word: 'Schere', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/schere.jpg' },
-  { word: 'Maedchen', answer: 'das', image: 'assets/img/premium/user-reference/word-card-crops/maedchen.jpg' },
+  { word: 'Mädchen', answer: 'das', image: 'assets/img/premium/user-reference/word-card-crops/maedchen.jpg' },
   { word: 'Katze', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/katze.jpg' },
   { word: 'Stuhl', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/stuhl.jpg' },
   { word: 'Baum', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/baum.jpg' },
@@ -61,7 +77,7 @@ const SENTENCES = [
   ['Mila', 'findet', 'eine', 'rote', 'Blume'],
   ['Am', 'Fluss', 'steht', 'ein', 'alter', 'Baum'],
   ['Wir', 'bauen', 'einen', 'klaren', 'Satz'],
-  ['Die', 'Katze', 'schlaeft', 'auf', 'dem', 'Stuhl']
+  ['Die', 'Katze', 'schläft', 'auf', 'dem', 'Stuhl']
 ];
 
 const BOSS_QUESTIONS = [
@@ -100,6 +116,30 @@ const MAZE_TRAPS = [
 
 const WORD_TYPE_LABELS = ['Nomen', 'Verb', 'Adjektiv'];
 
+const WORD_TYPE_CONFIG = [
+  {
+    key: 'nomen',
+    label: 'Nomen',
+    topic: 'nomen',
+    rule: 'Nomen benennen Menschen, Tiere, Dinge oder Gedanken. Sie können einen Artikel haben.',
+    cue: 'Namenwort'
+  },
+  {
+    key: 'verben',
+    label: 'Verb',
+    topic: 'verben',
+    rule: 'Verben sagen, was jemand tut oder was geschieht. Man kann sie beugen.',
+    cue: 'Tunwort'
+  },
+  {
+    key: 'adjektive',
+    label: 'Adjektiv',
+    topic: 'adjektive',
+    rule: 'Adjektive beschreiben, wie etwas ist. Sie passen zu Fragen wie: Wie ist es?',
+    cue: 'Wie-Wort'
+  }
+];
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -130,6 +170,19 @@ function roundCount(task, fallback = 7) {
   return clamp(Number(task.partyConfig?.rounds || task.rounds || fallback), 4, 10);
 }
 
+function activeCharacterIndex(task, fallbackIndex = 0) {
+  const players = Array.isArray(task.players) ? task.players : [];
+  const activePlayer = players.find((player) => player.id === task.currentPlayerId) || players[0];
+  if (Number.isFinite(activePlayer?.colorIndex)) {
+    return activePlayer.colorIndex;
+  }
+  return fallbackIndex;
+}
+
+function renderTaskCharacterAvatar(task, fallbackIndex, size) {
+  return renderCharacterAvatar(activeCharacterIndex(task, fallbackIndex), size);
+}
+
 function resultFrom(score, maxScore, misses = 0) {
   const percentage = clamp(Math.round((score / Math.max(maxScore, 1)) * 100) - misses * 4, 0, 100);
   return {
@@ -149,6 +202,73 @@ function buildHud({ kicker, title, status }) {
       <em>${escapeHtml(status)}</em>
     </div>
   `;
+}
+
+function difficultyKeyFromTask(task) {
+  const level = Number(task.difficulty?.languageComplexity ?? 2);
+  if (level <= 2) return 'easy';
+  if (level <= 4) return 'medium';
+  return 'hard';
+}
+
+function uniqueWords(words) {
+  return [...new Set(words.map((word) => String(word || '').trim()).filter(Boolean))];
+}
+
+function wordTypeConfigForTopic(topic) {
+  return WORD_TYPE_CONFIG.find((entry) => entry.topic === topic || entry.key === topic || entry.label.toLowerCase() === topic);
+}
+
+function wordTypeLabelForTask(task) {
+  return wordTypeConfigForTopic(task?.topic)?.label || null;
+}
+
+function makeWordTypeItem(word, config) {
+  return {
+    word,
+    type: config.label,
+    hint: 'Wortkarte',
+    cue: config.cue,
+    explanation: config.rule
+  };
+}
+
+function buildWordTypeDeck(task) {
+  const difficultyKey = difficultyKeyFromTask(task);
+  const contentWords = Array.isArray(task.content?.words) ? task.content.words : [];
+  const focusConfig = wordTypeConfigForTopic(task.topic);
+
+  return WORD_TYPE_CONFIG.reduce((deck, config) => {
+    const configuredWords = [
+      ...(WORTARTEN_CONTENT[config.key]?.[difficultyKey] || []),
+      ...(difficultyKey !== 'easy' ? WORTARTEN_CONTENT[config.key]?.easy || [] : [])
+    ];
+    const topicWords = focusConfig?.label === config.label ? contentWords : [];
+    const words = uniqueWords([...topicWords, ...configuredWords, ...WORD_TYPES.filter((item) => item.type === config.label).map((item) => item.word)]);
+    deck[config.label] = words.map((word) => makeWordTypeItem(word, config));
+    return deck;
+  }, {});
+}
+
+function buildTargetTypeSequence(task, total) {
+  const focusConfig = wordTypeConfigForTopic(task.topic);
+  const rotation = shuffle(WORD_TYPE_CONFIG.map((entry) => entry.label));
+  return Array.from({ length: total }, (_, index) => {
+    if (focusConfig && index % 2 === 0) {
+      return focusConfig.label;
+    }
+    return rotation[index % rotation.length];
+  });
+}
+
+function takeWordTypeItem(deck, type, usedWords) {
+  const entries = deck[type] || [];
+  const available = shuffle(entries.filter((item) => !usedWords.has(`${item.type}:${item.word}`)));
+  const item = available[0] || pick(entries);
+  if (item) {
+    usedWords.add(`${item.type}:${item.word}`);
+  }
+  return item;
 }
 
 function makeCleanupBag() {
@@ -202,13 +322,18 @@ export const WortartenSprunglauf = {
     let heroLane = 1;
     let done = false;
 
-    const lanes = ['Oben', 'Mitte', 'Unten'];
+    const deck = buildWordTypeDeck(task);
+    const targetTypes = buildTargetTypeSequence(task, total);
+    const usedWords = new Set();
 
     const finish = () => {
       if (done) return;
       done = true;
       SoundManager.play(score >= Math.ceil(total * 0.75) ? 'finish' : 'failSoft');
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(score, total, misses)), 760));
+      cleanup.timer(setTimeout(() => onComplete({
+        ...resultFrom(score, total, misses),
+        details: { score, misses, total, topic: 'wortarten' }
+      }), 760));
     };
 
     const renderRound = () => {
@@ -217,9 +342,13 @@ export const WortartenSprunglauf = {
         return;
       }
 
-      const targetType = ['Nomen', 'Verb', 'Adjektiv'][round % 3];
-      const correct = pick(WORD_TYPES.filter((item) => item.type === targetType));
-      const wrongPool = shuffle(WORD_TYPES.filter((item) => item.type !== targetType)).slice(0, 2);
+      const targetType = targetTypes[round] || pick(WORD_TYPE_LABELS);
+      const targetConfig = WORD_TYPE_CONFIG.find((entry) => entry.label === targetType) || WORD_TYPE_CONFIG[0];
+      const correct = takeWordTypeItem(deck, targetType, usedWords);
+      const wrongPool = shuffle(WORD_TYPE_LABELS.filter((type) => type !== targetType))
+        .map((type) => takeWordTypeItem(deck, type, usedWords))
+        .filter(Boolean)
+        .slice(0, 2);
       const platforms = shuffle([correct, ...wrongPool]).map((item, index) => ({
         ...item,
         lane: index
@@ -236,14 +365,19 @@ export const WortartenSprunglauf = {
           <div class="arcade-runner-stage">
             <div class="arcade-parallax arcade-parallax--back"></div>
             <div class="arcade-runner-hitline"></div>
+            <div class="arcade-runner-target">
+              <span>Gesucht</span>
+              <strong>${escapeHtml(targetType)}</strong>
+              <p>${escapeHtml(targetConfig.rule)}</p>
+            </div>
             <div class="arcade-runner-hero" data-hero-lane="${heroLane}">
-              ${renderCharacterAvatar(4, 78)}
+              ${renderTaskCharacterAvatar(task, 4, 78)}
               <span></span>
             </div>
             ${platforms.map((item, index) => `
-              <button class="arcade-platform arcade-platform--lane-${index}" type="button" data-type="${escapeHtml(item.type)}">
+              <button class="arcade-platform arcade-platform--lane-${index}" type="button" data-type="${escapeHtml(item.type)}" data-cue="${escapeHtml(item.cue)}" data-explanation="${escapeHtml(item.explanation)}" aria-label="${escapeHtml(item.word)}">
                 <span>${escapeHtml(item.word)}</span>
-                <small>${escapeHtml(item.type)}</small>
+                <small>${escapeHtml(item.hint || 'Wortkarte')}</small>
               </button>
             `).join('')}
             <div class="arcade-runner-help">Tippe die richtige Plattform, der Charakter springt dorthin.</div>
@@ -280,12 +414,18 @@ export const WortartenSprunglauf = {
             ? `Treffer! ${score + 1}/${total}`
             : `Falsch: ${button.dataset.type || 'Auswahl'} statt ${targetType}`;
         }
+
+        const smallLabel = button.querySelector('small');
+        if (smallLabel) {
+          smallLabel.textContent = button.dataset.type || targetType;
+        }
+
         if (stage) {
           const feedback = document.createElement('div');
           feedback.className = `arcade-feedback ${hit ? 'is-hit' : 'is-miss'}`;
           feedback.innerHTML = hit
-            ? `<strong>Treffer!</strong><span>${escapeHtml(word)} ist ${escapeHtml(targetType)}</span>`
-            : `<strong>Noch nicht.</strong><span>Gesucht war ${escapeHtml(targetType)}</span>`;
+            ? `<strong>Treffer!</strong><span>${escapeHtml(word)} ist ${escapeHtml(targetType)}. ${escapeHtml(button.dataset.explanation || '')}</span>`
+            : `<strong>Noch nicht.</strong><span>${escapeHtml(word)} ist ${escapeHtml(button.dataset.type || 'eine andere Wortart')}. Gesucht war ${escapeHtml(targetType)}.</span>`;
           stage.appendChild(feedback);
         }
         SoundManager.play(hit ? 'pop' : 'error');
@@ -309,10 +449,10 @@ export const WortartenSprunglauf = {
 export const SchneeballWortschlacht = {
   id: 'schneeball-wortschlacht',
   name_de: 'Schneeball-Wortschlacht',
-  description: 'Ego-Shooter-Gefuehl ohne Gewalt: nur die passenden Wortarten mit Schneebaellen treffen.',
+  description: 'Ego-Shooter-Gefühl ohne Gewalt: nur die passenden Wortarten mit Schneebällen treffen.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
-  usesInternalTimer: true,
+  usesInternalTimer: false,
   directPlayDefaults: DIRECT_DEFAULTS,
   defaultRounds: 8,
   mascotIndex: 1,
@@ -320,21 +460,31 @@ export const SchneeballWortschlacht = {
   setup(container, task, onComplete) {
     SoundManager.play('gameStart');
     const cleanup = makeCleanupBag();
-    const targetType = pick(['Nomen', 'Verb', 'Adjektiv']);
-    const total = Math.max(7, roundCount(task, 8));
+    const focusConfig = wordTypeConfigForTopic(task.topic);
+    const targetType = focusConfig?.label || pick(WORD_TYPE_LABELS);
+    const wordDeck = buildWordTypeDeck(task);
+    const requestedCorrect = roundCount(task, 8);
+    const correctPool = wordDeck[targetType]?.length
+      ? wordDeck[targetType]
+      : WORD_TYPES.filter((item) => item.type === targetType);
+    const correctTargets = shuffle(correctPool).slice(0, requestedCorrect);
+    const targetGoal = correctTargets.length;
+    const decoyTargets = WORD_TYPE_LABELS
+      .filter((type) => type !== targetType)
+      .flatMap((type) => wordDeck[type]?.length ? wordDeck[type] : WORD_TYPES.filter((item) => item.type === type));
     const targets = shuffle([
-      ...shuffle(WORD_TYPES.filter((item) => item.type === targetType)).slice(0, 5),
-      ...shuffle(WORD_TYPES.filter((item) => item.type !== targetType)).slice(0, 7)
+      ...correctTargets,
+      ...shuffle(decoyTargets).slice(0, 7)
     ]).slice(0, 12);
     let hits = 0;
     let misses = 0;
-    let remainingCorrect = targets.filter((target) => target.type === targetType).length;
+    let remainingCorrect = targetGoal;
     let done = false;
 
     const finish = () => {
       if (done) return;
       done = true;
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(hits, Math.min(total, hits + remainingCorrect), misses)), 680));
+      cleanup.timer(setTimeout(() => onComplete(resultFrom(hits, targetGoal, misses)), 680));
     };
 
     container.innerHTML = `
@@ -342,19 +492,19 @@ export const SchneeballWortschlacht = {
         ${buildHud({
           kicker: 'Schneeball-Arena',
           title: `Triff nur: ${targetType}`,
-          status: `Treffer ${hits}/${Math.min(total, remainingCorrect)}`
+          status: `Treffer ${hits}/${targetGoal}`
         })}
         <div class="snow-arena">
           <div class="snow-crosshair"></div>
           <div class="snow-horizon"></div>
           ${targets.map((target, index) => `
-            <button class="snow-target snow-target--${index % 5}" type="button" data-type="${escapeHtml(target.type)}" style="--x:${8 + (index * 17) % 82}%; --y:${18 + (index * 23) % 58}%;">
+            <button class="snow-target snow-target--${index % 5}" type="button" data-type="${escapeHtml(target.type)}" style="--x:${SNOW_TARGET_POSITIONS[index].x}%; --y:${SNOW_TARGET_POSITIONS[index].y}%; --mobile-x:${SNOW_TARGET_POSITIONS[index].mobileX}%; --mobile-y:${SNOW_TARGET_POSITIONS[index].mobileY}%;">
               <span>${escapeHtml(target.word)}</span>
               <small>${escapeHtml(target.type)}</small>
             </button>
           `).join('')}
           <div class="snow-blaster">
-            ${renderCharacterAvatar(1, 74)}
+            ${renderTaskCharacterAvatar(task, 1, 74)}
             <span>Schneeball</span>
           </div>
         </div>
@@ -380,12 +530,11 @@ export const SchneeballWortschlacht = {
           misses += 1;
           cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 460));
         }
-        if (hudStatus) hudStatus.textContent = `Treffer ${hits}/${Math.min(total, hits + remainingCorrect)}`;
-        if (hits >= total || remainingCorrect <= 0) finish();
+        if (hudStatus) hudStatus.textContent = `Treffer ${hits}/${targetGoal}`;
+        if (hits >= targetGoal || remainingCorrect <= 0) finish();
       });
     });
 
-    cleanup.timer(setTimeout(finish, 26000));
     return () => cleanup.clear();
   }
 };
@@ -393,7 +542,7 @@ export const SchneeballWortschlacht = {
 export const ArtikelGateRunner = {
   id: 'artikel-gate-runner',
   name_de: 'Artikel-Gate-Runner',
-  description: 'Runner mit drei Toren: der, die oder das im richtigen Moment waehlen.',
+  description: 'Runner mit drei Toren: der, die oder das im richtigen Moment wählen.',
   topics: ['artikel', 'nomen'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -423,7 +572,7 @@ export const ArtikelGateRunner = {
         <div class="arcade-game arcade-game--gates">
           ${buildHud({
             kicker: 'Gate Runner',
-            title: `Artikel fuer: ${item.word}`,
+            title: `Artikel für: ${item.word}`,
             status: `${index + 1}/${questions.length} · ${score} Treffer`
           })}
           <div class="gate-road" data-lane="${lane}">
@@ -439,7 +588,7 @@ export const ArtikelGateRunner = {
             </div>
             <div class="gate-start-flag" aria-hidden="true">Start</div>
             <div class="gate-finish-banner" aria-hidden="true">Artikel-Tore</div>
-            <div class="gate-runner">${renderCharacterAvatar(3, 116)}<span></span><i></i></div>
+            <div class="gate-runner">${renderTaskCharacterAvatar(task, 3, 116)}<span></span><i></i></div>
             ${['der', 'die', 'das'].map((article, gateIndex) => `
               <button class="gate-option gate-option--${gateIndex}" type="button" data-answer="${article}">
                 <strong>${article}</strong>
@@ -476,7 +625,7 @@ export const ArtikelGateRunner = {
           feedback.className = `gate-feedback ${hit ? 'is-hit' : 'is-miss'}`;
           feedback.innerHTML = hit
             ? `<strong>Tor offen!</strong><span>${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`
-            : `<strong>Tor klemmt.</strong><span>Richtig waere: ${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`;
+            : `<strong>Tor klemmt.</strong><span>Richtig wäre: ${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`;
           road.appendChild(feedback);
         }
         score += hit ? 1 : 0;
@@ -536,6 +685,9 @@ export const SilbenBeatSurfer = {
           })}
           <div class="beat-stage">
             <div class="beat-wave"><span></span></div>
+            <div class="beat-surfer-rider" aria-hidden="true">
+              ${renderTaskCharacterAvatar(task, 7, 76)}
+            </div>
             <div class="beat-word">${escapeHtml(item.word)}</div>
             <div class="beat-pads">
               ${[1, 2, 3, 4].map((beat) => `
@@ -572,7 +724,7 @@ export const SilbenBeatSurfer = {
 export const SatzJetpack = {
   id: 'satz-jetpack',
   name_de: 'Satz-Jetpack',
-  description: 'Baue Saetze im Flug: sammle die Woerter in richtiger Reihenfolge, bevor der Treibstoff sinkt.',
+  description: 'Baue Sätze im Flug: sammle die Wörter in richtiger Reihenfolge, bevor der Treibstoff sinkt.',
   topics: ['satzbau', 'lesen', 'grammatik'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -603,11 +755,11 @@ export const SatzJetpack = {
         ${buildHud({
           kicker: 'Jetpack',
           title: 'Sammle den Satz in Reihenfolge',
-          status: `${current}/${sentence.length} Woerter`
+          status: `${current}/${sentence.length} Wörter`
         })}
         <div class="jet-stage">
           <div class="jet-fuel"><span style="width:${fuel}%"></span></div>
-          <div class="jet-hero">${renderCharacterAvatar(8, 84)}<i></i></div>
+          <div class="jet-hero">${renderTaskCharacterAvatar(task, 8, 84)}<i></i></div>
           <div class="jet-slots">${sentence.map((_, index) => `<span data-slot="${index}"></span>`).join('')}</div>
           ${words.map((entry, index) => `
             <button class="jet-word jet-word--${index % 6}" type="button" data-index="${entry.index}">
@@ -621,7 +773,7 @@ export const SatzJetpack = {
     const updateHud = () => {
       const status = container.querySelector('.arcade-hud em');
       const fuelBar = container.querySelector('.jet-fuel span');
-      if (status) status.textContent = `${current}/${sentence.length} Woerter`;
+      if (status) status.textContent = `${current}/${sentence.length} Wörter`;
       if (fuelBar) fuelBar.style.width = `${fuel}%`;
     };
 
@@ -683,10 +835,18 @@ export const WortLabyrinthJagd = {
   setup(container, task, onComplete) {
     SoundManager.play('gameStart');
     const cleanup = makeCleanupBag();
-    const targetType = WORD_TYPE_LABELS[Math.floor(Math.random() * WORD_TYPE_LABELS.length)];
-    const targetWords = shuffle(WORD_TYPES.filter((entry) => entry.type === targetType)).slice(0, 6);
-    const decoyWords = shuffle(WORD_TYPES.filter((entry) => entry.type !== targetType)).slice(0, 6);
-    const tokens = shuffle([...targetWords, ...decoyWords]).map((entry, index) => ({
+    const deck = buildWordTypeDeck(task);
+    const usedWords = new Set();
+    const targetType = wordTypeLabelForTask(task) || pick(WORD_TYPE_LABELS);
+    const targetGoal = clamp(Number(task.partyConfig?.rounds || task.rounds || 5), 4, 6);
+    const decoyCount = MAZE_WORD_SPOTS.length - targetGoal;
+    const targetWords = Array.from({ length: targetGoal }, () => takeWordTypeItem(deck, targetType, usedWords)).filter(Boolean);
+    const decoyTypes = shuffle(WORD_TYPE_LABELS.filter((type) => type !== targetType));
+    const decoyWords = Array.from({ length: decoyCount }, (_, index) => {
+      const decoyType = decoyTypes[index % decoyTypes.length] || pick(WORD_TYPE_LABELS.filter((type) => type !== targetType));
+      return takeWordTypeItem(deck, decoyType, usedWords);
+    }).filter(Boolean);
+    const tokens = shuffle([...targetWords, ...decoyWords]).slice(0, MAZE_WORD_SPOTS.length).map((entry, index) => ({
       ...entry,
       id: `maze-token-${index}`,
       x: MAZE_WORD_SPOTS[index][0],
@@ -697,6 +857,8 @@ export const WortLabyrinthJagd = {
     let score = 0;
     let misses = 0;
     let done = false;
+    let timerStarted = false;
+    let remainingSeconds = clamp(Number(task.timerSeconds || task.partyConfig?.timeLimitSec || DIRECT_DEFAULTS.solo_arcade.timeLimitSec), 18, 60);
 
     const targetCount = tokens.filter((token) => token.type === targetType).length;
     const cellHtml = MAZE_MAP.map((row, y) => [...row].map((cell, x) => `
@@ -708,7 +870,7 @@ export const WortLabyrinthJagd = {
         ${buildHud({
           kicker: 'Labyrinth',
           title: `Sammle: ${targetType}`,
-          status: `0/${targetCount} · Pfeile oder Buttons`
+          status: `0/${targetCount} · Timer startet beim ersten Zug`
         })}
         <div class="maze-stage">
           <div class="maze-grid">
@@ -721,7 +883,7 @@ export const WortLabyrinthJagd = {
               </button>
             `).join('')}
             ${MAZE_TRAPS.map(([x, y], index) => `<span class="maze-chaser maze-chaser--${index}" style="--c:${x + 1}; --r:${y + 1};"></span>`).join('')}
-            <div class="maze-player" style="--c:${player.x + 1}; --r:${player.y + 1};">${renderCharacterAvatar(2, 60)}</div>
+            <div class="maze-player" style="--c:${player.x + 1}; --r:${player.y + 1};">${renderTaskCharacterAvatar(task, 2, 60)}</div>
           </div>
           <div class="maze-controls" aria-label="Labyrinth-Steuerung">
             <button type="button" data-move="up">↑</button>
@@ -733,11 +895,15 @@ export const WortLabyrinthJagd = {
       </div>
     `;
 
-    const finish = () => {
+    const finish = ({ timeout = false } = {}) => {
       if (done) return;
       done = true;
       SoundManager.play(score >= targetCount ? 'finish' : 'failSoft');
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(score, targetCount, misses)), 560));
+      cleanup.timer(setTimeout(() => onComplete({
+        ...resultFrom(score, targetCount, misses),
+        timeout,
+        details: { score, misses, targetCount, targetType }
+      }), 560));
     };
 
     const update = () => {
@@ -747,11 +913,32 @@ export const WortLabyrinthJagd = {
         playerEl.style.setProperty('--r', String(player.y + 1));
       }
       const hudStatus = container.querySelector('.arcade-hud em');
-      if (hudStatus) hudStatus.textContent = `${score}/${targetCount} · Fehler ${misses}`;
+      if (hudStatus) {
+        const timerText = timerStarted ? `Zeit ${remainingSeconds}s` : 'Timer startet beim ersten Zug';
+        hudStatus.textContent = `${score}/${targetCount} · ${timerText} · Fehler ${misses}`;
+      }
+    };
+
+    const startTimer = () => {
+      if (timerStarted || done) return;
+      timerStarted = true;
+      update();
+      cleanup.timer(setInterval(() => {
+        if (done) return;
+        remainingSeconds -= 1;
+        update();
+        if (remainingSeconds > 0 && remainingSeconds <= 5) {
+          SoundManager.play('tick');
+        }
+        if (remainingSeconds <= 0) {
+          finish({ timeout: true });
+        }
+      }, 1000));
     };
 
     const move = (dx, dy) => {
       if (done) return;
+      startTimer();
       const next = { x: player.x + dx, y: player.y + dy };
       if (MAZE_MAP[next.y]?.[next.x] === '#') {
         SoundManager.play('uiClick');
@@ -816,7 +1003,6 @@ export const WortLabyrinthJagd = {
       move(vector[0], vector[1]);
     });
 
-    cleanup.timer(setTimeout(finish, 36000));
     return () => cleanup.clear();
   }
 };
@@ -824,7 +1010,7 @@ export const WortLabyrinthJagd = {
 export const ArtikelInvaders = {
   id: 'artikel-invaders',
   name_de: 'Artikel-Invaders',
-  description: 'Space-Invaders-inspiriert: waehle den Kanonen-Artikel und schiesse passende Wort-Ufos ab.',
+  description: 'Space-Invaders-inspiriert: wähle den Kanonen-Artikel und schieße passende Wort-Ufos ab.',
   topics: ['artikel', 'nomen'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -845,13 +1031,17 @@ export const ArtikelInvaders = {
     let misses = 0;
     let pressure = 0;
     let done = false;
+    let pressureStarted = false;
+    const pressureLimitSec = clamp(Number(task.timerSeconds || task.partyConfig?.timeLimitSec || DIRECT_DEFAULTS.solo_arcade.timeLimitSec), 18, 60);
+    const pressureTickMs = 1300;
+    const pressureStep = Math.max(1, Math.ceil(100 / Math.max(1, Math.round((pressureLimitSec * 1000) / pressureTickMs))));
 
     container.innerHTML = `
       <div class="arcade-game arcade-game--invaders">
         ${buildHud({
           kicker: 'Invaders',
           title: 'Artikel-Kanone',
-          status: `0/${invaders.length} · Artikel waehlen`
+          status: `0/${invaders.length} · Druck startet beim ersten Schuss`
         })}
         <div class="invaders-stage">
           <div class="invader-sky" aria-hidden="true"></div>
@@ -865,7 +1055,7 @@ export const ArtikelInvaders = {
             `).join('')}
           </div>
           <div class="invader-cannon">
-            <div class="invader-hero">${renderCharacterAvatar(1, 72)}</div>
+            <div class="invader-hero">${renderTaskCharacterAvatar(task, 1, 72)}</div>
             <div class="invader-cannon-body" aria-hidden="true"><span></span></div>
             <div class="invader-articles">
               ${['der', 'die', 'das'].map((article) => `<button class="${article === selected ? 'is-active' : ''}" type="button" data-article="${article}">${article}</button>`).join('')}
@@ -886,11 +1076,26 @@ export const ArtikelInvaders = {
     const update = () => {
       const hudStatus = container.querySelector('.arcade-hud em');
       const pressureBar = container.querySelector('.invader-pressure span');
-      if (hudStatus) hudStatus.textContent = `${score}/${invaders.length} · Fehler ${misses}`;
+      if (hudStatus) {
+        const pressureText = pressureStarted ? `Druck ${pressure}%` : 'Druck startet beim ersten Schuss';
+        hudStatus.textContent = `${score}/${invaders.length} · ${pressureText} · Fehler ${misses}`;
+      }
       if (pressureBar) pressureBar.style.width = `${pressure}%`;
       container.querySelectorAll('[data-article]').forEach((button) => {
         button.classList.toggle('is-active', button.dataset.article === selected);
       });
+    };
+
+    const startPressure = () => {
+      if (pressureStarted || done) return;
+      pressureStarted = true;
+      update();
+      cleanup.timer(setInterval(() => {
+        if (done) return;
+        pressure = Math.min(100, pressure + pressureStep);
+        update();
+        if (pressure >= 100) finish();
+      }, pressureTickMs));
     };
 
     container.querySelectorAll('[data-article]').forEach((button) => {
@@ -904,6 +1109,7 @@ export const ArtikelInvaders = {
     container.querySelectorAll('.invader-target').forEach((button) => {
       cleanup.on(button, 'click', () => {
         if (done || button.disabled) return;
+        startPressure();
         const hit = button.dataset.answer === selected;
         button.classList.add(hit ? 'is-hit' : 'is-miss');
         SoundManager.play(hit ? 'whoosh' : 'error');
@@ -921,13 +1127,6 @@ export const ArtikelInvaders = {
       });
     });
 
-    cleanup.timer(setInterval(() => {
-      if (done) return;
-      pressure = Math.min(100, pressure + 2);
-      update();
-      if (pressure >= 100) finish();
-    }, 1300));
-
     return () => cleanup.clear();
   }
 };
@@ -935,7 +1134,7 @@ export const ArtikelInvaders = {
 export const WortTetrisStapel = {
   id: 'wort-tetris-stapel',
   name_de: 'Wort-Tetris',
-  description: 'Tetris-inspiriert: fallende Wortbloecke in die richtige Wortarten-Spalte sortieren und Reihen raeumen.',
+  description: 'Tetris-inspiriert: fallende Wortblöcke in die richtige Wortarten-Spalte sortieren und Reihen räumen.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -982,6 +1181,9 @@ export const WortTetrisStapel = {
           <div class="wordtris-stage">
             <div class="wordtris-score-ribbon" aria-hidden="true">
               <span>1</span><span>2</span><span>3</span>
+            </div>
+            <div class="wordtris-helper" aria-hidden="true">
+              ${renderTaskCharacterAvatar(task, 6, 72)}
             </div>
             <div class="wordtris-piece">
               <strong>${escapeHtml(piece.word)}</strong>
@@ -1076,7 +1278,7 @@ export const GrammatikBossfight = {
           <div class="boss-stage" style="--boss-hp:${(hp / questions.length) * 100}%">
             <div class="boss-health"><span></span></div>
             <div class="boss-creature">
-              <div class="boss-face">${renderCharacterAvatar(10, 128)}</div>
+              <div class="boss-face">${renderTaskCharacterAvatar(task, 10, 128)}</div>
               <strong>Wortmonster</strong>
             </div>
             <div class="boss-shields">

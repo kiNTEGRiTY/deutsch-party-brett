@@ -1,8 +1,106 @@
 /**
  * Mini-Game: Article Cannon (Artikel-Kanone)
- * 
- * Arcade style shooter. Nouns hover, player shoots the correct article.
+ *
+ * Players fire the correct German article at each noun and receive immediate
+ * feedback before the next target appears.
  */
+
+const MAX_ROUNDS = 5;
+const ADVANCE_DELAY_MS = 1150;
+const ARTICLES = ['der', 'die', 'das'];
+
+const FALLBACK_WORDS = [
+  { word: 'Haus', correct: 'das' },
+  { word: 'Baum', correct: 'der' },
+  { word: 'Katze', correct: 'die' },
+  { word: 'Sonne', correct: 'die' },
+  { word: 'Buch', correct: 'das' }
+];
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let index = copy.length - 1; index > 0; index--) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+  return copy;
+}
+
+function normalizeQuestion(rawQuestion) {
+  const word = String(rawQuestion?.word ?? rawQuestion?.noun ?? '').trim();
+  const correct = String(rawQuestion?.correct ?? rawQuestion?.article ?? '').trim().toLowerCase();
+
+  if (!word || !ARTICLES.includes(correct)) {
+    return null;
+  }
+
+  return { word, correct };
+}
+
+function collectQuestions(content = {}) {
+  const quizSets = Array.isArray(content.quizSets) ? content.quizSets : [];
+  const questions = quizSets.flatMap((set) => (
+    Array.isArray(set?.questions) ? set.questions : [set]
+  ));
+  const normalized = questions.map(normalizeQuestion).filter(Boolean);
+  return normalized.length ? normalized : FALLBACK_WORDS;
+}
+
+function articleName(article) {
+  return {
+    der: 'maskulin',
+    die: 'feminin',
+    das: 'neutral'
+  }[article] || 'Artikel';
+}
+
+function ruleHintFor(word, correct, rules = []) {
+  const normalized = word.toLocaleLowerCase('de-DE');
+  const suffixHints = [
+    { suffix: 'ung', text: 'Endung -ung: fast immer die.' },
+    { suffix: 'schaft', text: 'Endung -schaft: immer die.' },
+    { suffix: 'chen', text: 'Endung -chen: immer das.' },
+    { suffix: 'nis', text: 'Endung -nis: meistens das.' },
+    { suffix: 'er', text: 'Endung -er: oft der.' }
+  ];
+
+  const suffixHint = suffixHints.find((hint) => normalized.endsWith(hint.suffix));
+  if (suffixHint) {
+    return suffixHint.text;
+  }
+
+  const matchingRule = Array.isArray(rules)
+    ? rules.find((rule) => Array.isArray(rule.examples) && rule.examples.includes(word))
+    : null;
+
+  if (matchingRule?.rule) {
+    return matchingRule.rule;
+  }
+
+  return `Sprich laut: ${correct} ${word}.`;
+}
+
+function feedbackText(item, selectedArticle, state, rules = []) {
+  if (!selectedArticle) {
+    return `Wähle den Artikel für ${item.word}.`;
+  }
+
+  const hint = ruleHintFor(item.word, item.correct, rules);
+  if (state === 'correct') {
+    return `Treffer: ${item.correct} ${item.word}. ${hint}`;
+  }
+
+  return `Knapp vorbei: richtig ist ${item.correct} ${item.word}. ${hint}`;
+}
 
 export const ArticleCannon = {
   id: 'article-cannon',
@@ -11,329 +109,159 @@ export const ArticleCannon = {
 
   setup(container, task, onComplete) {
     const content = task.content || {};
-    
-    let words = [];
-    if (content.quizSets) {
-        const set = content.quizSets;
-        if (Array.isArray(set) && set[0] && set[0].questions) {
-            words = set[0].questions;
-        } else if (Array.isArray(set)) {
-            words = set;
-        }
+    const questions = shuffle(collectQuestions(content)).slice(0, MAX_ROUNDS);
+
+    if (!questions.length) {
+      onComplete({
+        correct: false,
+        partial: false,
+        score: 0,
+        reason: 'missing-article-cannon-content',
+        topic: task.topic
+      });
+      return () => {};
     }
 
-    if (!words || words.length === 0) {
-      words = [
-          { word: 'Haus', correct: 'das' },
-          { word: 'Baum', correct: 'der' },
-          { word: 'Katze', correct: 'die' }
-      ];
-    }
-
-    const targetWords = [...words].sort(() => Math.random() - 0.5).slice(0, 5);
-    
-    let isPlaying = false;
-    let score = 0;
     let currentIndex = 0;
-    let activeTarget = null;
-    let activeBullet = null;
-    let gameLoopFrame = 0;
-    let cleanupDone = false;
-    let resizeObserver = null;
-    let areaWidth = 0;
-    let areaHeight = 0;
-    let cannonOriginX = 0;
-    let cannonOriginY = 0;
-    const pendingTimeouts = new Set();
+    let score = 0;
+    let answered = false;
+    let disposed = false;
+    let selectedArticle = null;
+    let nextTimeoutId = null;
     const listeners = new AbortController();
     const { signal } = listeners;
 
-    container.innerHTML = `
-      <div class="cannon-container" style="position: relative; width: 100%; height: 60vh; max-height: 500px; background: #87CEEB; border-radius: 16px; overflow: hidden; touch-action: none; user-select: none;">
-        
-        <!-- Score -->
-        <div style="position: absolute; top: 10px; left: 10px; color: #2c3e50; z-index: 10; font-family: 'Fredoka One', cursive; text-shadow: 1px 1px 0px white;">
-           <div>Treffer: <span id="can-score">0</span>/${targetWords.length}</div>
-        </div>
-
-        <!-- Overlay -->
-        <div id="can-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-            <p style="color: white; font-size: 1.5rem; text-align: center; font-family: 'Fredoka One';">Feuere den richtigen<br>Artikel ab!</p>
-            <button id="can-start-btn" class="btn btn-primary btn-lg mt-3">Start</button>
-        </div>
-
-        <div id="can-game-area" style="position: absolute; inset: 0; overflow: hidden;"></div>
-
-        <!-- Cannon Base structure -->
-        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: #34495e; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px;">
-           <div style="width: 150px; height: 60px; background: #2c3e50; border-radius: 30px 30px 0 0; position: relative;">
-              <!-- Cannon barrel -->
-              <div id="can-barrel" style="width: 20px; height: 50px; background: #7f8c8d; position: absolute; top: -30px; left: 65px; transform-origin: bottom center; border-radius: 10px;"></div>
-           </div>
-        </div>
-
-        <!-- Firing Buttons -->
-        <div style="position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 20px;">
-           <button class="fire-btn" data-art="der" style="width:60px; height:60px; border-radius:50%; font-weight:bold; font-size:1.2rem; background:#3498db; color:white; border:3px solid #2980b9;">der</button>
-           <button class="fire-btn" data-art="die" style="width:60px; height:60px; border-radius:50%; font-weight:bold; font-size:1.2rem; background:#e74c3c; color:white; border:3px solid #c0392b;">die</button>
-           <button class="fire-btn" data-art="das" style="width:60px; height:60px; border-radius:50%; font-weight:bold; font-size:1.2rem; background:#2ecc71; color:white; border:3px solid #27ae60;">das</button>
-        </div>
-      </div>
-    `;
-
-    const gameArea = container.querySelector('#can-game-area');
-    const barrel = container.querySelector('#can-barrel');
-    const scoreEl = container.querySelector('#can-score');
-    const overlay = container.querySelector('#can-overlay');
-
-    function scheduleTimeout(callback, delay) {
-      const timeoutId = window.setTimeout(() => {
-        pendingTimeouts.delete(timeoutId);
-        callback();
-      }, delay);
-      pendingTimeouts.add(timeoutId);
-      return timeoutId;
-    }
-
-    function measureArea() {
-      areaWidth = gameArea.clientWidth || 800;
-      areaHeight = gameArea.clientHeight || 500;
-      cannonOriginX = areaWidth / 2 - 20;
-      cannonOriginY = areaHeight - 80;
-    }
-
-    function cleanup() {
-      if (cleanupDone) return;
-      cleanupDone = true;
-      isPlaying = false;
-      cancelAnimationFrame(gameLoopFrame);
-      gameLoopFrame = 0;
-      pendingTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
-      pendingTimeouts.clear();
-      listeners.abort();
-      resizeObserver?.disconnect();
-      resizeObserver = null;
-      activeTarget?.el?.remove();
-      activeBullet?.el?.remove();
-      activeTarget = null;
-      activeBullet = null;
-
-      if (container.__minigameCleanup === cleanup) {
-        delete container.__minigameCleanup;
-      }
-    }
-
-    function finalize(result, delay = 0) {
-      const run = () => {
-        cleanup();
-        onComplete(result);
-      };
-
-      if (delay > 0) {
-        scheduleTimeout(run, delay);
-      } else {
-        run();
-      }
-    }
-
-    container.__minigameCleanup = cleanup;
-
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(measureArea);
-      resizeObserver.observe(gameArea);
-    }
-    measureArea();
-
-    function endGame() {
-      isPlaying = false;
-      cancelAnimationFrame(gameLoopFrame);
-      gameLoopFrame = 0;
-      const percentage = (score / targetWords.length) * 100;
-      
-      overlay.style.display = 'flex';
-      overlay.innerHTML = '<h2 style="color:white">Fertig! [Ziel getroffen]</h2>';
-
-      finalize({
+    const finish = () => {
+      const percentage = Math.round((score / questions.length) * 100);
+      onComplete({
         correct: percentage >= 80,
-        partial: percentage >= 50 && percentage < 80,
-        score: Math.round(percentage),
-        details: { score, total: targetWords.length }
-      }, 1500);
-    }
+        partial: percentage >= 50,
+        score: percentage,
+        details: {
+          score,
+          total: questions.length,
+          topic: task.topic
+        }
+      });
+    };
 
-    function spawnNextTarget() {
-        if (cleanupDone) return;
-        if (currentIndex >= targetWords.length) {
-            endGame();
-            return;
+    const scheduleNext = () => {
+      nextTimeoutId = window.setTimeout(() => {
+        nextTimeoutId = null;
+        if (disposed) {
+          return;
         }
 
-        const data = targetWords[currentIndex];
-        
-        const targetEl = document.createElement('div');
-        targetEl.textContent = data.word;
-        targetEl.dataset.correct = data.correct;
-        
-        Object.assign(targetEl.style, {
-            position: 'absolute',
-            top: '40px',
-            left: '0',
-            padding: '10px 20px',
-            background: '#f39c12',
-            color: 'white',
-            borderRadius: '20px',
-            fontWeight: 'bold',
-            fontSize: '1.5rem',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-            whiteSpace: 'nowrap',
-            willChange: 'transform'
+        currentIndex++;
+        selectedArticle = null;
+        answered = false;
+
+        if (currentIndex < questions.length) {
+          renderRound();
+          return;
+        }
+
+        finish();
+      }, ADVANCE_DELAY_MS);
+    };
+
+    const renderRound = (state = '') => {
+      const item = questions[currentIndex];
+      const progress = (currentIndex + (answered ? 1 : 0)) / questions.length;
+      const shotClass = selectedArticle ? ' is-fired' : '';
+      const stateAttr = state ? ` data-state="${escapeHTML(state)}"` : '';
+
+      container.innerHTML = `
+        <div class="article-cannon-game"${stateAttr}>
+          <div class="article-cannon-hud">
+            <div class="article-cannon-mark" aria-hidden="true">Artikel</div>
+            <div class="article-cannon-copy">
+              <h3>Artikel treffen</h3>
+              <p>Feuere den passenden Begleiter auf das Wort. Jeder Treffer macht den Artikel sicherer.</p>
+            </div>
+            <div class="article-cannon-status" aria-live="polite">
+              <span>${currentIndex + 1}/${questions.length}</span>
+              <strong>${score} Treffer</strong>
+              <div class="article-cannon-progress" aria-hidden="true"><span></span></div>
+            </div>
+          </div>
+
+          <section class="article-cannon-range" aria-label="Artikel-Kanone">
+            <div class="article-cannon-target"${stateAttr}>
+              <span>Nomen</span>
+              <strong>${escapeHTML(item.word)}</strong>
+              <small>${selectedArticle ? `${escapeHTML(item.correct)} ${escapeHTML(item.word)}` : 'der, die oder das?'}</small>
+            </div>
+            <div class="article-cannon-shot${shotClass}" data-article="${escapeHTML(selectedArticle || '')}" aria-hidden="true">
+              ${escapeHTML(selectedArticle || '')}
+            </div>
+            <div class="article-cannon-aim-line" aria-hidden="true"></div>
+            <div class="article-cannon-base" aria-hidden="true">
+              <div class="article-cannon-barrel"></div>
+              <div class="article-cannon-wheel article-cannon-wheel--left"></div>
+              <div class="article-cannon-body">Kanone</div>
+              <div class="article-cannon-wheel article-cannon-wheel--right"></div>
+            </div>
+          </section>
+
+          <section class="article-cannon-controls" aria-label="Artikel wählen">
+            ${ARTICLES.map((article) => `
+              <button class="article-cannon-button" type="button" data-article="${article}" ${answered ? 'disabled' : ''}>
+                <span>${article}</span>
+                <small>${articleName(article)}</small>
+              </button>
+            `).join('')}
+          </section>
+
+          <div class="article-cannon-feedback" id="article-cannon-feedback" aria-live="polite">
+            ${escapeHTML(feedbackText(item, selectedArticle, state, content.rules))}
+          </div>
+        </div>
+      `;
+
+      container.querySelector('.article-cannon-progress span')?.style.setProperty('transform', `scaleX(${progress})`);
+
+      const buttons = [...container.querySelectorAll('.article-cannon-button')];
+      if (answered) {
+        buttons.forEach((button) => {
+          const article = button.dataset.article;
+          button.classList.toggle('is-correct', article === item.correct);
+          button.classList.toggle('is-wrong', article === selectedArticle && article !== item.correct);
         });
-        
-        gameArea.appendChild(targetEl);
+        return;
+      }
 
-        const width = targetEl.offsetWidth;
-        const height = targetEl.offsetHeight;
-
-        activeTarget = {
-          el: targetEl,
-          word: data.word,
-          correct: data.correct,
-          x: -width,
-          y: 40,
-          width,
-          height,
-          speed: 1.5 + Math.random(),
-          direction: 1
-        };
-
-        targetEl.style.transform = `translate3d(${activeTarget.x}px, ${activeTarget.y}px, 0)`;
-        barrel.style.transform = 'rotate(0deg)';
-    }
-
-    function update() {
-        if (!isPlaying || cleanupDone) return;
-
-        if (activeTarget) {
-            activeTarget.x += activeTarget.speed * activeTarget.direction;
-
-            if (activeTarget.x > areaWidth - activeTarget.width) {
-                activeTarget.x = areaWidth - activeTarget.width;
-                activeTarget.direction = -1;
-            } else if (activeTarget.x < 0 && activeTarget.direction === -1) {
-                activeTarget.x = 0;
-                activeTarget.direction = 1;
-            }
-
-            activeTarget.el.style.transform = `translate3d(${activeTarget.x}px, ${activeTarget.y}px, 0)`;
-
-            const targetCenterX = activeTarget.x + activeTarget.width / 2;
-            const deltaX = targetCenterX - (cannonOriginX + 20);
-            const deltaY = cannonOriginY - activeTarget.y;
-            const angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
-            barrel.style.transform = `rotate(${angle}deg)`;
-
-            if (activeBullet) {
-                activeBullet.y -= activeBullet.speed;
-                activeBullet.x += activeBullet.vx;
-                activeBullet.el.style.transform = `translate3d(${activeBullet.x}px, ${activeBullet.y}px, 0)`;
-
-                const bx = activeBullet.x + 20;
-                const by = activeBullet.y + 20;
-                const tx = activeTarget.x;
-                const ty = activeTarget.y;
-                const tw = activeTarget.width;
-                const th = activeTarget.height;
-
-                if (bx > tx && bx < tx + tw && by > ty && by < ty + th) {
-                    const isCorrect = activeBullet.article === activeTarget.correct;
-                    
-                    if (isCorrect) {
-                        score++;
-                        scoreEl.textContent = score;
-                        activeTarget.el.style.background = '#2ecc71';
-                    } else {
-                        activeTarget.el.style.background = '#e74c3c';
-                    }
-                    
-                    activeTarget.el.textContent = `${activeTarget.correct} ${activeTarget.word}`;
-                    
-                    activeBullet.el.remove();
-                    activeBullet = null;
-
-                    const previousTarget = activeTarget;
-                    activeTarget = null;
-                    currentIndex++;
-                    
-                    scheduleTimeout(() => {
-                        previousTarget.el.remove();
-                        spawnNextTarget();
-                    }, 1000);
-                } else if (by < -50) {
-                    activeBullet.el.remove();
-                    activeBullet = null;
-                }
-            }
-        }
-
-        gameLoopFrame = requestAnimationFrame(update);
-    }
-
-    container.querySelectorAll('.fire-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            if (!isPlaying || cleanupDone || !activeTarget || activeBullet) return;
-
-            const article = btn.dataset.art;
-            const barrelAngleStr = barrel.style.transform;
-            let angleDeg = 0;
-            if (barrelAngleStr.includes('rotate(')) {
-                angleDeg = parseFloat(barrelAngleStr.split('rotate(')[1]) || 0;
-            }
-            const angleRad = angleDeg * (Math.PI / 180);
-
-            const bulletEl = document.createElement('div');
-            bulletEl.textContent = article;
-            Object.assign(bulletEl.style, {
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                width: '40px',
-                height: '40px',
-                background: btn.style.background,
-                color: 'white',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                zIndex: 20,
-                willChange: 'transform'
-            });
-            gameArea.appendChild(bulletEl);
-
-            activeBullet = {
-                el: bulletEl,
-                article,
-                x: cannonOriginX,
-                y: cannonOriginY,
-                speed: 10,
-                vx: Math.sin(angleRad) * 10
-            };
-            bulletEl.style.transform = `translate3d(${activeBullet.x}px, ${activeBullet.y}px, 0)`;
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          handleAnswer(button.dataset.article);
         }, { signal });
-    });
+      });
+    };
 
-    container.querySelector('#can-start-btn').addEventListener('click', () => {
-      overlay.style.display = 'none';
-      measureArea();
-      isPlaying = true;
-      spawnNextTarget();
-      update();
-    }, { signal });
+    const handleAnswer = (article) => {
+      if (answered || disposed || !ARTICLES.includes(article)) {
+        return;
+      }
 
-    return {
-      destroy: cleanup,
-      cleanup
+      const item = questions[currentIndex];
+      const isCorrect = article === item.correct;
+      selectedArticle = article;
+      answered = true;
+
+      if (isCorrect) {
+        score++;
+      }
+
+      renderRound(isCorrect ? 'correct' : 'wrong');
+      scheduleNext();
+    };
+
+    renderRound();
+
+    return () => {
+      disposed = true;
+      window.clearTimeout(nextTimeoutId);
+      listeners.abort();
     };
   }
 };

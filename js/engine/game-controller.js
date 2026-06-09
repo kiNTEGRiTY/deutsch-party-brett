@@ -5,7 +5,7 @@
  * Setup -> Board Play -> Mini-Games -> Rewards -> End
  */
 
-import { Board } from './board.js?v=game-feel-cutouts-30';
+import { Board } from './board.js?v=content-card-material-50';
 import { Dice } from './dice.js';
 import { Player } from './player.js';
 import { TurnManager, TurnPhase } from './turn.js';
@@ -168,8 +168,8 @@ export class GameController {
         return { action: 'minigame', mode: 'single', topic: 'verben', difficulty: fieldDifficulty, field };
 
       case 'minigame_adjektiv':
-        this._emit('minigameStart', { mode: 'single', player, field, topic: 'adjektiv', difficulty: fieldDifficulty });
-        return { action: 'minigame', mode: 'single', topic: 'adjektiv', difficulty: fieldDifficulty, field };
+        this._emit('minigameStart', { mode: 'single', player, field, topic: 'adjektive', difficulty: fieldDifficulty });
+        return { action: 'minigame', mode: 'single', topic: 'adjektive', difficulty: fieldDifficulty, field };
 
       case 'minigame_all':
         this._emit('minigameStart', { 
@@ -472,7 +472,7 @@ export class GameController {
         reward: { description: 'Schutz-Joker eingesetzt! Du bleibst stehen. 🛡️', items: [] }
       });
       this.completeTurn();
-      return { action: 'movement', blocked: true };
+      return { action: 'movement', blocked: true, oldPos, newPos: oldPos };
     }
     
     player.moveTo(newPos);
@@ -484,7 +484,7 @@ export class GameController {
 
     this._emit('reward', { player, reward: { description: effect.description, items: [] }});
     this.completeTurn();
-    return { action: 'movement', effect };
+    return { action: 'movement', effect, oldPos, newPos };
   }
 
   _handleTreasureField(player) {
@@ -513,6 +513,8 @@ export class GameController {
   }
 
   _handleTrapField(player, field) {
+    const oldPos = player.position;
+
     // Check for protection joker
     if (player.jokers.protection > 0) {
       player.useJoker('protection');
@@ -521,11 +523,10 @@ export class GameController {
         reward: { description: 'Schutz-Joker eingesetzt! Die Falle hat keine Wirkung. 🛡️', items: [] }
       });
       this.completeTurn();
-      return { action: 'trap', blocked: true };
+      return { action: 'trap', blocked: true, oldPos, newPos: oldPos };
     }
 
     const reward = grantReward(player, 'trapField');
-    const oldPos = player.position;
     const trapMove = Number.isFinite(field?.move) ? field.move : -3;
     const newPos = Math.max(0, player.position + trapMove);
     
@@ -544,7 +545,7 @@ export class GameController {
     this._emit('reward', { player, reward });
     
     this.completeTurn();
-    return { action: 'trap', reward, move: trapMove };
+    return { action: 'trap', reward, move: trapMove, oldPos, newPos };
   }
 
   _handlePortalField(player, field) {
@@ -569,7 +570,7 @@ export class GameController {
     this._emit('reward', { player, reward });
     
     this.completeTurn();
-    return { action: 'portal', targetId: newPos };
+    return { action: 'portal', targetId: newPos, oldPos, newPos };
   }
 
   _getTeamPartners(player) {

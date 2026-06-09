@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -44,14 +44,14 @@ const GAMES = {
   ],
   wortfunkeln: [
     { prompt: 'schnell', answer: 'flink', options: ['flink', 'leise', 'rund', 'hell'] },
-    { prompt: 'fruehlich', answer: 'heiter', options: ['heiter', 'hart', 'kurz', 'kalt'] },
-    { prompt: 'gross', answer: 'riesig', options: ['riesig', 'trocken', 'weich', 'still'] },
+    { prompt: 'fröhlich', answer: 'heiter', options: ['heiter', 'hart', 'kurz', 'kalt'] },
+    { prompt: 'groß', answer: 'riesig', options: ['riesig', 'trocken', 'weich', 'still'] },
     { prompt: 'reden', answer: 'sprechen', options: ['sprechen', 'liegen', 'malen', 'fallen'] }
   ],
   verben: [
     { prompt: 'Heute ___ wir ein Spiel.', answer: 'spielen', options: ['spielen', 'spielte', 'spielst'] },
     { prompt: 'Gestern ___ ich ein Buch.', answer: 'las', options: ['lese', 'las', 'liest'] },
-    { prompt: 'Morgen ___ du frueh auf.', answer: 'stehst', options: ['stand', 'stehst', 'stehen'] },
+    { prompt: 'Morgen ___ du früh auf.', answer: 'stehst', options: ['stand', 'stehst', 'stehen'] },
     { prompt: 'Die Kinder ___ im Hof.', answer: 'rennen', options: ['rennt', 'rennen', 'rannte'] }
   ]
 };
@@ -138,19 +138,19 @@ export const ArtikelAtelier = createChoiceGame({
   topics: ['artikel', 'nomen'],
   tone: 'ochre',
   kicker: 'Atelier',
-  headline: 'Welcher Artikel gehoert dazu?',
-  instruction: 'Waehle den passenden Artikel, bevor die Farbe trocknet.',
+  headline: 'Welcher Artikel gehört dazu?',
+  instruction: 'Wähle den passenden Artikel, bevor die Farbe trocknet.',
   items: GAMES.artikel
 });
 
 export const Silbenstrom = createChoiceGame({
   id: 'silbenstrom',
   name: 'Silbenstrom',
-  description: 'Silben hoeren, zaehlen und ueber den Fluss setzen.',
+  description: 'Silben hören, zählen und über den Fluss setzen.',
   topics: ['silben', 'konzentration'],
   tone: 'blue',
   kicker: 'Flussrunde',
-  headline: 'Wie viele Silben hoerst du?',
+  headline: 'Wie viele Silben hörst du?',
   instruction: 'Sprich das Wort leise mit und tippe die Anzahl.',
   items: GAMES.silben
 });
@@ -158,12 +158,12 @@ export const Silbenstrom = createChoiceGame({
 export const Reimwerk = createChoiceGame({
   id: 'reimwerk',
   name: 'Reimwerk',
-  description: 'Klangpaare finden mit Werkstatt-Gefuehl.',
+  description: 'Klangpaare finden mit Werkstatt-Gefühl.',
   topics: ['reime', 'wortschatz'],
   tone: 'green',
   kicker: 'Klangwerk',
   headline: 'Welches Wort reimt sich?',
-  instruction: 'Finde das passende Klangstueck.',
+  instruction: 'Finde das passende Klangstück.',
   items: GAMES.reime
 });
 
@@ -187,7 +187,7 @@ export const Fehlerlupe = createChoiceGame({
   tone: 'violet',
   kicker: 'Detektivblatt',
   headline: 'Welche Fassung ist richtig?',
-  instruction: 'Vergleiche genau und waehle den sauberen Satz.',
+  instruction: 'Vergleiche genau und wähle den sauberen Satz.',
   items: GAMES.fehler
 });
 
@@ -199,26 +199,26 @@ export const Wortfunkeln = createChoiceGame({
   tone: 'gold',
   kicker: 'Wortschatz',
   headline: 'Welches Wort passt am besten?',
-  instruction: 'Suche ein Wort mit aehnlicher Bedeutung.',
+  instruction: 'Suche ein Wort mit ähnlicher Bedeutung.',
   items: GAMES.wortfunkeln
 });
 
 export const VerbTakt = createChoiceGame({
   id: 'verb-takt',
   name: 'Verb-Takt',
-  description: 'Verbformen rhythmisch in Satzluecken setzen.',
+  description: 'Verbformen rhythmisch in Satzlücken setzen.',
   topics: ['verben', 'zeitformen', 'grammatik'],
   tone: 'blue',
   kicker: 'Taktprobe',
   headline: 'Welche Verbform sitzt im Takt?',
-  instruction: 'Lies den Satz und waehle die passende Form.',
+  instruction: 'Lies den Satz und wähle die passende Form.',
   items: GAMES.verben
 });
 
 export const SatzKompass = {
   id: 'satz-kompass',
   name_de: 'Satz-Kompass',
-  description: 'Woerter Schritt fuer Schritt zum Satzpfad ordnen.',
+  description: 'Wörter Schritt für Schritt zum Satzpfad ordnen.',
   topics: ['satzbau', 'lesen', 'grammatik'],
   supportsDirectPlay: true,
   directPlayDefaults: DIRECT_DEFAULTS,
@@ -229,7 +229,7 @@ export const SatzKompass = {
     const sentence = pick([
       ['Der', 'kleine', 'Vogel', 'singt', 'laut'],
       ['Mila', 'findet', 'eine', 'rote', 'Feder'],
-      ['Wir', 'bauen', 'einen', 'schoenen', 'Satz'],
+      ['Wir', 'bauen', 'einen', 'schönen', 'Satz'],
       ['Am', 'Fluss', 'liegt', 'ein', 'heller', 'Stein']
     ]);
     let index = 0;
@@ -240,7 +240,7 @@ export const SatzKompass = {
         <div class="variety-scene">
           <div class="variety-kicker">Kompass</div>
           <h3>Baue den Satz in der richtigen Reihenfolge</h3>
-          <p>Tippe immer das naechste Wort des Satzes.</p>
+          <p>Tippe immer das nächste Wort des Satzes.</p>
           <div class="variety-sentence-track">
             ${sentence.map((_, slotIndex) => `<span data-slot="${slotIndex}"></span>`).join('')}
           </div>

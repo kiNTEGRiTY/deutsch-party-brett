@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));

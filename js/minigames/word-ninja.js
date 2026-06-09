@@ -4,7 +4,61 @@
  * Arcade style slice game. Nouns fly up, players swipe them. Avoid Verbs!
  */
 
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+
+const MAX_TARGETS = 5;
+const FALLBACK_NOUNS = ['Hund', 'Katze', 'Baum', 'Haus', 'Ball'];
+const FALLBACK_DECOYS = ['laufen', 'spielen', 'lesen', 'malen', 'groß', 'schnell'];
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let index = copy.length - 1; index > 0; index--) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+  return copy;
+}
+
+function uniqueWords(words) {
+  const seen = new Set();
+  return words
+    .map((word) => String(word ?? '').trim())
+    .filter(Boolean)
+    .filter((word) => {
+      const key = word.toLocaleLowerCase('de-DE');
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+}
+
+function buildWordPools(content = {}) {
+  const mixedSets = Array.isArray(content.mixedSets) ? content.mixedSets : [];
+  const nouns = uniqueWords([
+    ...(Array.isArray(content.words) && content.type === 'wortarten' ? content.words : []),
+    ...mixedSets.flatMap((set) => Array.isArray(set?.nomen) ? set.nomen : [])
+  ]);
+  const decoys = uniqueWords([
+    ...mixedSets.flatMap((set) => Array.isArray(set?.verben) ? set.verben : []),
+    ...mixedSets.flatMap((set) => Array.isArray(set?.adjektive) ? set.adjektive : [])
+  ]);
+
+  return {
+    nouns: nouns.length ? nouns : FALLBACK_NOUNS,
+    decoys: decoys.length ? decoys : FALLBACK_DECOYS
+  };
+}
 
 export const WordNinja = {
   id: 'word-ninja',
@@ -12,32 +66,40 @@ export const WordNinja = {
   topics: ['wortarten', 'wortschatz', 'nomen'],
 
   setup(container, task, onComplete) {
-    const content = task.content;
+    const { nouns, decoys } = buildWordPools(task.content);
+    const targetWords = shuffle(nouns).slice(0, Math.min(MAX_TARGETS, nouns.length));
 
-    let mixedSet;
-    if (content.mixedSets && content.mixedSets.length > 0) {
-      mixedSet = content.mixedSets[Math.floor(Math.random() * content.mixedSets.length)];
-    } else {
-      onComplete({ correct: false, score: 0 });
-      return () => {};
-    }
-
-    const { nomen, verben } = mixedSet;
-    if (!nomen || !verben || nomen.length === 0 || verben.length === 0) {
-      onComplete({ correct: false, score: 0 });
+    if (!targetWords.length || !decoys.length) {
+      onComplete({
+        correct: false,
+        partial: false,
+        score: 0,
+        reason: 'missing-word-ninja-content',
+        topic: task.topic
+      });
       return () => {};
     }
 
     let isPlaying = false;
     let score = 0;
-    const targetScore = Math.min(nomen.length, 5);
-    let spawnedNouns = 0;
+    const targetScore = targetWords.length;
+    let spawnedTargetIndex = 0;
     let lives = 3;
     let disposed = false;
     let spawnIntervalId = null;
     let animationFrameId = null;
     let completionTimeoutId = null;
     const activeWords = [];
+    const pendingTimeouts = new Set();
+
+    const scheduleTimeout = (callback, delay) => {
+      const timeoutId = window.setTimeout(() => {
+        pendingTimeouts.delete(timeoutId);
+        callback();
+      }, delay);
+      pendingTimeouts.add(timeoutId);
+      return timeoutId;
+    };
 
     container.innerHTML = `
       <div class="arcade-stage word-ninja-stage">
@@ -48,18 +110,18 @@ export const WordNinja = {
           </div>
           <div class="hud-chip is-danger">
             <span>Leben</span>
-            <strong id="ninja-lives">❤ ❤ ❤</strong>
+            <strong id="ninja-lives">3 / 3</strong>
           </div>
         </div>
 
         <div id="ninja-overlay" class="premium-overlay-card">
           <div>
             <div class="premium-kicker">Arcade-Mission</div>
-            <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">Schneide nur die Nomen</div>
-            <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
-              Wörter fliegen durchs Bild. Nomen bringen Punkte, Verben kosten Herzen.
+            <div class="glow-title ninja-overlay-title">Schneide nur die Nomen</div>
+            <p class="ninja-overlay-copy">
+              Wörter fliegen durchs Bild. Nomen bringen Punkte, andere Wörter kosten Leben.
             </p>
-            <div style="margin-top:24px; display:flex; justify-content:center;">
+            <div class="ninja-overlay-actions">
               <button id="ninja-start-btn" class="btn btn-primary btn-lg" type="button">Los geht's</button>
             </div>
           </div>
@@ -71,10 +133,18 @@ export const WordNinja = {
     `;
 
     const gameArea = container.querySelector('#ninja-game-area');
+    const stageEl = container.querySelector('.word-ninja-stage');
     const scoreEl = container.querySelector('#ninja-score');
     const livesEl = container.querySelector('#ninja-lives');
     const overlay = container.querySelector('#ninja-overlay');
     const startButton = container.querySelector('#ninja-start-btn');
+
+    function clampWordX(word, nextX) {
+      const areaWidth = gameArea.clientWidth || 1;
+      const halfWidth = ((word?.el?.offsetWidth || 96) / 2) + 8;
+      const edgePercent = Math.min(46, (halfWidth / areaWidth) * 100);
+      return Math.max(edgePercent, Math.min(100 - edgePercent, nextX));
+    }
 
     function clearWord(word) {
       if (!word || word.retired) {
@@ -93,6 +163,7 @@ export const WordNinja = {
       }
 
       isPlaying = false;
+      stageEl.classList.remove('is-running');
       window.clearInterval(spawnIntervalId);
       spawnIntervalId = null;
       window.cancelAnimationFrame(animationFrameId);
@@ -102,10 +173,10 @@ export const WordNinja = {
       overlay.innerHTML = `
         <div>
           <div class="premium-kicker">${won ? 'Bonus!' : 'Neue Runde'}</div>
-          <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">
+          <div class="glow-title ninja-overlay-title">
             ${won ? 'Geschafft!' : 'Weiterkämpfen!'}
           </div>
-          <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
+          <p class="ninja-overlay-copy">
             ${won ? 'Alle Ziele erwischt. Sauber gespielt.' : 'Ein paar Wörter fehlen noch. Die nächste Runde sitzt.'}
           </p>
         </div>
@@ -136,17 +207,17 @@ export const WordNinja = {
           continue;
         }
 
-        word.velocityY -= word.gravity;
-        word.posY += word.velocityY;
-        word.posX += word.velocityX;
-        word.el.style.transform = `translate(${word.posX}%, ${-word.posY}px)`;
+        word.posY += word.speed;
+        word.posX = clampWordX(word, word.posX + word.velocityX);
+        word.el.style.left = `${word.posX}%`;
+        word.el.style.setProperty('--ninja-y', `${-word.posY}px`);
 
-        if (word.posY < -100) {
+        if (word.posY > gameArea.clientHeight + 110) {
           clearWord(word);
           activeWords.splice(index, 1);
 
           if (!word.isBomb && !word.sliced && isPlaying) {
-            spawnedNouns = Math.max(0, spawnedNouns - 1);
+            spawnedTargetIndex = Math.max(0, spawnedTargetIndex - 1);
           }
         }
       }
@@ -159,19 +230,19 @@ export const WordNinja = {
         return;
       }
 
-      const isBomb = spawnedNouns >= targetScore || Math.random() > 0.6;
+      const isBomb = spawnedTargetIndex >= targetScore || Math.random() > 0.62;
       let wordText = '';
 
       if (isBomb) {
-        wordText = verben[Math.floor(Math.random() * verben.length)];
+        wordText = decoys[Math.floor(Math.random() * decoys.length)];
       } else {
-        wordText = nomen[spawnedNouns % nomen.length];
-        spawnedNouns += 1;
+        wordText = targetWords[spawnedTargetIndex % targetWords.length];
+        spawnedTargetIndex += 1;
       }
 
       const el = document.createElement('div');
       el.className = `ninja-word ${isBomb ? 'bomb' : 'target'}`;
-      el.textContent = wordText;
+      el.innerHTML = `<span>${escapeHTML(wordText)}</span><small>${isBomb ? 'kein Nomen' : 'Nomen'}</small>`;
       gameArea.appendChild(el);
 
       const word = {
@@ -179,16 +250,17 @@ export const WordNinja = {
         isBomb,
         sliced: false,
         retired: false,
-        posY: -50,
-        posX: 10 + Math.random() * 60,
-        velocityY: 12 + Math.random() * 4,
-        velocityX: (Math.random() - 0.5) * 4,
-        gravity: 0.2,
+        posY: -70,
+        posX: 14 + Math.random() * 72,
+        speed: 2.8 + Math.random() * 1.1,
+        velocityX: (Math.random() - 0.5) * 0.32,
         handleSlice: null,
         handlePointerEnter: null
       };
 
-      el.style.transform = `translate(${word.posX}%, 50px)`;
+      word.posX = clampWordX(word, word.posX);
+      el.style.left = `${word.posX}%`;
+      el.style.setProperty('--ninja-y', '70px');
 
       word.handleSlice = (event) => {
         if (word.sliced || !isPlaying || word.retired || disposed) {
@@ -201,10 +273,10 @@ export const WordNinja = {
 
         if (word.isBomb) {
           lives -= 1;
-          livesEl.textContent = '❤ '.repeat(Math.max(0, lives)).trim();
+          livesEl.textContent = `${Math.max(0, lives)} / 3`;
           el.classList.add('bad-hit');
           SoundManager.play('error');
-          window.setTimeout(() => clearWord(word), 220);
+          scheduleTimeout(() => clearWord(word), 220);
 
           if (lives <= 0) {
             finish(false);
@@ -216,7 +288,7 @@ export const WordNinja = {
         scoreEl.textContent = score;
         el.classList.add('sliced');
         SoundManager.play('pop');
-        window.setTimeout(() => clearWord(word), 220);
+        scheduleTimeout(() => clearWord(word), 220);
 
         if (score >= targetScore) {
           finish(true);
@@ -240,8 +312,10 @@ export const WordNinja = {
       }
 
       overlay.style.display = 'none';
+      stageEl.classList.add('is-running');
       isPlaying = true;
       SoundManager.play('launch');
+      spawnWord();
       spawnIntervalId = window.setInterval(() => {
         if (isPlaying && Math.random() > 0.3) {
           spawnWord();
@@ -255,9 +329,12 @@ export const WordNinja = {
     return () => {
       disposed = true;
       isPlaying = false;
+      stageEl.classList.remove('is-running');
       window.clearInterval(spawnIntervalId);
       window.cancelAnimationFrame(animationFrameId);
       window.clearTimeout(completionTimeoutId);
+      pendingTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      pendingTimeouts.clear();
       startButton.removeEventListener('click', handleStart);
       activeWords.forEach((word) => clearWord(word));
       activeWords.length = 0;

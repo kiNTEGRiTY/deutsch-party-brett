@@ -4,7 +4,7 @@
  * Players judge if a sentence spelling/grammar is completely correct or a lie.
  */
 
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 export const LieDetector = {
   id: 'lie-detector',

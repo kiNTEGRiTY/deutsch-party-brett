@@ -3,7 +3,7 @@
  */
 
 import { FieldType } from './field-types.js';
-import { getBoardLayoutForImage } from './board-layouts.js?v=game-feel-cutouts-30';
+import { getBoardLayoutForImage } from './board-layouts.js?v=content-card-material-50';
 
 const TYPE_COUNTS = {
   [FieldType.NOMEN]: 8,
@@ -44,7 +44,7 @@ const LEARNING_FOCUS = {
   [FieldType.ADJEKTIV]: {
     title: 'Adjektive',
     subtitle: 'Steigerung + passend',
-    prompt: 'Waehle das treffende Adjektiv und steigere es richtig.'
+    prompt: 'Wähle das treffende Adjektiv und steigere es richtig.'
   },
   [FieldType.HELPER]: {
     title: 'Helfer',
@@ -53,8 +53,8 @@ const LEARNING_FOCUS = {
   },
   [FieldType.MOVEMENT]: {
     title: 'Bewegung',
-    subtitle: 'Vor oder zurueck',
-    prompt: 'Das Feld veraendert sofort deine Position auf dem Pfad.'
+    subtitle: 'Vor oder zurück',
+    prompt: 'Das Feld verändert sofort deine Position auf dem Pfad.'
   },
   [FieldType.TRAP]: {
     title: 'Falle',
@@ -64,11 +64,11 @@ const LEARNING_FOCUS = {
   [FieldType.REWARD]: {
     title: 'Belohnung',
     subtitle: 'Bonus oder Extra-Zug',
-    prompt: 'Eine gute Etappe bringt Muenzen oder einen Bonuszug.'
+    prompt: 'Eine gute Etappe bringt Münzen oder einen Bonuszug.'
   },
   [FieldType.PORTAL]: {
     title: 'Portal',
-    subtitle: 'Vor und zurueck',
+    subtitle: 'Vor und zurück',
     prompt: 'Das Portal verbindet zwei markierte Felder in beide Richtungen.'
   }
 };
@@ -226,7 +226,7 @@ function getFocus(type) {
   return LEARNING_FOCUS[type] || {
     title: 'Aufgabe',
     subtitle: 'Lernen',
-    prompt: 'Loese eine neue Deutsch-Aufgabe.'
+    prompt: 'Löse eine neue Deutsch-Aufgabe.'
   };
 }
 
@@ -277,7 +277,7 @@ export class Board {
         field.move = move;
         field.displayValue = formatSignedValue(move);
         field.shortLabel = move > 0 ? 'Sprint' : 'Umweg';
-        field.focusSubtitle = move > 0 ? `${field.displayValue} Felder vor` : `${Math.abs(move)} Felder zurueck`;
+        field.focusSubtitle = move > 0 ? `${field.displayValue} Felder vor` : `${Math.abs(move)} Felder zurück`;
       });
   }
 
@@ -299,7 +299,7 @@ export class Board {
       field.rewardMode = index === 0 ? 'coins' : 'extra_turn';
       field.displayValue = field.rewardMode === 'coins' ? '+3 M' : 'Bonuszug';
       field.shortLabel = field.rewardMode === 'coins' ? 'Bonus' : 'Extra-Zug';
-      field.focusSubtitle = field.rewardMode === 'coins' ? 'Muenzen' : 'Sofort noch mal';
+      field.focusSubtitle = field.rewardMode === 'coins' ? 'Münzen' : 'Sofort noch mal';
     });
   }
 

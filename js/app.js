@@ -4,11 +4,11 @@
  */
 
 import { ScreenManager } from './ui/screen-manager.js';
-import { GameController } from './engine/game-controller.js?v=game-feel-cutouts-30';
+import { GameController } from './engine/game-controller.js?v=content-card-material-50';
 import { SettingsManager } from './settings/settings-manager.js';
 import { GameSessionStorage } from './settings/game-session.js';
 import { ProfileManager } from './settings/profiles.js';
-import { SoundManager } from './ui/sound-manager.js?v=game-feel-cutouts-30';
+import { SoundManager } from './ui/sound-manager.js?v=content-card-material-50';
 import { 
   iconDice, iconHome, iconCoin, iconStar,
   iconGold, iconSilver, iconBronze
@@ -32,6 +32,7 @@ class App {
     this.boardRenderer = null;
     this.minigameRenderer = null;
     this.minigameMenuRenderer = null;
+    this.startPreview = null;
     this.resultsTimeoutId = null;
     this._setupRendererClass = null;
     this._boardRendererClass = null;
@@ -62,6 +63,7 @@ class App {
 
   _setupStartScreen() {
     this._refreshStartScreenCta();
+    void this._mountStartPreview();
 
     document.getElementById('btn-new-game')?.addEventListener('click', () => {
       GameSessionStorage.clear();
@@ -141,16 +143,25 @@ class App {
     const minigameSettings = resolvedRequest.difficulty
       ? { ...settingsSnapshot, difficulty: { ...resolvedRequest.difficulty } }
       : settingsSnapshot;
+    const taskPlayer = resolvedRequest.player || this.gameController.getCurrentPlayer();
 
     await this._ensureMinigameRenderer(minigameSettings);
     const runtimeContext = {
+      source: 'board',
       players: this.gameController.getPlayers().map((player) => ({
         id: player.id,
         name: player.name,
         colorIndex: player.colorIndex,
-        avatarId: player.avatarId
+        avatarId: player.avatarId,
+        avatarName: player.avatarName,
+        position: player.position
       })),
-      currentPlayerId: this.gameController.getCurrentPlayer()?.id ?? null,
+      currentPlayerId: taskPlayer?.id ?? null,
+      field: resolvedRequest.field ? {
+        id: resolvedRequest.field.id,
+        title: resolvedRequest.field.focusTitle || resolvedRequest.field.type || '',
+        subtitle: resolvedRequest.field.focusSubtitle || ''
+      } : null,
       exitOptions: {
         backLabel: 'Zum Brett',
         onBack: () => this._abortMinigame(resolvedRequest.mode, Screens.BOARD),
@@ -177,6 +188,7 @@ class App {
     SoundManager.play('launch');
     await this._ensureMinigameRenderer(this.settings.getSnapshot());
     const runtimeContext = {
+      source: 'direct',
       players: Array.isArray(payload.players) ? payload.players : [],
       currentPlayerId: payload.players?.[0]?.id ?? null,
       exitOptions: {
@@ -302,9 +314,27 @@ class App {
       if (detailEl) detailEl.textContent = 'Gespeicherte Einstellungen';
       continueBtn.title = 'Gespeicherte Spielprofile laden';
     } else {
-      if (labelEl) labelEl.textContent = 'Setup oeffnen';
+      if (labelEl) labelEl.textContent = 'Setup öffnen';
       if (detailEl) detailEl.textContent = 'Keine gespeicherte Partie';
       continueBtn.title = 'Direkt mit dem Setup weitergehen';
+    }
+  }
+
+  async _mountStartPreview() {
+    if (this.startPreview) {
+      return;
+    }
+
+    const root = document.getElementById('start-live-board');
+    if (!root) {
+      return;
+    }
+
+    try {
+      const { mountStartPreview } = await import('./ui/render-start-preview.js?v=content-card-material-50');
+      this.startPreview = mountStartPreview(root);
+    } catch (error) {
+      console.warn('Start board preview could not be mounted.', error);
     }
   }
 
@@ -357,11 +387,14 @@ class App {
     }
 
     const playMode = params.get('debugMode') || 'solo_arcade';
-    const topic = params.get('debugTopic') || 'satzbau';
+    const requestedTopic = params.get('debugTopic');
     const timeLimitSec = Number(params.get('debugTimeLimit') || 8);
     const rounds = Number(params.get('debugRounds') || 1);
 
-    window.setTimeout(() => {
+    window.setTimeout(async () => {
+      const { getMinigame } = await import('./minigames/minigame-registry.js?v=content-card-material-50');
+      const minigame = getMinigame(miniGameId);
+      const topic = requestedTopic || minigame?.topics?.[0] || 'wortschatz';
       void this._launchStandaloneMinigame({
         miniGameId,
         playMode,
@@ -450,6 +483,11 @@ class App {
 
   async _ensureMinigameRenderer(settingsSnapshot) {
     const minigameContainer = document.getElementById('minigame-content');
+    if (this.minigameRenderer) {
+      this.minigameRenderer.settings = settingsSnapshot;
+      return;
+    }
+
     const MinigameRenderer = await this._getMinigameRendererClass();
     this.minigameRenderer = new MinigameRenderer(minigameContainer, settingsSnapshot);
   }
@@ -515,7 +553,7 @@ class App {
 
   async _getSetupRendererClass() {
     if (!this._setupRendererClass) {
-      const module = await import('./ui/render-setup.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-setup.js?v=content-card-material-50');
       this._setupRendererClass = module.SetupRenderer;
     }
     return this._setupRendererClass;
@@ -523,7 +561,7 @@ class App {
 
   async _getBoardRendererClass() {
     if (!this._boardRendererClass) {
-      const module = await import('./ui/render-board.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-board.js?v=content-card-material-50');
       this._boardRendererClass = module.BoardRenderer;
     }
     return this._boardRendererClass;
@@ -531,7 +569,7 @@ class App {
 
   async _getMinigameRendererClass() {
     if (!this._minigameRendererClass) {
-      const module = await import('./ui/render-minigame.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-minigame.js?v=content-card-material-50');
       this._minigameRendererClass = module.MinigameRenderer;
     }
     return this._minigameRendererClass;
@@ -539,7 +577,7 @@ class App {
 
   async _getMinigameMenuRendererClass() {
     if (!this._minigameMenuRendererClass) {
-      const module = await import('./ui/render-minigame-menu.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-minigame-menu.js?v=content-card-material-50');
       this._minigameMenuRendererClass = module.MinigameMenuRenderer;
     }
     return this._minigameMenuRendererClass;

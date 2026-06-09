@@ -4,7 +4,7 @@
  * Uses hand-drawn illustrated animal characters instead of emojis.
  */
 
-import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js?v=content-card-material-50';
 
 const PLAYER_COLORS = [
   'var(--player-1)', 'var(--player-2)', 'var(--player-3)',

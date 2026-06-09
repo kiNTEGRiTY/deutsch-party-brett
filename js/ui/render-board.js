@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=game-feel-cutouts-30';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=content-card-material-50';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=game-feel-cutouts-30';
-import { SoundManager } from './sound-manager.js?v=game-feel-cutouts-30';
+import { renderCharacterAvatar } from './characters.js?v=content-card-material-50';
+import { SoundManager } from './sound-manager.js?v=content-card-material-50';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -21,13 +21,11 @@ const FIELD_STYLE = {
   normal: { label: '.', title: 'Aufgabe', color: '#f2d9a2', deep: '#8c6330', icon: '*' }
 };
 
-const DIRECTION_MARKERS = [2, 6, 10, 14, 18, 22, 26, 30, 33];
-
 const MOMENT_DECK = [
   { title: 'Blitzduell', text: 'Zwei Spieler antworten gleichzeitig.' },
   { title: 'Jokerzug', text: 'Ein Hinweis, Tausch oder Bonus kann retten.' },
   { title: 'Teamruf', text: 'Die Gruppe darf einen kurzen Tipp geben.' },
-  { title: 'Risiko', text: 'Mehr Punkte oder ein Rueckschritt.' }
+  { title: 'Risiko', text: 'Mehr Punkte oder ein Rückschritt.' }
 ];
 
 export class BoardRenderer {
@@ -36,6 +34,8 @@ export class BoardRenderer {
     this.game = gameController;
     this.onMinigameNeeded = null;
     this.onMenuRequested = null;
+    this._movementPreview = null;
+    this._isResolvingMove = false;
   }
 
   render() {
@@ -45,9 +45,10 @@ export class BoardRenderer {
       return;
     }
 
-    const currentField = this.game.board.getField(currentPlayer.position);
-    const progress = Math.round((currentPlayer.position / (this.game.board.totalFields - 1)) * 100);
-    const nextField = this.game.board.getField(Math.min(currentPlayer.position + 1, this.game.board.totalFields - 1));
+    const currentPosition = this._getPlayerRenderPosition(currentPlayer);
+    const currentField = this.game.board.getField(currentPosition);
+    const progress = Math.round((currentPosition / (this.game.board.totalFields - 1)) * 100);
+    const nextField = this.game.board.getField(Math.min(currentPosition + 1, this.game.board.totalFields - 1));
 
     if (!this.container.querySelector('.board-shell')) {
       this.container.innerHTML = `
@@ -55,13 +56,13 @@ export class BoardRenderer {
           <div class="board-watercolor-bg" aria-hidden="true"></div>
 
           <section class="board-map-frame" aria-label="Spielbrett">
-            <div class="board-map-art board-map-art--painted" aria-hidden="true"></div>
-            <svg class="board-playfield" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Deutsch Party Brett Spielzustand">
+            <div class="board-map-art board-map-art--paper" aria-hidden="true"></div>
+            <svg class="board-playfield" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Deutsch Party Brett Spielzustand">
               <defs>
-                <linearGradient id="boardPathPremium" x1="0" x2="1" y1="0" y2="1">
-                  <stop offset="0" stop-color="#ffe9a8"></stop>
-                  <stop offset="0.5" stop-color="#d8a74c"></stop>
-                  <stop offset="1" stop-color="#8f5b24"></stop>
+                <linearGradient id="boardPaperPremium" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#f7e8c2"></stop>
+                  <stop offset="0.58" stop-color="#ecd09a"></stop>
+                  <stop offset="1" stop-color="#c79758"></stop>
                 </linearGradient>
                 <linearGradient id="fieldGlaze" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0" stop-color="#ffffff" stop-opacity="0.94"></stop>
@@ -86,18 +87,20 @@ export class BoardRenderer {
           <aside class="board-context-dock" aria-label="Spielinformationen">
             <section class="board-panel board-panel--field"></section>
             <section class="board-panel board-panel--moments">
-              <span class="board-panel-kicker">Naechste Momente</span>
+              <span class="board-panel-kicker">Nächste Momente</span>
               <div class="board-moment-list"></div>
             </section>
           </aside>
 
           <section class="board-player-rail" aria-label="Figuren"></section>
           <div class="board-progress-chip"></div>
+          <aside class="board-landing-card" aria-live="polite" aria-hidden="true"></aside>
 
           <footer class="board-action-dock">
             <button id="dice-roll-button" class="board-dice-button" type="button">
               <span class="board-dice-copy">
-                <strong id="dice-prompt">${iconDice(20)} Wuerfeln</strong>
+                <span class="board-dice-kicker">Würfelzug</span>
+                <strong id="dice-prompt">${iconDice(20)} Würfeln</strong>
                 <small id="dice-helper"></small>
               </span>
               <span class="board-dice" id="dice" aria-hidden="true">${this._renderDiceDots(this.game.dice?.value || 1)}</span>
@@ -121,7 +124,7 @@ export class BoardRenderer {
   }
 
   _renderBoardDynamic(players, currentPlayer) {
-    const currentField = this.game.board.getField(currentPlayer.position);
+    const currentField = this.game.board.getField(this._getPlayerRenderPosition(currentPlayer));
     const currentPoint = this._projectField(currentField);
     return `
       <g class="board-current-target" transform="translate(${currentPoint.x} ${currentPoint.y})">
@@ -136,82 +139,107 @@ export class BoardRenderer {
   _renderBoardStatic() {
     const fields = this.game.board.getAllFields();
     return `
-      ${this._renderDecor()}
-      ${this._renderPortalBridge(fields)}
-      ${this._renderPath(fields)}
+      ${this._renderBoardArtwork(fields)}
       ${this._renderDirectionMarkers(fields)}
       <g class="board-field-layer">
         ${fields.map((field) => this._renderFieldTile(field)).join('')}
       </g>
-      ${this._renderLandmarks()}
     `;
   }
 
-  _renderDecor() {
+  _renderBoardArtwork(fields) {
     return `
-      <g class="board-map-decor" aria-hidden="true">
-        <path class="decor-sky" d="M0 0H1672V246C1458 218 1362 244 1197 215C1020 184 940 228 770 190C590 150 468 220 290 178C184 153 92 176 0 220Z"></path>
-        <path class="decor-hill decor-hill--back" d="M0 650C170 590 332 620 492 672C642 721 744 671 900 682C1060 694 1190 758 1348 724C1465 698 1558 645 1672 662V941H0Z"></path>
-        <path class="decor-hill decor-hill--front" d="M0 771C156 700 296 710 456 760C626 812 772 770 928 782C1100 796 1216 872 1395 824C1502 795 1594 764 1672 786V941H0Z"></path>
-        <path class="decor-river" d="M1338 15C1294 82 1342 146 1392 199C1456 268 1442 354 1372 424C1300 496 1326 578 1392 650C1454 718 1446 802 1396 910"></path>
-        <path class="decor-river-light" d="M1349 30C1318 91 1360 149 1410 203C1465 264 1448 344 1384 411C1319 479 1346 566 1407 630C1474 699 1458 782 1412 908"></path>
-        <g class="decor-forest">
-          <path d="M112 690C74 594 118 512 139 425C168 514 211 594 166 699Z"></path>
-          <path d="M184 642C151 560 186 500 207 432C231 509 270 579 230 647Z"></path>
-          <path d="M260 604C232 538 260 482 280 424C302 488 335 548 302 608Z"></path>
-          <path d="M312 520C284 466 306 414 328 364C349 419 378 474 350 526Z"></path>
-          <path d="M166 412C134 346 168 286 190 228C214 295 252 356 214 420Z"></path>
-          <path d="M260 382C232 322 258 271 282 221C304 276 338 330 309 388Z"></path>
-        </g>
-        <g class="decor-fireflies">
-          <circle cx="242" cy="384" r="8"></circle>
-          <circle cx="302" cy="546" r="7"></circle>
-          <circle cx="708" cy="274" r="8"></circle>
-          <circle cx="968" cy="618" r="9"></circle>
-          <circle cx="1490" cy="338" r="7"></circle>
-        </g>
+      <g class="board-artwork-layer" aria-hidden="true">
+        <rect class="board-paper-sheet" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}"></rect>
+        ${this._renderPaperTexture()}
+        ${this._renderBoardLandmarks()}
+        ${this._renderFunctionalFieldBackground(fields)}
       </g>
     `;
   }
 
-  _renderLandmarks() {
+  _renderPaperTexture() {
+    return `
+      <g class="board-paper-texture" aria-hidden="true">
+        <path class="paper-wash paper-wash--top" d="M0 232C196 176 334 184 498 216C662 248 760 172 922 198C1084 224 1200 178 1360 196C1494 212 1578 186 1672 154V0H0Z"></path>
+        <path class="paper-wash paper-wash--bottom" d="M0 783C166 740 330 736 502 772C672 808 788 744 960 766C1130 788 1244 720 1410 744C1536 762 1608 740 1672 710V941H0Z"></path>
+      </g>
+    `;
+  }
+
+  _renderBoardLandmarks() {
     return `
       <g class="board-landmarks" aria-hidden="true">
-        <g class="landmark-start" transform="translate(172 848)">
-          <path d="M-74 20H82L62-42H-52Z"></path>
-          <text y="7" text-anchor="middle">START</text>
+        <g class="landmark-start" transform="translate(191 526)">
+          <path d="M-92 -25H58L84 0L58 25H-92L-70 0Z"></path>
+          <text y="8" text-anchor="middle">START</text>
         </g>
-        <g class="landmark-castle" transform="translate(1452 272)">
-          <path d="M-110 82H110V-20L76-38L42-20L4-52L-34-20L-78-42L-110-18Z"></path>
-          <rect x="-74" y="8" width="34" height="74" rx="8"></rect>
-          <rect x="39" y="8" width="34" height="74" rx="8"></rect>
-          <path d="M-126-18L-78-74L-28-18ZM-42-20L4-92L50-20ZM50-18L78-72L126-18Z"></path>
-          <text y="22" text-anchor="middle">SCHLOSS</text>
-        </g>
-        <g class="landmark-sign" transform="translate(1322 96)">
-          <path d="M-96-26H96L82 30H-82Z"></path>
-          <text y="4" text-anchor="middle">ZIELPFAD</text>
+        <g class="landmark-goal" transform="translate(1328 96)">
+          <path d="M-116 -24H116L96 31H-96Z"></path>
+          <path d="M-74 -24L-48 -62L-12 -24ZM-18 -24L18 -76L54 -24ZM50 -24L76 -62L102 -24Z"></path>
+          <text y="13" text-anchor="middle">ZIEL</text>
         </g>
       </g>
     `;
   }
 
-  _renderPath(fields) {
-    const points = fields.map((field) => `${field.x},${field.y}`).join(' ');
+  _renderFunctionalFieldBackground(fields) {
     return `
-      <g class="board-main-path" aria-hidden="true">
-        <polyline class="path-shadow" points="${points}"></polyline>
-        <polyline class="path-earth" points="${points}"></polyline>
-        <polyline class="path-gold" points="${points}"></polyline>
-        <polyline class="path-stitched" points="${points}"></polyline>
+      <g class="board-field-built-background" aria-hidden="true">
+        <g class="board-field-join-layer">
+          ${fields.slice(0, -1).map((field, index) => this._renderFieldJoin(field, fields[index + 1], index)).join('')}
+        </g>
       </g>
     `;
+  }
+
+  _renderFieldJoin(from, to, index) {
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const width = index % 3 === 0 ? 62 : 54;
+    const height = index % 2 === 0 ? 38 : 34;
+    const style = this._fieldStyle(to);
+    const tabPath = [
+      `M ${-width / 2 + 8} ${-height / 2}`,
+      `H ${width / 2 - 12}`,
+      `L ${width / 2 + 10} 0`,
+      `L ${width / 2 - 12} ${height / 2}`,
+      `H ${-width / 2 + 8}`,
+      `L ${-width / 2 - 6} 0`,
+      'Z'
+    ].join(' ');
+
+    return `
+      <g class="field-join" transform="translate(${midX} ${midY}) rotate(${angle})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
+        <path class="field-join-shadow" d="${tabPath}" transform="translate(0 5)"></path>
+        <path class="field-join-paper" d="${tabPath}"></path>
+        <path class="field-join-arrow" d="M -10 -8 L 8 0 L -10 8"></path>
+      </g>
+    `;
+  }
+
+  _paperTilePath(width, height) {
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+    return [
+      `M ${-halfWidth + 18} ${-halfHeight + 2}`,
+      `C ${-halfWidth + 36} ${-halfHeight - 8} ${halfWidth - 33} ${-halfHeight - 7} ${halfWidth - 16} ${-halfHeight + 5}`,
+      `C ${halfWidth + 5} ${-halfHeight + 21} ${halfWidth + 3} ${halfHeight - 22} ${halfWidth - 15} ${halfHeight - 7}`,
+      `C ${halfWidth - 34} ${halfHeight + 9} ${-halfWidth + 34} ${halfHeight + 8} ${-halfWidth + 15} ${halfHeight - 5}`,
+      `C ${-halfWidth - 4} ${halfHeight - 21} ${-halfWidth - 5} ${-halfHeight + 19} ${-halfWidth + 18} ${-halfHeight + 2}`,
+      'Z'
+    ].join(' ');
   }
 
   _renderDirectionMarkers(fields) {
+    const markerIndexes = new Set([2, 6, 10, 14, 18, 22, 26, 30, fields.length - 2]);
     return `
       <g class="board-direction-markers" aria-hidden="true">
-        ${DIRECTION_MARKERS.map((index) => {
+        ${fields.slice(0, -1).map((field, index) => {
+          if (!markerIndexes.has(index)) return '';
           const from = fields[index];
           const to = fields[Math.min(index + 1, fields.length - 1)];
           if (!from || !to) return '';
@@ -220,7 +248,7 @@ export class BoardRenderer {
           const angle = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
           return `
             <g transform="translate(${midX} ${midY}) rotate(${angle})">
-              <path d="M-24 -14 L20 -14 L34 0 L20 14 L-24 14 L-12 0Z"></path>
+              <path d="M-28 -16 L24 -16 L39 0 L24 16 L-28 16 L-14 0Z"></path>
             </g>
           `;
         }).join('')}
@@ -239,6 +267,17 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
+    const tileWidth = isStart || isFinish ? 212 : 146;
+    const tileHeight = isStart || isFinish ? 112 : 90;
+    const badgeX = isStart || isFinish ? -62 : -48;
+    const badgeY = isStart || isFinish ? -38 : -30;
+    const indexX = isStart || isFinish ? 62 : 48;
+    const indexY = isStart || isFinish ? -38 : -30;
+    const angle = Number.isFinite(field.angle) ? field.angle : 0;
+    const shadowShape = this._paperTilePath(tileWidth, tileHeight);
+    const washShape = this._paperTilePath(tileWidth + 8, tileHeight + 8);
+    const bodyShape = this._paperTilePath(tileWidth, tileHeight);
+    const glazeShape = this._paperTilePath(tileWidth - 14, tileHeight - 14);
     const className = [
       'board-field-node',
       `board-field-node--${field.type}`,
@@ -248,46 +287,21 @@ export class BoardRenderer {
       isPortalReturn ? 'is-portal-return' : ''
     ].filter(Boolean).join(' ');
 
-    const radius = isStart || isFinish ? 52 : 34;
-    const stonePath = this._fieldStonePath(field.id, radius);
-    const innerPath = this._fieldStonePath(field.id + 4, radius - 9);
-    const washPath = this._fieldStonePath(field.id + 11, radius + 4);
-
     return `
       <g class="${className}" transform="translate(${field.x} ${field.y})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
-        <path class="field-shadow" d="${stonePath}"></path>
-        <path class="field-wash" d="${washPath}"></path>
-        <path class="field-body" d="${stonePath}"></path>
-        <path class="field-glaze" d="${innerPath}"></path>
-        <circle class="field-type-dot" cx="${isStart || isFinish ? -18 : -18}" cy="${isStart || isFinish ? -24 : -18}" r="${isStart || isFinish ? 12 : 9}"></circle>
-        <text class="field-icon" x="${isStart || isFinish ? -18 : -18}" y="${isStart || isFinish ? -24 : -18}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
-        <text class="field-index" x="${isStart || isFinish ? 20 : 17}" y="${isStart || isFinish ? -27 : -21}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
-        <text class="field-main" y="${isStart || isFinish ? 9 : 8}" text-anchor="middle">${this._escape(shortLabel)}</text>
+        <g class="field-shape" transform="rotate(${angle})">
+          <path class="field-shadow" d="${shadowShape}" transform="translate(0 7)"></path>
+          <path class="field-wash" d="${washShape}"></path>
+          <path class="field-body" d="${bodyShape}"></path>
+          <path class="field-glaze" d="${glazeShape}"></path>
+        </g>
+        <circle class="field-type-dot" cx="${badgeX}" cy="${badgeY}" r="${isStart || isFinish ? 13 : 10}"></circle>
+        <text class="field-icon" x="${badgeX}" y="${badgeY}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
+        <text class="field-index" x="${indexX}" y="${indexY}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
+        <text class="field-main" y="${isStart || isFinish ? 13 : 12}" text-anchor="middle">${this._escape(shortLabel)}</text>
+        <title>${this._escape(`Feld ${field.id}: ${displayType}`)}</title>
       </g>
     `;
-  }
-
-  _fieldStonePath(seed = 0, radius = 36) {
-    const points = Array.from({ length: 12 }, (_, index) => {
-      const angle = -Math.PI / 2 + (Math.PI * 2 * index) / 12;
-      const wobble = 1 + Math.sin(seed * 1.73 + index * 1.91) * 0.075 + Math.cos(seed * 0.91 + index * 2.37) * 0.045;
-      return {
-        x: Math.cos(angle) * radius * wobble,
-        y: Math.sin(angle) * radius * 0.74 * wobble
-      };
-    });
-
-    const first = points[0];
-    return [
-      `M${first.x.toFixed(1)} ${first.y.toFixed(1)}`,
-      ...points.map((point, index) => {
-        const next = points[(index + 1) % points.length];
-        const midX = (point.x + next.x) / 2;
-        const midY = (point.y + next.y) / 2;
-        return `Q${point.x.toFixed(1)} ${point.y.toFixed(1)} ${midX.toFixed(1)} ${midY.toFixed(1)}`;
-      }),
-      'Z'
-    ].join(' ');
   }
 
   _getBoardSignature() {
@@ -363,22 +377,23 @@ export class BoardRenderer {
 
     const diceHelper = this.container.querySelector('#dice-helper');
     if (diceHelper) {
-      diceHelper.textContent = `${currentPlayer.name} zieht die Figur auf dem klaren Weg weiter.`;
+      diceHelper.textContent = `${currentPlayer.name} zieht die Figur weiter.`;
     }
 
     const dockStack = this.container.querySelector('.board-dock-stack');
     if (dockStack) {
+      const currentPosition = this._getPlayerRenderPosition(currentPlayer);
       dockStack.innerHTML = `
-        <span>Feld ${currentPlayer.position}/${this.game.board.totalFields - 1}</span>
+        <span>Feld ${currentPosition}/${this.game.board.totalFields - 1}</span>
         <strong>${this._fieldTitle(currentField)}</strong>
       `;
     }
   }
 
   _renderToken(player, currentPlayer) {
-    const field = this.game.board.getField(player.position);
+    const field = this.game.board.getField(this._getPlayerRenderPosition(player));
     const point = this._projectField(field);
-    const active = currentPlayer.id === player.id;
+    const active = currentPlayer.id === player.id || this._movementPreview?.playerId === player.id;
     const offset = this._getTokenOffset(player);
     const size = active ? 82 : 70;
     const x = point.x + offset.x;
@@ -425,8 +440,9 @@ export class BoardRenderer {
 
   _renderPlayerSlip(player, currentPlayer) {
     const totalSteps = this.game.board.totalFields - 1;
-    const progress = Math.round((player.position / totalSteps) * 100);
-    const field = this.game.board.getField(player.position);
+    const position = this._getPlayerRenderPosition(player);
+    const progress = Math.round((position / totalSteps) * 100);
+    const field = this.game.board.getField(position);
 
     return `
       <article class="board-player-slip ${player.id === currentPlayer.id ? 'is-current' : ''}" style="--player-accent:${player.color || '#b9563e'}">
@@ -434,7 +450,7 @@ export class BoardRenderer {
           ${player.getTokenHTML(38)}
           <div>
             <strong>${this._escape(player.name)}</strong>
-            <span>Feld ${player.position} · ${this._fieldTitle(field)}</span>
+            <span>Feld ${position} · ${this._fieldTitle(field)}</span>
           </div>
         </div>
         <div class="board-player-progress"><span style="width:${progress}%;"></span></div>
@@ -500,19 +516,21 @@ export class BoardRenderer {
   }
 
   _fieldPrompt(field) {
-    if (!field) return 'Naechster Spielmoment.';
-    if (field.id === 0) return 'Wuerfeln und die erste Aufgabe oeffnen.';
+    if (!field) return 'Nächster Spielmoment.';
+    if (field.id === 0) return 'Würfeln und die erste Aufgabe öffnen.';
     if (field.id === this.game.board.totalFields - 1) return 'Wer hier landet, erreicht das Finale.';
-    if (field.type === 'movement') return field.move > 0 ? `${field.move} Felder vor.` : `${Math.abs(field.move || 0)} Felder zurueck.`;
-    if (field.type === 'trap') return `Risiko: ${Math.abs(field.move || 0)} Felder zurueck oder Aufgabe retten.`;
-    if (field.type === 'reward') return field.rewardMode === 'extra_turn' ? 'Sofort noch einmal wuerfeln.' : 'Muenzen, Sterne oder einen Joker einsammeln.';
+    if (field.type === 'movement') return field.move > 0 ? `${field.move} Felder vor.` : `${Math.abs(field.move || 0)} Felder zurück.`;
+    if (field.type === 'trap') return `Risiko: ${Math.abs(field.move || 0)} Felder zurück oder Aufgabe retten.`;
+    if (field.type === 'reward') return field.rewardMode === 'extra_turn' ? 'Sofort noch einmal würfeln.' : 'Münzen, Sterne oder einen Joker einsammeln.';
     if (field.type === 'portal') return `Sprung direkt zu Feld ${field.portalPairId}.`;
-    if (field.portalRole === 'return') return `Dieses Feld verbindet zurueck zu Feld ${field.portalPairId}.`;
+    if (field.portalRole === 'return') return `Dieses Feld verbindet zurück zu Feld ${field.portalPairId}.`;
     return field.focusPrompt || 'Deutsch-Aufgabe starten.';
   }
 
   _getTokenOffset(player) {
-    const sameField = this.game.getPlayers().filter((entry) => entry.position === player.position);
+    const playerPosition = this._getPlayerRenderPosition(player);
+    const sameField = this.game.getPlayers()
+      .filter((entry) => this._getPlayerRenderPosition(entry) === playerPosition);
     const index = sameField.findIndex((entry) => entry.id === player.id);
     return [
       { x: -25, y: 26 },
@@ -520,6 +538,13 @@ export class BoardRenderer {
       { x: -25, y: -24 },
       { x: 25, y: 26 }
     ][index] || { x: 0, y: 0 };
+  }
+
+  _getPlayerRenderPosition(player) {
+    if (this._movementPreview?.playerId === player?.id) {
+      return this._movementPreview.position;
+    }
+    return player?.position ?? 0;
   }
 
   _setupBoardActions() {
@@ -539,47 +564,223 @@ export class BoardRenderer {
     if (!diceButton || !diceEl) return;
 
     diceButton.addEventListener('click', async () => {
-      if (this.game.state !== 'playing' || diceEl.classList.contains('is-rolling')) return;
+      if (this.game.state !== 'playing' || this._isResolvingMove || diceEl.classList.contains('is-rolling')) return;
 
+      diceButton.disabled = true;
+      diceButton.classList.add('is-busy');
       diceEl.classList.add('is-rolling');
       SoundManager.play('diceRoll');
-      if (dicePromptEl) dicePromptEl.textContent = 'Wuerfelt...';
+      if (dicePromptEl) dicePromptEl.textContent = 'Würfelt...';
 
       const rollingHandler = (event) => {
         diceEl.innerHTML = this._renderDiceDots(event.detail.value);
       };
 
-      window.addEventListener('dice:rolling', rollingHandler);
-      const value = await this.game.rollDice();
-      window.removeEventListener('dice:rolling', rollingHandler);
-      diceEl.classList.remove('is-rolling');
+      try {
+        window.addEventListener('dice:rolling', rollingHandler);
+        const value = await this.game.rollDice();
+        window.removeEventListener('dice:rolling', rollingHandler);
+        diceEl.classList.remove('is-rolling');
 
-      if (!value) {
-        if (dicePromptEl) dicePromptEl.textContent = 'Wuerfeln';
-        return;
+        if (!value) {
+          if (dicePromptEl) dicePromptEl.textContent = 'Würfeln';
+          return;
+        }
+
+        diceEl.innerHTML = this._renderDiceDots(value);
+        SoundManager.play('diceLand');
+        if (dicePromptEl) dicePromptEl.textContent = `Wurf: ${value}`;
+        await this._resolveMove(value);
+      } finally {
+        window.removeEventListener('dice:rolling', rollingHandler);
+        diceEl.classList.remove('is-rolling');
+        diceButton.classList.remove('is-busy');
+        diceButton.disabled = false;
       }
-
-      diceEl.innerHTML = this._renderDiceDots(value);
-      SoundManager.play('diceLand');
-      if (dicePromptEl) dicePromptEl.textContent = `Wurf: ${value}`;
-      await this._resolveMove(value);
     });
   }
 
   async _resolveMove(diceValue) {
-    SoundManager.play('moveStep', { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
-    this.game.movePlayer(diceValue);
-    const landedField = this.game.board.getField(this.game.getCurrentPlayer().position);
-    const result = this.game.resolveField(landedField);
-    SoundManager.play(landedField.type === 'portal' ? 'portal' : 'fieldLand');
-
-    if (result.action === 'minigame') {
-      this.onMinigameNeeded?.(result);
+    if (this._isResolvingMove) {
       return;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 220));
+    this._isResolvingMove = true;
+
+    try {
+      const player = this.game.getCurrentPlayer();
+      const startPosition = player.position;
+      const destination = this.game.board.getDestination(startPosition, diceValue);
+
+      await this._animateBoardMove(player, startPosition, destination, { diceValue, label: 'Schritt' });
+
+      this.game.movePlayer(diceValue);
+      this._movementPreview = null;
+      this.render();
+
+      const landedField = this.game.board.getField(player.position);
+      const result = this.game.resolveField(landedField);
+      SoundManager.play(landedField.type === 'portal' ? 'portal' : 'fieldLand');
+
+      if (result.action === 'minigame') {
+        await this._showLandingCard(player, landedField, result);
+        this._hideLandingCard();
+        this.onMinigameNeeded?.({ ...result, player });
+        return;
+      }
+
+      const animatedFieldEffect = await this._animateResolvedFieldEffect(player, landedField.id, result);
+
+      await new Promise((resolve) => setTimeout(resolve, animatedFieldEffect ? 120 : 220));
+      this.render();
+    } finally {
+      this._movementPreview = null;
+      this._isResolvingMove = false;
+    }
+  }
+
+  async _showLandingCard(player, field, result) {
+    const card = this.container.querySelector('.board-landing-card');
+    if (!card || !field || !player) {
+      return;
+    }
+
+    const style = this._fieldStyle(field);
+    const modeLabel = result?.mode === 'team'
+      ? 'Teamaufgabe'
+      : result?.mode === 'challenge'
+        ? 'Blitzaufgabe'
+        : 'Einzelaufgabe';
+
+    card.style.setProperty('--field-accent', style.color);
+    card.innerHTML = `
+      <div class="board-landing-player">
+        ${player.getTokenHTML(38)}
+        <span>${this._escape(player.name)} landet</span>
+      </div>
+      <div class="board-landing-copy">
+        <span>Feld ${field.id}/${this.game.board.totalFields - 1} · ${modeLabel}</span>
+        <strong>${this._escape(this._fieldTitle(field))}</strong>
+        <p>${this._escape(this._fieldPrompt(field))}</p>
+      </div>
+      <div class="board-landing-type">
+        <i>${this._escape(this._shortFieldLabel(field))}</i>
+        <span>${this._escape(this._fieldTypeLabel(field))}</span>
+      </div>
+    `;
+    card.classList.add('is-visible');
+    card.setAttribute('aria-hidden', 'false');
+    this._setDiceHelper(`${player.name}: Aufgabe auf ${this._fieldTitle(field)} startet.`);
+
+    await new Promise((resolve) => setTimeout(resolve, 900));
+  }
+
+  _hideLandingCard() {
+    const card = this.container.querySelector('.board-landing-card');
+    if (!card) {
+      return;
+    }
+
+    card.classList.remove('is-visible');
+    card.setAttribute('aria-hidden', 'true');
+  }
+
+  async _animateResolvedFieldEffect(player, landedPosition, result) {
+    if (!player || !result || result.blocked) {
+      return false;
+    }
+
+    const isAnimatedEffect = ['movement', 'trap', 'portal'].includes(result.action);
+    if (!isAnimatedEffect) {
+      return false;
+    }
+
+    const targetPosition = Number.isFinite(result.newPos)
+      ? result.newPos
+      : Number.isFinite(result.targetId)
+        ? result.targetId
+        : player.position;
+
+    if (!Number.isFinite(targetPosition) || targetPosition === landedPosition) {
+      return false;
+    }
+
+    if (result.action === 'portal') {
+      await this._animateBoardJump(player, landedPosition, targetPosition, 'Portal');
+      return true;
+    }
+
+    const isForward = targetPosition > landedPosition;
+    const label = result.action === 'trap'
+      ? 'Rückweg'
+      : isForward
+        ? 'Bonusweg'
+        : 'Umweg';
+
+    this._movementPreview = { playerId: player.id, position: landedPosition };
     this.render();
+    this._setDiceHelper(`${player.name}: ${label} startet auf Feld ${landedPosition}.`);
+    await new Promise((resolve) => setTimeout(resolve, 180));
+
+    await this._animateBoardMove(player, landedPosition, targetPosition, {
+      label,
+      diceValue: Math.abs(targetPosition - landedPosition),
+      stepDelay: result.action === 'trap' ? 175 : 150,
+      sound: result.action === 'trap' ? 'failSoft' : 'moveStep'
+    });
+
+    return true;
+  }
+
+  async _animateBoardJump(player, startPosition, destination, label = 'Sprung') {
+    this._movementPreview = { playerId: player.id, position: startPosition };
+    this.render();
+    this._setDiceHelper(`${player.name}: ${label} von Feld ${startPosition} zu Feld ${destination}.`);
+    SoundManager.play('portal');
+    await new Promise((resolve) => setTimeout(resolve, 240));
+
+    this._movementPreview = { playerId: player.id, position: destination };
+    this.render();
+    this._setDiceHelper(`${player.name}: angekommen auf Feld ${destination}.`);
+    await new Promise((resolve) => setTimeout(resolve, 320));
+  }
+
+  async _animateBoardMove(player, startPosition, destination, movement = {}) {
+    const distance = Math.abs(destination - startPosition);
+    if (!player || distance === 0) {
+      return;
+    }
+
+    const options = typeof movement === 'number' ? { diceValue: movement } : movement;
+    const direction = Math.sign(destination - startPosition);
+    const diceValue = Number.isFinite(options.diceValue) ? options.diceValue : distance;
+    const label = options.label || 'Schritt';
+    const stepDelay = Number.isFinite(options.stepDelay) ? options.stepDelay : 145;
+    const sound = options.sound || 'moveStep';
+
+    for (let step = 1; step <= distance; step += 1) {
+      const position = startPosition + direction * step;
+      this._movementPreview = {
+        playerId: player.id,
+        position,
+        step,
+        totalSteps: distance
+      };
+
+      SoundManager.play(sound, { intensity: Math.min(1.4, 0.7 + diceValue * 0.12) });
+      this.render();
+
+      this._setDiceHelper(`${player.name}: ${label} ${step}/${distance} zu Feld ${position}.`);
+
+      await new Promise((resolve) => setTimeout(resolve, step === distance ? Math.max(190, stepDelay) : stepDelay));
+    }
+  }
+
+  _setDiceHelper(message) {
+    const diceHelper = this.container.querySelector('#dice-helper');
+    if (diceHelper) {
+      diceHelper.textContent = message;
+    }
   }
 
   update() {

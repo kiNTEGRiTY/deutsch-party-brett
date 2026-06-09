@@ -4,7 +4,52 @@
  * Arcade style typing game. Words fall down, player must type them quickly.
  */
 
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+
+const MAX_TARGETS = 5;
+const FALLBACK_WORDS = ['Haus', 'Baum', 'Katze', 'Auto', 'Blume'];
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let index = copy.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+  return copy;
+}
+
+function uniqueWords(words) {
+  const seen = new Set();
+  return words
+    .map((word) => String(word ?? '').trim())
+    .filter(Boolean)
+    .filter((word) => {
+      const key = word.toLocaleLowerCase('de-DE');
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+}
+
+function collectWords(content = {}) {
+  const mixedSets = Array.isArray(content.mixedSets) ? content.mixedSets : [];
+  return uniqueWords([
+    ...(Array.isArray(content.words) ? content.words : []),
+    ...(Array.isArray(content.pairs)
+      ? content.pairs
+        .filter((pair) => !pair?.wrong)
+        .map((pair) => pair?.correct || pair?.word)
+      : []),
+    ...mixedSets.flatMap((set) => [
+      ...(Array.isArray(set?.words) ? set.words : []),
+      ...(Array.isArray(set?.nomen) ? set.nomen : []),
+      ...(Array.isArray(set?.verben) ? set.verben : []),
+      ...(Array.isArray(set?.adjektive) ? set.adjektive : [])
+    ])
+  ]);
+}
 
 export const WordMeteorites = {
   id: 'word-meteorites',
@@ -12,25 +57,9 @@ export const WordMeteorites = {
   topics: ['rechtschreibung', 'wortschatz', 'lesen'],
 
   setup(container, task, onComplete) {
-    const content = task.content;
-
-    let wordList = [];
-    if (content.pairs) {
-      wordList = content.pairs
-        .filter((pair) => !pair.wrong)
-        .map((pair) => pair.correct || pair.word)
-        .filter(Boolean);
-    } else if (content.words) {
-      wordList = content.words;
-    } else if (content.mixedSets) {
-      wordList = content.mixedSets[0]?.words || [];
-    }
-
-    if (!wordList || wordList.length === 0) {
-      wordList = ['Haus', 'Baum', 'Katze', 'Auto', 'Blume'];
-    }
-
-    const targetWords = [...wordList].sort(() => Math.random() - 0.5).slice(0, 5);
+    const wordList = collectWords(task.content);
+    const targetWords = shuffle(wordList.length ? wordList : FALLBACK_WORDS).slice(0, MAX_TARGETS);
+    const passScore = Math.ceil(targetWords.length * 0.8);
     let isPlaying = false;
     let score = 0;
     let currentInput = '';
@@ -41,6 +70,16 @@ export const WordMeteorites = {
     let completionTimeoutId = null;
     let disposed = false;
     let gameAreaHeight = 0;
+    const pendingTimeouts = new Set();
+
+    const scheduleTimeout = (callback, delay) => {
+      const timeoutId = window.setTimeout(() => {
+        pendingTimeouts.delete(timeoutId);
+        callback();
+      }, delay);
+      pendingTimeouts.add(timeoutId);
+      return timeoutId;
+    };
 
     container.innerHTML = `
       <div class="arcade-stage meteor-stage">
@@ -51,18 +90,18 @@ export const WordMeteorites = {
           </div>
           <div class="hud-chip is-danger">
             <span>Schutz</span>
-            <strong id="met-lives">❤ ❤ ❤</strong>
+            <strong id="met-lives">3 / 3</strong>
           </div>
         </div>
 
         <div id="met-overlay" class="premium-overlay-card">
           <div>
             <div class="premium-kicker">Himmelwache</div>
-            <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">Tippe die Wörter vor dem Einschlag</div>
-            <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
-              Jeder korrekte Treffer sprengt einen Meteoriten. Falsche Eingaben kosten Zeit.
+            <div class="glow-title meteor-overlay-title">Tippe die Wörter vor dem Einschlag</div>
+            <p class="meteor-overlay-copy">
+              Beginne mit den Buchstaben eines sichtbaren Wortes. Ein voller Treffer sprengt den Meteoriten.
             </p>
-            <div style="margin-top:24px; display:flex; justify-content:center;">
+            <div class="meteor-overlay-actions">
               <button id="met-start-btn" class="btn btn-primary btn-lg" type="button">Mission starten</button>
             </div>
           </div>
@@ -87,6 +126,7 @@ export const WordMeteorites = {
       </div>
     `;
 
+    const stageEl = container.querySelector('.meteor-stage');
     const gameArea = container.querySelector('#met-game-area');
     const inputEl = container.querySelector('#met-input');
     const overlay = container.querySelector('#met-overlay');
@@ -98,7 +138,18 @@ export const WordMeteorites = {
       gameAreaHeight = gameArea.clientHeight || 0;
     };
 
+    function clampMeteorX(meteor, nextX) {
+      const areaWidth = gameArea.clientWidth || 1;
+      const halfWidth = ((meteor?.el?.offsetWidth || 110) / 2) + 8;
+      const edgePercent = Math.min(46, (halfWidth / areaWidth) * 100);
+      return Math.max(edgePercent, Math.min(100 - edgePercent, nextX));
+    }
+
     function removeMeteor(meteor) {
+      if (!meteor || meteor.retired) {
+        return;
+      }
+      meteor.retired = true;
       meteor.el.remove();
     }
 
@@ -108,6 +159,7 @@ export const WordMeteorites = {
       }
 
       isPlaying = false;
+      stageEl.classList.remove('is-running');
       window.cancelAnimationFrame(gameLoopFrame);
       gameLoopFrame = null;
       inputEl.blur();
@@ -115,12 +167,12 @@ export const WordMeteorites = {
       overlay.style.display = 'flex';
       overlay.innerHTML = `
         <div>
-          <div class="premium-kicker">${won ? 'Stark!' : 'Nochmal'}</div>
-          <div class="glow-title" style="font-size:clamp(2rem,5vw,3rem); margin-top:12px;">
+          <div class="premium-kicker">${won ? 'Stark!' : 'Weiter üben'}</div>
+          <div class="glow-title meteor-overlay-title">
             ${won ? 'Himmel gerettet!' : 'Noch ein Versuch!'}
           </div>
-          <p style="margin:12px 0 0; font-size:1rem; font-weight:800; color:var(--text-secondary);">
-            ${won ? 'Die Wörter sitzen. Kein Meteorit ist durchgekommen.' : 'Ein paar Treffer fehlen noch. Mit dem nächsten Lauf wird es rund.'}
+          <p class="meteor-overlay-copy">
+            ${won ? 'Die Wörter sitzen. Die Himmelswache bleibt stabil.' : 'Ein paar Treffer fehlen noch. Mit dem nächsten Lauf wird es rund.'}
           </p>
         </div>
       `;
@@ -130,7 +182,7 @@ export const WordMeteorites = {
           return;
         }
         onComplete({
-          correct: won || score >= targetWords.length * 0.8,
+          correct: won,
           partial: !won && score > 0,
           score: Math.round((score / targetWords.length) * 100),
           details: { lives, score }
@@ -149,21 +201,28 @@ export const WordMeteorites = {
       const el = document.createElement('div');
       el.className = 'meteor-word';
       el.innerHTML = '<span class="met-typed"></span><span class="met-untyped"></span>';
-      el.style.left = `${10 + Math.random() * 60}%`;
       gameArea.appendChild(el);
 
       const typedNode = el.querySelector('.met-typed');
       const untypedNode = el.querySelector('.met-untyped');
       untypedNode.textContent = word;
 
-      activeMeteors.push({
+      const meteor = {
         el,
         word,
         typedNode,
         untypedNode,
+        retired: false,
         posY: -40,
-        speed: 0.5 + Math.random() * 0.5
-      });
+        posX: 14 + Math.random() * 72,
+        speed: 1.1 + Math.random() * 0.7,
+        drift: (Math.random() - 0.5) * 0.18
+      };
+
+      meteor.posX = clampMeteorX(meteor, meteor.posX);
+      el.style.left = `${meteor.posX}%`;
+      el.style.setProperty('--meteor-y', `${meteor.posY}px`);
+      activeMeteors.push(meteor);
     }
 
     function updateMatchState() {
@@ -195,13 +254,13 @@ export const WordMeteorites = {
             scoreEl.textContent = score;
             meteor.el.classList.add('burst');
             SoundManager.play('pop');
-            window.setTimeout(() => removeMeteor(meteor), 220);
+            scheduleTimeout(() => removeMeteor(meteor), 220);
             activeMeteors.splice(index, 1);
             currentInput = '';
             inputEl.value = '';
 
             if (spawnedCount >= targetWords.length && activeMeteors.length === 0) {
-              finish(true);
+              finish(score >= passScore);
               return;
             }
           }
@@ -226,25 +285,32 @@ export const WordMeteorites = {
 
       for (let index = activeMeteors.length - 1; index >= 0; index -= 1) {
         const meteor = activeMeteors[index];
-        meteor.posY += meteor.speed;
-        meteor.el.style.transform = `translateY(${meteor.posY}px)`;
+        if (meteor.retired) {
+          activeMeteors.splice(index, 1);
+          continue;
+        }
 
-        if (meteor.posY > gameAreaHeight - 30) {
+        meteor.posY += meteor.speed;
+        meteor.posX = clampMeteorX(meteor, meteor.posX + meteor.drift);
+        meteor.el.style.left = `${meteor.posX}%`;
+        meteor.el.style.setProperty('--meteor-y', `${meteor.posY}px`);
+
+        if (meteor.posY > gameAreaHeight - meteor.el.offsetHeight - 6) {
           removeMeteor(meteor);
           activeMeteors.splice(index, 1);
           lives -= 1;
-          livesEl.textContent = '❤ '.repeat(Math.max(0, lives)).trim();
+          livesEl.textContent = `${Math.max(0, lives)} / 3`;
           gameArea.classList.add('impact');
           SoundManager.play('error');
-          window.setTimeout(() => gameArea.classList.remove('impact'), 220);
+          scheduleTimeout(() => gameArea.classList.remove('impact'), 220);
 
           if (lives <= 0) {
-            finish(false);
+            finish(score >= passScore);
             return;
           }
 
           if (spawnedCount >= targetWords.length && activeMeteors.length === 0) {
-            finish(score > 0);
+            finish(score >= passScore);
             return;
           }
         }
@@ -255,7 +321,7 @@ export const WordMeteorites = {
     }
 
     const handleInput = (event) => {
-      currentInput = event.target.value.trim();
+      currentInput = event.target.value.trimStart();
     };
 
     const handleStart = () => {
@@ -265,9 +331,11 @@ export const WordMeteorites = {
 
       refreshBounds();
       overlay.style.display = 'none';
+      stageEl.classList.add('is-running');
       isPlaying = true;
       SoundManager.play('launch');
       inputEl.focus();
+      spawnMeteor();
       gameLoopFrame = window.requestAnimationFrame(update);
     };
 
@@ -285,8 +353,11 @@ export const WordMeteorites = {
     return () => {
       disposed = true;
       isPlaying = false;
+      stageEl.classList.remove('is-running');
       window.cancelAnimationFrame(gameLoopFrame);
       window.clearTimeout(completionTimeoutId);
+      pendingTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      pendingTimeouts.clear();
       inputEl.removeEventListener('input', handleInput);
       startButton.removeEventListener('click', handleStart);
       gameArea.removeEventListener('click', handleGameAreaClick);

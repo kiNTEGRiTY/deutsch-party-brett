@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1672 941" role="img" aria-label="Funktionales Spielbrett mit einem einzigen Weg aus 36 Feldern">
+  <defs>
+    <filter id="paperNoise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.032" numOctaves="3" seed="36"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.14"/>
+      </feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+    <filter id="softLift" x="-20%" y="-30%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#4a301d" flood-opacity="0.18"/>
+    </filter>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f6e8c8"/>
+      <stop offset="0.56" stop-color="#ecd5a5"/>
+      <stop offset="1" stop-color="#d2ab70"/>
+    </linearGradient>
+    <linearGradient id="routePaint" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff4ce"/>
+      <stop offset="0.54" stop-color="#e9c889"/>
+      <stop offset="1" stop-color="#b98248"/>
+    </linearGradient>
+    <pattern id="slotGrain" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M7 18 C20 9 31 26 45 13 M12 47 C26 35 39 53 55 42" fill="none" stroke="#69482b" stroke-width="2" opacity="0.07"/>
+      <circle cx="18" cy="35" r="2" fill="#6c4b2b" opacity="0.07"/>
+      <circle cx="45" cy="26" r="1.8" fill="#fff6dc" opacity="0.32"/>
+    </pattern>
+    <symbol id="field-slot" viewBox="-58 -38 116 76">
+      <rect x="-52" y="-29" width="104" height="58" rx="18" fill="#65422a" opacity="0.16" transform="translate(0 8)"/>
+      <rect x="-52" y="-31" width="104" height="62" rx="18" fill="#f5dfab"/>
+      <rect x="-52" y="-31" width="104" height="62" rx="18" fill="url(#slotGrain)" opacity="0.54"/>
+      <path d="M-40 -14 C-20 -25 18 -25 40 -13" fill="none" stroke="#fff8df" stroke-width="5" stroke-linecap="round" opacity="0.38"/>
+      <rect x="-52" y="-31" width="104" height="62" rx="18" fill="none" stroke="#fff8e3" stroke-width="7"/>
+      <rect x="-47" y="-26" width="94" height="52" rx="15" fill="none" stroke="#825a35" stroke-width="1.7" opacity="0.26"/>
+    </symbol>
+    <marker id="routeArrow" markerWidth="16" markerHeight="16" refX="12" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M2 2 L14 8 L2 14 Z" fill="#634126" opacity="0.68"/>
+    </marker>
+    <style>
+      .route-shadow,
+      .route-base,
+      .route-thread,
+      .route-arrow { display: none; }
+      .slot { opacity: 0.92; }
+      .label { font-family: Avenir Next, Segoe UI, sans-serif; font-weight: 950; letter-spacing: 0; paint-order: stroke; stroke: rgba(255, 248, 226, 0.92); stroke-width: 6px; }
+    </style>
+  </defs>
+
+  <rect width="1672" height="941" fill="url(#paper)"/>
+  <rect width="1672" height="941" fill="#fff3d7" opacity="0.18"/>
+
+  <g opacity="0.72">
+    <path d="M0 250 C190 182 342 162 505 194 C660 226 752 113 917 143 C1058 169 1155 99 1309 125 C1455 151 1543 111 1672 78 L1672 0 L0 0 Z" fill="#c9d8ae"/>
+    <path d="M0 884 C186 802 344 806 510 850 C676 895 789 812 956 835 C1126 858 1248 770 1410 806 C1532 832 1608 802 1672 776 L1672 941 L0 941 Z" fill="#a9bd86" opacity="0.34"/>
+    <ellipse cx="836" cy="612" rx="178" ry="62" fill="#8fb2bc" opacity="0.22"/>
+    <ellipse cx="836" cy="612" rx="126" ry="37" fill="#ecfbff" opacity="0.34"/>
+  </g>
+
+  <g filter="url(#softLift)" opacity="0.9">
+    <path d="M120 674 L199 623 L286 674 L286 753 L120 753 Z" fill="#f3d9a6"/>
+    <path d="M103 678 L201 592 L304 678 Z" fill="#c97641"/>
+    <rect x="163" y="705" width="35" height="48" rx="4" fill="#755035"/>
+    <rect x="218" y="704" width="39" height="33" rx="5" fill="#63838d"/>
+
+    <path d="M1090 74 L1220 48 L1355 104 L1334 199 L1110 204 Z" fill="#f3ddad"/>
+    <path d="M1072 81 L1220 25 L1374 91 Z" fill="#bd6d3a"/>
+    <path d="M1155 128 L1310 128" stroke="#8d5c37" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="1180" cy="145" r="38" fill="#fff3c4" opacity="0.56"/>
+  </g>
+
+  <g opacity="0.78" fill="#68784f">
+    <path d="M84 390 C56 337 86 277 106 230 C129 286 150 343 119 399 Z"/>
+    <path d="M1548 448 C1512 384 1548 315 1571 258 C1596 326 1618 394 1582 458 Z"/>
+    <path d="M556 172 C531 122 561 73 579 31 C601 84 617 135 589 182 Z"/>
+  </g>
+
+  <g aria-hidden="true">
+    <polyline class="route-shadow" points="150,785 285,785 420,785 555,785 690,785 825,785 960,785 1095,785 1230,785 1370,745 1500,675 1520,575 1430,500 1295,470 1160,470 1025,470 890,470 755,470 620,470 485,470 350,470 215,470 155,390 220,310 350,275 485,275 620,275 755,275 890,275 1025,275 1160,275 1295,275 1430,275 1520,220 1460,145 1330,145"/>
+    <polyline class="route-base" points="150,785 285,785 420,785 555,785 690,785 825,785 960,785 1095,785 1230,785 1370,745 1500,675 1520,575 1430,500 1295,470 1160,470 1025,470 890,470 755,470 620,470 485,470 350,470 215,470 155,390 220,310 350,275 485,275 620,275 755,275 890,275 1025,275 1160,275 1295,275 1430,275 1520,220 1460,145 1330,145"/>
+    <polyline class="route-thread" points="150,785 285,785 420,785 555,785 690,785 825,785 960,785 1095,785 1230,785 1370,745 1500,675 1520,575 1430,500 1295,470 1160,470 1025,470 890,470 755,470 620,470 485,470 350,470 215,470 155,390 220,310 350,275 485,275 620,275 755,275 890,275 1025,275 1160,275 1295,275 1430,275 1520,220 1460,145 1330,145"/>
+    <path class="route-arrow" d="M450 785 H610"/>
+    <path class="route-arrow" d="M1265 774 C1340 760 1402 728 1462 692"/>
+    <path class="route-arrow" d="M1418 500 C1330 477 1236 470 1148 470"/>
+    <path class="route-arrow" d="M394 470 C292 470 209 448 174 397"/>
+    <path class="route-arrow" d="M428 275 H615"/>
+    <path class="route-arrow" d="M1378 275 C1468 270 1518 246 1520 220"/>
+  </g>
+
+  <g class="slots" aria-hidden="true">
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(150 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(285 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(420 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(555 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(690 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(825 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(960 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1095 785) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1230 785) rotate(-8.3)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1370 745) rotate(-22.2)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1500 675) rotate(-48.6)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1520 575) rotate(-111.8)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1430 500) rotate(-155)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1295 470) rotate(-173.7)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1160 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1025 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(890 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(755 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(620 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(485 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(350 470) rotate(180)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(215 470) rotate(-157.7)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(155 390) rotate(-88.2)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(220 310) rotate(-30.5)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(350 275) rotate(-7.5)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(485 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(620 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(755 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(890 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1025 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1160 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1295 275) rotate(0)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1430 275) rotate(-13.7)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1490 220) rotate(-124.7)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1340 145) rotate(-166.4)"/>
+    <use class="slot" href="#field-slot" x="-58" y="-38" width="116" height="76" transform="translate(1180 145) rotate(180)"/>
+  </g>
+
+  <text class="label" x="90" y="852" fill="#3a2618" font-size="32">Start</text>
+  <text class="label" x="1144" y="103" fill="#3a2618" font-size="32">Ziel</text>
+</svg>

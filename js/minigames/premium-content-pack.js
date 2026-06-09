@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
-import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+import { renderCharacterAvatar } from '../ui/characters.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -14,25 +14,26 @@ const DIRECT_DEFAULTS = {
 
 const WORD_CARD_A = '/assets/img/premium/user-reference/original-word-cards-labeled-a.jpeg';
 const WORD_CARD_B = '/assets/img/premium/user-reference/original-word-cards-labeled-b.jpeg';
+const WORD_CARD_CONTACT_SHEET = '/assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg';
 const OBJECT_TABLE = WORD_CARD_A;
-const BOARD_TABLE = '/assets/img/premium/watercolor-premium-game-table.png';
+const HANDMADE_STAGE_MATERIAL = WORD_CARD_CONTACT_SHEET;
 
 const OBJECTS = [
   { id: 'hund', word: 'Hund', article: 'der', clue: 'Das Tier mit Halsband und wedelndem Schwanz.', image: WORD_CARD_A, x: 12, y: 16, topics: ['nomen', 'artikel', 'wortschatz'] },
   { id: 'sonne', word: 'Sonne', article: 'die', clue: 'Der gelbe Kreis mit Strahlen.', image: WORD_CARD_A, x: 37, y: 14, topics: ['nomen', 'artikel', 'wortschatz'] },
   { id: 'stift', word: 'Stift', article: 'der', clue: 'Damit kann man schreiben oder malen.', image: WORD_CARD_A, x: 62, y: 13, topics: ['nomen', 'rechtschreibung', 'wortschatz'] },
   { id: 'mann', word: 'Mann', article: 'der', clue: 'Die Figur mit Brille und blauer Kleidung.', image: WORD_CARD_A, x: 86, y: 15, topics: ['nomen', 'artikel'] },
-  { id: 'schmetterling', word: 'Schmetterling', article: 'der', clue: 'Das Tier mit bunten Fluegeln.', image: WORD_CARD_A, x: 12, y: 64, topics: ['nomen', 'wortschatz'] },
+  { id: 'schmetterling', word: 'Schmetterling', article: 'der', clue: 'Das Tier mit bunten Flügeln.', image: WORD_CARD_A, x: 12, y: 64, topics: ['nomen', 'wortschatz'] },
   { id: 'schere', word: 'Schere', article: 'die', clue: 'Damit schneidet man Papier.', image: WORD_CARD_A, x: 37, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'maedchen', word: 'Mädchen', article: 'das', clue: 'Die kleine Figur mit gelbem Rock.', image: WORD_CARD_A, x: 62, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'katze', word: 'Katze', article: 'die', clue: 'Das Tier mit Schnurrhaaren und langem Schwanz.', image: WORD_CARD_A, x: 86, y: 64, topics: ['nomen', 'artikel'] },
   { id: 'stuhl', word: 'Stuhl', article: 'der', clue: 'Darauf kann man sitzen.', image: WORD_CARD_B, x: 10, y: 13, topics: ['nomen', 'wortschatz'] },
-  { id: 'baum', word: 'Baum', article: 'der', clue: 'Er hat Stamm, Aeste und gruene Blaetter.', image: WORD_CARD_B, x: 36, y: 12, topics: ['nomen', 'artikel'] },
+  { id: 'baum', word: 'Baum', article: 'der', clue: 'Er hat Stamm, Äste und grüne Blätter.', image: WORD_CARD_B, x: 36, y: 12, topics: ['nomen', 'artikel'] },
   { id: 'junge', word: 'Junge', article: 'der', clue: 'Die kleine Figur in blauer Kleidung.', image: WORD_CARD_B, x: 62, y: 13, topics: ['nomen', 'artikel'] },
-  { id: 'apfel', word: 'Apfel', article: 'der', clue: 'Das rote Obst mit gruenem Blatt.', image: WORD_CARD_B, x: 87, y: 13, topics: ['nomen', 'artikel'] },
+  { id: 'apfel', word: 'Apfel', article: 'der', clue: 'Das rote Obst mit grünem Blatt.', image: WORD_CARD_B, x: 87, y: 13, topics: ['nomen', 'artikel'] },
   { id: 'frau', word: 'Frau', article: 'die', clue: 'Die Figur mit rotem Rock.', image: WORD_CARD_B, x: 10, y: 63, topics: ['nomen', 'artikel'] },
   { id: 'fisch', word: 'Fisch', article: 'der', clue: 'Das Tier schwimmt im Wasser.', image: WORD_CARD_B, x: 36, y: 63, topics: ['nomen', 'wortschatz'] },
-  { id: 'blume', word: 'Blume', article: 'die', clue: 'Sie hat eine rote Bluete und gruene Blaetter.', image: WORD_CARD_B, x: 62, y: 63, topics: ['nomen', 'artikel'] },
+  { id: 'blume', word: 'Blume', article: 'die', clue: 'Sie hat eine rote Blüte und grüne Blätter.', image: WORD_CARD_B, x: 62, y: 63, topics: ['nomen', 'artikel'] },
   { id: 'haus', word: 'Haus', article: 'das', clue: 'Darin kann eine Familie wohnen.', image: WORD_CARD_B, x: 87, y: 63, topics: ['nomen', 'artikel'] }
 ];
 
@@ -53,7 +54,7 @@ const STORY_SETS = [
     panels: [
       { text: 'Der Baum steht in der Mitte.', crop: '36% 12%' },
       { text: 'Der Apfel ist rot.', crop: '87% 13%' },
-      { text: 'Die Blume waechst.', crop: '62% 63%' },
+      { text: 'Die Blume wächst.', crop: '62% 63%' },
       { text: 'Das Haus ist am Ziel.', crop: '87% 63%' }
     ]
   },
@@ -71,10 +72,10 @@ const STORY_SETS = [
 
 const COMPOUNDS = [
   { left: 'Papier', right: 'Boot', answer: 'Papierboot', meaning: 'ein kleines gefaltetes Boot' },
-  { left: 'Haus', right: 'Tuer', answer: 'Haustuer', meaning: 'die Tuer eines Hauses' },
-  { left: 'Blumen', right: 'Vase', answer: 'Blumenvase', meaning: 'ein Gefaess fuer Blumen' },
+  { left: 'Haus', right: 'Tür', answer: 'Haustür', meaning: 'die Tür eines Hauses' },
+  { left: 'Blumen', right: 'Vase', answer: 'Blumenvase', meaning: 'ein Gefäß für Blumen' },
   { left: 'Schreib', right: 'Tisch', answer: 'Schreibtisch', meaning: 'ein Tisch zum Arbeiten' },
-  { left: 'Schluessel', right: 'Bund', answer: 'Schluesselbund', meaning: 'mehrere Schluessel zusammen' },
+  { left: 'Schlüssel', right: 'Bund', answer: 'Schlüsselbund', meaning: 'mehrere Schlüssel zusammen' },
   { left: 'Wasser', right: 'Farbe', answer: 'Wasserfarbe', meaning: 'Farbe zum Malen mit Wasser' },
   { left: 'Buch', right: 'Seite', answer: 'Buchseite', meaning: 'ein Blatt in einem Buch' },
   { left: 'Spiel', right: 'Figur', answer: 'Spielfigur', meaning: 'eine Figur auf dem Brett' }
@@ -83,10 +84,10 @@ const COMPOUNDS = [
 const DIALOGUES = [
   {
     characterIndex: 7,
-    role: 'Erzaehlerin',
-    line: 'Der Weg fuehrt ueber den Fluss. Was sagt die Figur passend?',
-    answer: 'Ich gehe vorsichtig ueber die Bruecke.',
-    options: ['Ich gehe vorsichtig ueber die Bruecke.', 'Gestern sind der Bruecke laut.', 'Die Bruecke gehen schnell.']
+    role: 'Erzählerin',
+    line: 'Der Weg führt über den Fluss. Was sagt die Figur passend?',
+    answer: 'Ich gehe vorsichtig über die Brücke.',
+    options: ['Ich gehe vorsichtig über die Brücke.', 'Gestern sind der Brücke laut.', 'Die Brücke gehen schnell.']
   },
   {
     characterIndex: 1,
@@ -104,7 +105,7 @@ const DIALOGUES = [
   },
   {
     characterIndex: 8,
-    role: 'Zeitwaechter',
+    role: 'Zeitwächter',
     line: 'Die Uhr zeigt den Start. Welche Verbform passt?',
     answer: 'Wir beginnen jetzt.',
     options: ['Wir beginnen jetzt.', 'Wir begann jetzt.', 'Wir beginnst jetzt.']
@@ -128,12 +129,36 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
-function complete(onComplete, correct, delay = 780) {
-  setTimeout(() => onComplete({
+function complete(onComplete, correct, delay = 780, cleanup = null) {
+  const timerId = setTimeout(() => onComplete({
     correct,
     partial: false,
     score: correct ? 100 : 0
   }), delay);
+  if (cleanup?.timer) {
+    cleanup.timer(timerId);
+  }
+}
+
+function makeInteractionCleanup() {
+  const listeners = [];
+  const timers = [];
+  return {
+    on(target, type, handler, options) {
+      target.addEventListener(type, handler, options);
+      listeners.push([target, type, handler, options]);
+    },
+    timer(id) {
+      timers.push(id);
+      return id;
+    },
+    clear() {
+      listeners.forEach(([target, type, handler, options]) => target.removeEventListener(type, handler, options));
+      timers.forEach((id) => clearTimeout(id));
+      listeners.length = 0;
+      timers.length = 0;
+    }
+  };
 }
 
 function scene(container, { tone = 'green', kicker, title, text, image = OBJECT_TABLE, body }) {
@@ -151,9 +176,9 @@ function scene(container, { tone = 'green', kicker, title, text, image = OBJECT_
   `;
 }
 
-function bindChoice(container, selector, answer, onComplete) {
+function bindChoice(container, selector, answer, onComplete, cleanup = null) {
   container.querySelectorAll(selector).forEach((button) => {
-    button.addEventListener('click', () => {
+    const handleClick = () => {
       const correct = button.dataset.answer === answer;
       container.querySelectorAll(selector).forEach((entry) => {
         entry.disabled = true;
@@ -163,8 +188,13 @@ function bindChoice(container, selector, answer, onComplete) {
       });
       button.classList.add(correct ? 'is-hit' : 'is-miss');
       SoundManager.play(correct ? 'paintBloom' : 'error');
-      complete(onComplete, correct, correct ? 760 : 1080);
-    });
+      complete(onComplete, correct, correct ? 760 : 1080, cleanup);
+    };
+    if (cleanup?.on) {
+      cleanup.on(button, 'click', handleClick);
+    } else {
+      button.addEventListener('click', handleClick);
+    }
   });
 }
 
@@ -176,13 +206,14 @@ function objectOptions(target, key = 'word') {
 export const BildwortGalerie = {
   id: 'bildwort-galerie',
   name_de: 'Bildwort-Galerie',
-  description: 'Hochwertige Bildobjekte erkennen und das passende Wort waehlen.',
+  description: 'Hochwertige Bildobjekte erkennen und das passende Wort wählen.',
   topics: ['wortschatz', 'lesen', 'nomen'],
   supportsDirectPlay: true,
   directPlayDefaults: DIRECT_DEFAULTS,
   defaultRounds: 5,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS);
     const options = objectOptions(target);
@@ -191,7 +222,7 @@ export const BildwortGalerie = {
     scene(container, {
       tone: 'gold',
       kicker: 'Bildgalerie',
-      title: 'Welches Wort gehoert zum Bild?',
+      title: 'Welches Wort gehört zum Bild?',
       text: target.clue,
       image,
       body: `
@@ -205,7 +236,8 @@ export const BildwortGalerie = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', target.word, onComplete);
+    bindChoice(container, '.premium-content-options button', target.word, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -219,6 +251,7 @@ export const WimmelbildDetektiv = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS);
     const image = target.image || OBJECT_TABLE;
@@ -241,18 +274,19 @@ export const WimmelbildDetektiv = {
     });
 
     container.querySelectorAll('.premium-hotspot').forEach((button) => {
-      button.addEventListener('click', () => {
+      cleanup.on(button, 'click', () => {
         const correct = button.dataset.answer === target.id;
         button.classList.add(correct ? 'is-hit' : 'is-miss');
         if (correct) {
           SoundManager.play('reward');
-          complete(onComplete, true, 760);
+          complete(onComplete, true, 760, cleanup);
           return;
         }
         SoundManager.play('failSoft');
-        setTimeout(() => button.classList.remove('is-miss'), 420);
+        cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 420));
       });
     });
+    return cleanup.clear;
   }
 };
 
@@ -266,6 +300,7 @@ export const ArtikelBildjagd = {
   defaultRounds: 5,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS.filter((entry) => entry.article));
     const image = target.image || OBJECT_TABLE;
@@ -274,7 +309,7 @@ export const ArtikelBildjagd = {
       tone: 'ochre',
       kicker: 'Artikelbild',
       title: `Welcher Artikel passt zu ${target.word}?`,
-      text: 'Sieh genau auf das markierte Objekt und waehle der, die oder das.',
+      text: 'Sieh genau auf das markierte Objekt und wähle der, die oder das.',
       image,
       body: `
         <div class="premium-image-stage">
@@ -287,7 +322,8 @@ export const ArtikelBildjagd = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', target.article, onComplete);
+    bindChoice(container, '.premium-content-options button', target.article, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -301,6 +337,7 @@ export const SatzStoryboard = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const story = pick(STORY_SETS);
     const shuffled = shuffle(story.panels.map((panel, index) => ({ ...panel, index })));
@@ -311,7 +348,7 @@ export const SatzStoryboard = {
       kicker: 'Storyboard',
       title: story.title,
       text: 'Tippe die Bildkarten in der richtigen Reihenfolge an.',
-      image: story.image || BOARD_TABLE,
+      image: story.image || HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-story-track">
           ${story.panels.map((_, index) => `<span data-slot="${index}"></span>`).join('')}
@@ -327,12 +364,12 @@ export const SatzStoryboard = {
     });
 
     container.querySelectorAll('.premium-story-card').forEach((button) => {
-      button.addEventListener('click', () => {
+      cleanup.on(button, 'click', () => {
         const correct = Number(button.dataset.index) === cursor;
         if (!correct) {
           button.classList.add('is-miss');
           SoundManager.play('error');
-          setTimeout(() => button.classList.remove('is-miss'), 420);
+          cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 420));
           return;
         }
         const slot = container.querySelector(`[data-slot="${cursor}"]`);
@@ -346,10 +383,11 @@ export const SatzStoryboard = {
         cursor += 1;
         if (cursor >= story.panels.length) {
           SoundManager.play('success');
-          complete(onComplete, true, 760);
+          complete(onComplete, true, 760, cleanup);
         }
       });
     });
+    return cleanup.clear;
   }
 };
 
@@ -363,6 +401,7 @@ export const KompositumAtelier = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const item = pick(COMPOUNDS);
     const options = shuffle([item.answer, ...shuffle(COMPOUNDS.filter((entry) => entry.answer !== item.answer)).slice(0, 3).map((entry) => entry.answer)]);
@@ -372,7 +411,7 @@ export const KompositumAtelier = {
       kicker: 'Wortatelier',
       title: 'Baue das Kompositum',
       text: item.meaning,
-      image: BOARD_TABLE,
+      image: HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-compound-board">
           <span>${escapeHtml(item.left)}</span>
@@ -385,7 +424,8 @@ export const KompositumAtelier = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', item.answer, onComplete);
+    bindChoice(container, '.premium-content-options button', item.answer, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -399,6 +439,7 @@ export const DialogSpotlight = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const item = pick(DIALOGUES);
     const options = shuffle(item.options);
@@ -408,7 +449,7 @@ export const DialogSpotlight = {
       kicker: 'Dialog',
       title: item.role,
       text: item.line,
-      image: BOARD_TABLE,
+      image: HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-dialog-stage">
           <div class="premium-dialog-portrait" aria-hidden="true">${renderCharacterAvatar(item.characterIndex ?? 0, 112)}</div>
@@ -420,6 +461,7 @@ export const DialogSpotlight = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', item.answer, onComplete);
+    bindChoice(container, '.premium-content-options button', item.answer, onComplete, cleanup);
+    return cleanup.clear;
   }
 };

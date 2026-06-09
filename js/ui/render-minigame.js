@@ -3,11 +3,12 @@
  * No emojis - all illustrated SVG icons
  */
 
-import { getMinigame } from '../minigames/minigame-registry.js?v=game-feel-cutouts-30';
+import { getMinigame } from '../minigames/minigame-registry.js?v=content-card-material-50';
 import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigames/core/party-game-core.js';
-import { createDirectTask, generateTask } from '../learning/task-generator.js?v=game-feel-cutouts-30';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=game-feel-cutouts-30';
-import { SoundManager } from './sound-manager.js?v=game-feel-cutouts-30';
+import { createDirectTask, generateTask } from '../learning/task-generator.js?v=content-card-material-50';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=content-card-material-50';
+import { SoundManager } from './sound-manager.js?v=content-card-material-50';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=content-card-material-50';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
 
 export class MinigameRenderer {
@@ -16,6 +17,7 @@ export class MinigameRenderer {
     this.settings = settings;
     this.onComplete = null;
     this.timerInterval = null;
+    this.timerRunId = 0;
     this.activeCleanup = null;
     this.activeGameId = null;
   }
@@ -91,6 +93,9 @@ export class MinigameRenderer {
     const partyConfig = task.partyConfig;
     const useExternalTimer = task.timerSeconds > 0 && !minigame.usesInternalTimer;
     const exitOptions = runtimeContext.exitOptions || {};
+    const shellContext = this._getShellContext(runtimeContext, exitOptions, mode);
+    const boardPlayerCard = this._renderBoardPlayerCard(task, runtimeContext, 'sidebar');
+    const boardStagePlayerCard = this._renderBoardPlayerCard(task, runtimeContext, 'stage');
     const titleClassName = minigame.name_de.length > 14
       ? 'minigame-title minigame-title--compact'
       : 'minigame-title';
@@ -116,7 +121,7 @@ export class MinigameRenderer {
       " data-topic="${task.topic || 'wortschatz'}" data-mode="${mode}" data-game="${task.miniGameId || 'deutsch'}" data-world="${BOARD_THEME.id}">
         <div class="minigame-shell">
           <aside class="minigame-sidebar">
-            <div class="minigame-kicker">${modeIcon}<span>${this._getModeLabel(mode)}</span></div>
+            <div class="minigame-kicker">${modeIcon}<span>${shellContext.kicker}</span></div>
             <div class="minigame-title-row">
               <div class="minigame-title-icon">${modeIcon}</div>
               <div>
@@ -124,6 +129,7 @@ export class MinigameRenderer {
                 <p class="minigame-subtitle">${theme.subtitle}</p>
               </div>
             </div>
+            ${boardPlayerCard}
             ${this._renderMissionTrail(topicLabel)}
             <div class="minigame-meta">
               <span class="mission-chip">Thema: ${topicLabel}</span>
@@ -137,7 +143,7 @@ export class MinigameRenderer {
 
           <section class="minigame-stage">
             <div class="minigame-stage-topbar">
-              <div class="minigame-stage-title">Aufgabenblatt</div>
+              <div class="minigame-stage-title">${shellContext.stageTitle}</div>
               <div class="minigame-stage-actions">
                 ${exitOptions.backLabel ? `
                   <button class="btn btn-secondary btn-sm minigame-nav-btn" id="btn-minigame-back-out" type="button">
@@ -155,9 +161,10 @@ export class MinigameRenderer {
                       ${iconTimer(16)} <span id="timer-value">${task.timerSeconds}</span>s
                     </div>
                   </div>
-                ` : '<div class="mission-chip">Live-Show</div>'}
+                ` : `<div class="mission-chip">${shellContext.untimedLabel}</div>`}
               </div>
             </div>
+            ${boardStagePlayerCard}
             <div id="minigame-game-area" class="minigame-game-area"></div>
           </section>
         </div>
@@ -296,10 +303,16 @@ export class MinigameRenderer {
 
   _startTimer(seconds, onTimeout) {
     let remaining = seconds;
+    const runId = ++this.timerRunId;
     const timerEl = document.getElementById('timer-value');
     const timerContainer = document.getElementById('minigame-timer');
     
-    this.timerInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
+      if (this.timerRunId !== runId || this.timerInterval !== intervalId) {
+        clearInterval(intervalId);
+        return;
+      }
+
       remaining--;
       if (timerEl) timerEl.textContent = remaining;
       if (remaining > 0 && remaining <= 5) {
@@ -315,13 +328,23 @@ export class MinigameRenderer {
       }
       
       if (remaining <= 0) {
-        this._clearTimer();
+        clearInterval(intervalId);
+        if (this.timerInterval === intervalId) {
+          this.timerInterval = null;
+        }
+        if (this.timerRunId !== runId) {
+          return;
+        }
+        this.timerRunId++;
         onTimeout();
       }
     }, 1000);
+
+    this.timerInterval = intervalId;
   }
 
   _clearTimer() {
+    this.timerRunId++;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
@@ -394,7 +417,19 @@ export class MinigameRenderer {
       '.kompositum-shell',
       '.taeusch-shell',
       '.reim-battle-shell',
-      '.rollen-shell'
+      '.rollen-shell',
+      '.word-type-sort-game',
+      '.article-choice-game',
+      '.article-cannon-game',
+      '.case-choice-game',
+      '.noun-hunter-game',
+      '.rhyme-match-game',
+      '.syllable-counter-game',
+      '.sentence-order-game',
+      '.fill-blanks-game',
+      '.spelling-detective-game',
+      '.atelier-game',
+      '.premium-content-game'
     ];
 
     const isModern = modernSelectors.some((selector) => root.matches(selector) || root.querySelector(selector));
@@ -452,6 +487,93 @@ export class MinigameRenderer {
     if (mode === 'challenge') return 'Challenge';
     if (mode === 'team') return 'Team-Mission';
     return 'Solo-Mission';
+  }
+
+  _getShellContext(runtimeContext = {}, exitOptions = {}, mode = 'normal') {
+    if (runtimeContext.source === 'board' || exitOptions.backLabel === 'Zum Brett') {
+      return {
+        kicker: 'Brett-Mission',
+        stageTitle: 'Brettaufgabe',
+        untimedLabel: 'Brettmoment'
+      };
+    }
+
+    if (runtimeContext.source === 'direct' || exitOptions.backLabel === 'Zu Minigames') {
+      return {
+        kicker: 'Direktspiel',
+        stageTitle: 'Direktspiel',
+        untimedLabel: 'Freies Spiel'
+      };
+    }
+
+    return {
+      kicker: this._getModeLabel(mode),
+      stageTitle: 'Aufgabenblatt',
+      untimedLabel: 'Freies Spiel'
+    };
+  }
+
+  _renderBoardPlayerCard(task, runtimeContext = {}, placement = 'sidebar') {
+    if (runtimeContext.source !== 'board') {
+      return '';
+    }
+
+    const player = this._getCurrentPlayer(task);
+    if (!player) {
+      return '';
+    }
+
+    const characterIndex = this._getCharacterIndexForPlayer(player);
+    const field = runtimeContext.field || {};
+    const fieldTitle = field.title ? this._escape(field.title) : 'Brettfeld';
+    const fieldSubtitle = field.subtitle ? ` · ${this._escape(field.subtitle)}` : '';
+    const fieldNumber = Number.isFinite(field.id) ? `Feld ${field.id}` : 'Brettaufgabe';
+    const playerName = this._escape(player.name || `Spieler ${Number(player.id) + 1 || 1}`);
+    const avatarName = player.avatarName || CHARACTERS[characterIndex]?.name_de || 'Spielfigur';
+    const cardLabel = placement === 'stage' ? 'Brettzug' : 'Am Zug';
+    const cardTitle = placement === 'stage' ? `${fieldNumber} · ${playerName}` : playerName;
+    const cardDetail = placement === 'stage'
+      ? `${this._escape(avatarName)} spielt jetzt: ${fieldTitle}${fieldSubtitle}`
+      : `${this._escape(avatarName)} · ${this._escape(fieldNumber)} · ${fieldTitle}${fieldSubtitle}`;
+    const placementClass = placement === 'stage'
+      ? ' minigame-player-card--stage'
+      : ' minigame-player-card--sidebar';
+
+    return `
+      <div class="minigame-player-card${placementClass}" aria-label="Aktiver Spieler der Brettaufgabe">
+        <div class="minigame-player-avatar">${renderCharacterAvatar(characterIndex, 58)}</div>
+        <div class="minigame-player-copy">
+          <span>${cardLabel}</span>
+          <strong>${cardTitle}</strong>
+          <small>${cardDetail}</small>
+        </div>
+      </div>
+    `;
+  }
+
+  _getCurrentPlayer(task) {
+    const players = Array.isArray(task.players) ? task.players : [];
+    if (!players.length) {
+      return null;
+    }
+
+    const currentPlayerId = task.currentPlayerId;
+    return players.find((player) => player.id === currentPlayerId) || players[0] || null;
+  }
+
+  _getCharacterIndexForPlayer(player = {}) {
+    if (Number.isFinite(player.colorIndex)) {
+      return player.colorIndex;
+    }
+
+    if (player.avatarId) {
+      const avatarIndex = CHARACTERS.findIndex((character) => character.id === player.avatarId);
+      if (avatarIndex >= 0) {
+        return avatarIndex;
+      }
+    }
+
+    return Number.isFinite(player.id) ? player.id : 0;
   }
 
   _getTopicLabel(topic) {

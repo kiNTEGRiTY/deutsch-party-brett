@@ -1,4 +1,4 @@
-import { SoundManager } from '../../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../../ui/sound-manager.js?v=content-card-material-50';
 import {
   buildTaskPartyConfig,
   computeArcadeResult,
@@ -278,7 +278,7 @@ export function createRuleGame(definition) {
 
       return {
         valid: Boolean(result.valid),
-        message: result.message || (result.valid ? 'Treffer.' : 'Keine gueltige Antwort.'),
+        message: result.message || (result.valid ? 'Treffer.' : 'Keine gültige Antwort.'),
         tone: result.tone || (result.valid ? 'good' : 'fail'),
         points: Number(result.points || 0),
         displayValue: result.displayValue || '',

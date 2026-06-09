@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-8';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 import { RECHTSCHREIBUNG_CONTENT } from '../learning/languages/de/content-rechtschreibung.js';
 import {
   addScore,
