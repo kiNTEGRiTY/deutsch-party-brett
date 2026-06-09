@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=premium-curation-32';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=board-fullscreen-33';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=premium-curation-32';
-import { SoundManager } from './sound-manager.js?v=premium-curation-32';
+import { renderCharacterAvatar } from './characters.js?v=board-fullscreen-33';
+import { SoundManager } from './sound-manager.js?v=board-fullscreen-33';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -296,11 +296,15 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
-    const tileWidth = isStart || isFinish ? 118 : 98;
-    const tileHeight = isStart || isFinish ? 68 : 60;
-    const tileRadius = isStart || isFinish ? 20 : 18;
+    const tileWidth = isStart || isFinish ? 152 : 124;
+    const tileHeight = isStart || isFinish ? 84 : 74;
+    const tileRadius = isStart || isFinish ? 24 : 21;
     const tileX = -tileWidth / 2;
     const tileY = -tileHeight / 2;
+    const badgeX = isStart || isFinish ? -42 : -38;
+    const badgeY = isStart || isFinish ? -30 : -25;
+    const indexX = isStart || isFinish ? 42 : 38;
+    const indexY = isStart || isFinish ? -30 : -25;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const className = [
       'board-field-node',
@@ -319,10 +323,10 @@ export class BoardRenderer {
           <rect class="field-body" x="${tileX}" y="${tileY}" width="${tileWidth}" height="${tileHeight}" rx="${tileRadius}"></rect>
           <rect class="field-glaze" x="${tileX + 7}" y="${tileY + 7}" width="${tileWidth - 14}" height="${tileHeight - 14}" rx="${Math.max(10, tileRadius - 5)}"></rect>
         </g>
-        <circle class="field-type-dot" cx="${isStart || isFinish ? -29 : -25}" cy="${isStart || isFinish ? -22 : -19}" r="${isStart || isFinish ? 12 : 9}"></circle>
-        <text class="field-icon" x="${isStart || isFinish ? -29 : -25}" y="${isStart || isFinish ? -22 : -19}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
-        <text class="field-index" x="${isStart || isFinish ? 31 : 27}" y="${isStart || isFinish ? -23 : -19}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
-        <text class="field-main" y="${isStart || isFinish ? 10 : 9}" text-anchor="middle">${this._escape(shortLabel)}</text>
+        <circle class="field-type-dot" cx="${badgeX}" cy="${badgeY}" r="${isStart || isFinish ? 13 : 10}"></circle>
+        <text class="field-icon" x="${badgeX}" y="${badgeY}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
+        <text class="field-index" x="${indexX}" y="${indexY}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
+        <text class="field-main" y="${isStart || isFinish ? 13 : 12}" text-anchor="middle">${this._escape(shortLabel)}</text>
         <title>${this._escape(`Feld ${field.id}: ${displayType}`)}</title>
       </g>
     `;

@@ -3,7 +3,7 @@
  */
 
 import { FieldType } from './field-types.js';
-import { getBoardLayoutForImage } from './board-layouts.js?v=premium-curation-32';
+import { getBoardLayoutForImage } from './board-layouts.js?v=board-fullscreen-33';
 
 const TYPE_COUNTS = {
   [FieldType.NOMEN]: 8,

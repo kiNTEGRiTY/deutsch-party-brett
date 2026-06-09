@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=premium-curation-32';
+import { SoundManager } from '../ui/sound-manager.js?v=board-fullscreen-33';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
