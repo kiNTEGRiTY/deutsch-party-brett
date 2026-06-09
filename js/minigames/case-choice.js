@@ -1,8 +1,64 @@
 /**
  * Mini-Game: Case Choice
- * 
- * Is the word uppercase (noun) or lowercase (not a noun)?
+ *
+ * Decide whether a German word or word group should be written uppercase or
+ * lowercase.
  */
+
+const MAX_ROUNDS = 5;
+const ADVANCE_DELAY_MS = 1150;
+
+function escapeHTML(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let index = copy.length - 1; index > 0; index--) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+  }
+  return copy;
+}
+
+function normalizeCaseItem(rawItem) {
+  const source = String(rawItem?.word ?? '').trim();
+  const correct = String(rawItem?.correct ?? '').trim();
+  if (!source || !correct || typeof rawItem?.isNoun !== 'boolean') {
+    return null;
+  }
+
+  const answer = rawItem.isNoun ? 'gross' : 'klein';
+  return {
+    display: source.toLocaleLowerCase('de-DE'),
+    correct,
+    answer,
+    label: rawItem.isNoun ? 'Nomen oder nominalisiert' : 'kein Nomen',
+    explanation: String(rawItem?.explanation ?? '').trim() || (
+      rawItem.isNoun
+        ? 'Nomen und nominalisierte Wörter werden großgeschrieben.'
+        : 'Verben, Adjektive und viele Zeitwörter werden kleingeschrieben.'
+    )
+  };
+}
+
+const ANSWERS = [
+  {
+    id: 'gross',
+    title: 'Groß schreiben',
+    examples: 'Hund, Schule, das Lesen'
+  },
+  {
+    id: 'klein',
+    title: 'klein schreiben',
+    examples: 'spielen, schnell, heute'
+  }
+];
 
 export const CaseChoice = {
   id: 'case-choice',
@@ -10,89 +66,178 @@ export const CaseChoice = {
   topics: ['gross_klein'],
 
   setup(container, task, onComplete) {
-    const content = task.content;
-    const items = content.items;
-    
-    if (!items || items.length === 0) {
-      onComplete({ correct: false, score: 0 });
-      return;
+    const items = Array.isArray(task.content?.items)
+      ? task.content.items.map(normalizeCaseItem).filter(Boolean)
+      : [];
+
+    if (items.length === 0) {
+      onComplete({
+        correct: false,
+        partial: false,
+        score: 0,
+        reason: 'missing-case-choice-content',
+        topic: task.topic
+      });
+      return () => {};
     }
 
-    const selected = [...items].sort(() => Math.random() - 0.5).slice(0, 5);
+    const selected = shuffle(items).slice(0, MAX_ROUNDS);
     let currentIndex = 0;
     let correctCount = 0;
+    let answered = false;
+    let disposed = false;
+    let nextTimeoutId = null;
+    const listeners = [];
 
-    function renderQuestion() {
+    const addListener = (node, eventName, handler) => {
+      node.addEventListener(eventName, handler);
+      listeners.push(() => node.removeEventListener(eventName, handler));
+    };
+
+    const cleanupRenderListeners = () => {
+      listeners.forEach((remove) => remove());
+      listeners.length = 0;
+    };
+
+    const finish = () => {
+      const score = Math.round((correctCount / selected.length) * 100);
+      onComplete({
+        correct: score >= 80,
+        partial: score >= 50,
+        score,
+        details: {
+          correctCount,
+          totalQuestions: selected.length,
+          topic: task.topic
+        }
+      });
+    };
+
+    const scheduleNext = () => {
+      nextTimeoutId = setTimeout(() => {
+        nextTimeoutId = null;
+        if (disposed) {
+          return;
+        }
+
+        currentIndex++;
+        if (currentIndex < selected.length) {
+          renderQuestion();
+          return;
+        }
+
+        finish();
+      }, ADVANCE_DELAY_MS);
+    };
+
+    const renderQuestion = () => {
+      answered = false;
+      cleanupRenderListeners();
+
       const item = selected[currentIndex];
-      // Show the word in a "neutral" form (first letter could go either way)
-      const neutralWord = item.word.toLowerCase();
+      const progress = currentIndex / selected.length;
 
       container.innerHTML = `
-        <div class="minigame-body">
-          <div style="text-align:center; margin-bottom: var(--space-md);">
-            <span class="turn-round">${currentIndex + 1} / ${selected.length}</span>
+        <div class="case-choice-game">
+          <div class="case-choice-brief">
+            <div class="case-choice-mark" aria-hidden="true">Aa</div>
+            <div class="case-choice-copy">
+              <h3>Groß oder klein?</h3>
+              <p>Entscheide, ob das Wort als Nomen großgeschrieben wird.</p>
+            </div>
+            <div class="case-choice-status" aria-live="polite">
+              <span>${currentIndex + 1}/${selected.length}</span>
+              <div class="case-choice-progress" aria-hidden="true"><span></span></div>
+            </div>
           </div>
-          <p style="text-align:center; font-size: var(--font-size-lg); margin-bottom: var(--space-lg); color: var(--text-primary);">
-            Wird dieses Wort <strong>groß</strong> oder <strong>klein</strong> geschrieben?
-          </p>
-          <div style="text-align:center; margin-bottom: var(--space-xl);">
-            <span style="font-family: var(--font-family-display); font-size: var(--font-size-3xl); font-weight: var(--font-weight-black); color: var(--color-primary); letter-spacing: 2px;">
-              ${neutralWord}
-            </span>
+
+          <section class="case-choice-card" aria-label="Wortprobe">
+            <span class="case-choice-prompt">Wortprobe</span>
+            <strong class="case-choice-word" id="case-choice-word">${escapeHTML(item.display)}</strong>
+            <span class="case-choice-ghost">Welche Schreibweise wäre im Heft richtig?</span>
+          </section>
+
+          <section class="case-choice-options" aria-label="Schreibweise wählen">
+            ${ANSWERS.map((answer) => `
+              <button class="case-choice-option" type="button" data-answer="${answer.id}">
+                <span>${escapeHTML(answer.title)}</span>
+                <small>${escapeHTML(answer.examples)}</small>
+              </button>
+            `).join('')}
+          </section>
+
+          <div class="case-choice-solution" id="case-choice-solution" aria-live="polite">
+            <span class="case-choice-solution-label">Lösung</span>
+            <strong>...</strong>
+            <span>Die Regel erscheint nach deiner Wahl.</span>
           </div>
-          <div class="answer-options" style="max-width: 400px; margin: 0 auto; grid-template-columns: 1fr 1fr;">
-            <button class="answer-option" data-answer="gross" style="font-size: var(--font-size-xl);">
-              🔠 GROSS
-            </button>
-            <button class="answer-option" data-answer="klein" style="font-size: var(--font-size-xl);">
-              🔡 klein
-            </button>
+
+          <div class="case-choice-feedback" id="case-choice-feedback" aria-live="polite">
+            Achte darauf, ob ein Artikel davorsteht oder ob das Wort ein Nomen ist.
           </div>
-          <div id="feedback-area" style="text-align:center; margin-top: var(--space-lg); min-height: 60px;"></div>
         </div>
       `;
 
-      container.querySelectorAll('.answer-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const answer = btn.dataset.answer;
-          const correctAnswer = item.isNoun ? 'gross' : 'klein';
-          const isCorrect = answer === correctAnswer;
-          
-          container.querySelectorAll('.answer-option').forEach(b => b.classList.add('disabled'));
-          
-          const feedback = document.getElementById('feedback-area');
-          if (isCorrect) {
-            btn.classList.add('correct');
-            correctCount++;
-            feedback.innerHTML = `
-              <span style="color: var(--color-success); font-weight: bold; font-size: var(--font-size-lg);">
-                Richtig! ✓ -> ${item.correct}
-              </span><br>
-              <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">${item.explanation}</span>`;
-          } else {
-            btn.classList.add('wrong');
-            const correctBtn = container.querySelector(`[data-answer="${correctAnswer}"]`);
-            if (correctBtn) correctBtn.classList.add('correct');
-            feedback.innerHTML = `
-              <span style="color: var(--color-error); font-weight: bold; font-size: var(--font-size-lg);">
-                Leider nein! -> ${item.correct}
-              </span><br>
-              <span style="font-size: var(--font-size-sm); color: var(--text-secondary);">${item.explanation}</span>`;
+      container.querySelector('.case-choice-progress span')?.style.setProperty('transform', `scaleX(${progress})`);
+
+      const word = container.querySelector('#case-choice-word');
+      const solution = container.querySelector('#case-choice-solution');
+      const feedback = container.querySelector('#case-choice-feedback');
+      const buttons = Array.from(container.querySelectorAll('.case-choice-option'));
+
+      buttons.forEach((button) => {
+        addListener(button, 'click', () => {
+          if (answered) {
+            return;
           }
 
-          setTimeout(() => {
-            currentIndex++;
-            if (currentIndex < selected.length) {
-              renderQuestion();
-            } else {
-              const score = Math.round((correctCount / selected.length) * 100);
-              onComplete({ correct: score >= 80, partial: score >= 50, score });
-            }
-          }, 2000);
+          answered = true;
+          const selectedAnswer = button.dataset.answer;
+          const isCorrect = selectedAnswer === item.answer;
+          if (isCorrect) {
+            correctCount++;
+          }
+
+          buttons.forEach((optionButton) => {
+            const answer = optionButton.dataset.answer;
+            optionButton.disabled = true;
+            optionButton.classList.toggle('is-correct', answer === item.answer);
+            optionButton.classList.toggle('is-wrong', optionButton === button && !isCorrect);
+          });
+
+          if (word) {
+            word.dataset.state = isCorrect ? 'correct' : 'wrong';
+            word.textContent = item.correct;
+          }
+
+          if (solution) {
+            solution.dataset.state = isCorrect ? 'correct' : 'wrong';
+            solution.innerHTML = `
+              <span class="case-choice-solution-label">Lösung</span>
+              <strong>${escapeHTML(item.correct)}</strong>
+              <span>${escapeHTML(item.label)}: ${escapeHTML(item.explanation)}</span>
+            `;
+          }
+
+          if (feedback) {
+            feedback.dataset.state = isCorrect ? 'correct' : 'wrong';
+            feedback.textContent = isCorrect
+              ? `Richtig: ${item.correct}. ${item.explanation}`
+              : `Noch nicht: richtig ist "${item.correct}". ${item.explanation}`;
+          }
+
+          scheduleNext();
         });
       });
-    }
+    };
 
     renderQuestion();
+    return () => {
+      disposed = true;
+      cleanupRenderListeners();
+      if (nextTimeoutId) {
+        clearTimeout(nextTimeoutId);
+      }
+    };
   }
 };

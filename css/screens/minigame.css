@@ -4711,6 +4711,373 @@
   box-shadow: inset 0 0 0 7px rgba(255, 255, 255, 0.18) !important;
 }
 
+.minigame-game-area[data-game="case-choice"] {
+  place-items: stretch;
+  padding: 16px;
+  overflow-y: auto;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(112, 151, 94, 0.17), transparent 28%),
+    radial-gradient(circle at 87% 13%, rgba(94, 130, 157, 0.15), transparent 27%),
+    linear-gradient(145deg, rgba(255, 251, 238, 0.98), rgba(238, 220, 184, 0.94)),
+    #f8ecd1 !important;
+}
+
+.case-choice-game {
+  width: min(940px, 100%);
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(148px, auto) auto auto auto;
+  align-content: start;
+  gap: 12px;
+  color: #3f2e1d;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+.case-choice-brief {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(170px, 230px);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1.5px solid rgba(74, 52, 32, 0.22);
+  border-radius: 8px 13px 9px 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 243, 0.94), rgba(241, 226, 196, 0.88)),
+    #fff6df;
+  box-shadow: 0 12px 24px rgba(77, 48, 22, 0.13);
+}
+
+.case-choice-mark {
+  min-width: 66px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  padding: 0 12px;
+  border: 2px solid rgba(70, 48, 29, 0.2);
+  border-radius: 8px 15px 7px 13px;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(143, 171, 116, 0.58)),
+    #dfe8c9;
+  color: #405236;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 1.12rem;
+  font-weight: 900;
+  box-shadow: 0 5px 0 rgba(104, 66, 29, 0.15);
+}
+
+.case-choice-copy {
+  min-width: 0;
+}
+
+.case-choice-copy h3 {
+  margin: 0 0 4px;
+  color: #3b2b1b;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 1.34rem;
+  line-height: 1.06;
+  letter-spacing: 0;
+}
+
+.case-choice-copy p {
+  margin: 0;
+  color: #654b31;
+  font-size: 0.94rem;
+  font-weight: 760;
+  line-height: 1.32;
+}
+
+.case-choice-status {
+  display: grid;
+  gap: 8px;
+  color: #4f3a23;
+  font-weight: 900;
+  text-align: right;
+}
+
+.case-choice-progress {
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(76, 53, 31, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.case-choice-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, #70985e, #6c93ad),
+    #70985e;
+  transition: transform 220ms ease;
+}
+
+.case-choice-card,
+.case-choice-solution,
+.case-choice-feedback {
+  border: 1.5px solid rgba(72, 50, 30, 0.2);
+  border-radius: 9px 14px 8px 12px;
+  background:
+    linear-gradient(145deg, rgba(255, 253, 243, 0.88), rgba(238, 219, 184, 0.72)),
+    #fff1d0;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.14),
+    0 10px 18px rgba(65, 42, 22, 0.09);
+}
+
+.case-choice-card {
+  min-height: 148px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 18px;
+  text-align: center;
+}
+
+.case-choice-prompt {
+  color: #775733;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.case-choice-word {
+  color: #2f2418;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 2.24rem;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.case-choice-word[data-state="correct"] {
+  color: #355f32;
+}
+
+.case-choice-word[data-state="wrong"] {
+  color: #7b3526;
+}
+
+.case-choice-ghost {
+  color: #765b39;
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.case-choice-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.case-choice-option {
+  min-height: 78px;
+  display: grid;
+  gap: 5px;
+  align-content: center;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(61, 43, 25, 0.24);
+  border-radius: 7px 12px 6px 11px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(244, 225, 188, 0.82)),
+    #fff2d1;
+  color: #3f2d1b;
+  box-shadow:
+    0 5px 0 rgba(87, 56, 25, 0.14),
+    0 10px 18px rgba(65, 42, 22, 0.12);
+  cursor: pointer;
+  font: 900 1.08rem/1.12 "Avenir Next", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.case-choice-option small {
+  color: #735739;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.case-choice-option:hover:not(:disabled),
+.case-choice-option:focus-visible {
+  border-color: rgba(89, 133, 94, 0.58);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(221, 237, 207, 0.9)),
+    #eef6e4;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.case-choice-option.is-correct {
+  border-color: rgba(76, 131, 70, 0.5);
+  background:
+    linear-gradient(145deg, rgba(249, 255, 238, 0.96), rgba(196, 226, 171, 0.9)),
+    #dff0c8;
+  color: #355f32;
+}
+
+.case-choice-option.is-wrong {
+  border-color: rgba(171, 78, 48, 0.48);
+  background:
+    linear-gradient(145deg, rgba(255, 248, 239, 0.94), rgba(244, 174, 139, 0.9)),
+    #f5c19e;
+  color: #7b3526;
+  animation: case-choice-nudge 310ms ease-out;
+}
+
+.case-choice-option:disabled {
+  cursor: default;
+}
+
+.case-choice-solution {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  color: #5c452c;
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.28;
+}
+
+.case-choice-solution-label {
+  grid-row: span 2;
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  min-width: 78px;
+  padding: 7px 10px;
+  border-radius: 7px 11px 8px 12px;
+  background: rgba(255, 249, 233, 0.82);
+  color: #6b4c2a;
+  font-weight: 900;
+}
+
+.case-choice-solution strong {
+  color: #3f2d1b;
+  font-size: 1.12rem;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.case-choice-solution[data-state="correct"] {
+  border-color: rgba(79, 133, 75, 0.32);
+  background: rgba(226, 243, 210, 0.84);
+}
+
+.case-choice-solution[data-state="wrong"] {
+  border-color: rgba(182, 83, 55, 0.34);
+  background: rgba(255, 226, 207, 0.86);
+}
+
+.case-choice-feedback {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  color: #573e26;
+  font-size: 0.95rem;
+  font-weight: 820;
+  line-height: 1.28;
+}
+
+.case-choice-feedback[data-state="correct"] {
+  border-color: rgba(79, 133, 75, 0.32);
+  background: rgba(226, 243, 210, 0.84);
+  color: #355f32;
+}
+
+.case-choice-feedback[data-state="wrong"] {
+  border-color: rgba(182, 83, 55, 0.34);
+  background: rgba(255, 226, 207, 0.86);
+  color: #7b3526;
+}
+
+@keyframes case-choice-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 760px) {
+  .minigame-overlay[data-game="case-choice"] .minigame-shell {
+    height: calc(100dvh - 16px);
+    min-height: calc(100dvh - 16px) !important;
+  }
+
+  .minigame-overlay[data-game="case-choice"] .minigame-stage {
+    height: calc(100dvh - 16px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .minigame-game-area[data-game="case-choice"] {
+    padding: 10px;
+  }
+
+  .case-choice-game {
+    min-height: auto;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 10px;
+  }
+
+  .case-choice-brief {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .case-choice-status {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .case-choice-card {
+    min-height: 126px;
+    padding: 13px;
+  }
+
+  .case-choice-word {
+    font-size: 1.72rem;
+  }
+
+  .case-choice-options {
+    grid-template-columns: 1fr;
+  }
+
+  .case-choice-option {
+    min-height: 58px;
+  }
+
+  .case-choice-solution {
+    grid-template-columns: 1fr;
+  }
+
+  .case-choice-solution-label {
+    grid-row: auto;
+    min-width: 0;
+    min-height: 34px;
+  }
+}
+
 .minigame-game-area[data-game="spelling-detective"] {
   place-items: stretch;
   padding: 16px;
