@@ -5,7 +5,7 @@
  * Setup -> Board Play -> Mini-Games -> Rewards -> End
  */
 
-import { Board } from './board.js?v=field-route-fullscreen-31';
+import { Board } from './board.js?v=premium-curation-32';
 import { Dice } from './dice.js';
 import { Player } from './player.js';
 import { TurnManager, TurnPhase } from './turn.js';

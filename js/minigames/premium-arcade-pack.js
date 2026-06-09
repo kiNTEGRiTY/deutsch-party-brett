@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
-import { renderCharacterAvatar } from '../ui/characters.js?v=field-route-fullscreen-31';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=field-route-fullscreen-31';
+import { SoundManager } from '../ui/sound-manager.js?v=premium-curation-32';
+import { renderCharacterAvatar } from '../ui/characters.js?v=premium-curation-32';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=premium-curation-32';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

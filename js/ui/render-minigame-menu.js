@@ -1,9 +1,9 @@
 import {
   getCuratedDirectPlayGroups,
   getMinigame
-} from '../minigames/minigame-registry.js?v=field-route-fullscreen-31';
-import { renderCharacterAvatar } from './characters.js?v=field-route-fullscreen-31';
-import { SoundManager } from './sound-manager.js?v=field-route-fullscreen-31';
+} from '../minigames/minigame-registry.js?v=premium-curation-32';
+import { renderCharacterAvatar } from './characters.js?v=premium-curation-32';
+import { SoundManager } from './sound-manager.js?v=premium-curation-32';
 
 function difficultyLabelFromSettings(settings) {
   const complexity = Number(settings?.difficulty?.languageComplexity ?? 2);
@@ -130,7 +130,7 @@ export class MinigameMenuRenderer {
           <div>
             <div class="premium-kicker">Kuratierte Auswahl</div>
             <h2 class="glow-title minigame-menu-title">Premium-Minispiele</h2>
-            <p class="minigame-menu-subtitle">${games.length} starke Direktstarts: neue Arcade-Loops, echte Figuren, Kartenatelier und Party-Modi statt nur Fragekarten.</p>
+            <p class="minigame-menu-subtitle">${games.length} geprüfte Direktstarts: Arcade-Loops, echte Figuren und Kartenatelier statt alter Fragekarten.</p>
             <div class="atelier-menu-showcase" aria-hidden="true">
               <span class="atelier-menu-photo atelier-menu-photo--animals"></span>
               <span class="atelier-menu-photo atelier-menu-photo--cards-a"></span>

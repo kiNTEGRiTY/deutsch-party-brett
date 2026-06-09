@@ -1,5 +1,5 @@
 import { Board } from '../engine/board.js';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=field-route-fullscreen-31';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=premium-curation-32';
 import { FieldType } from '../engine/field-types.js';
 
 const VIEWBOX = 1000;

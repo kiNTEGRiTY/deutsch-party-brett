@@ -37,6 +37,8 @@ A board-ready minigame needs:
 
 - Keep weak legacy games as idea sources only.
 - Board flow must use `filterBoardReadyMinigames` from `js/minigames/quality-gate.js`.
+- The direct-play menu must also stay premium-curated: do not expose deferred,
+  quarantined, or non-board-ready games from `getCuratedDirectPlayGroups`.
 - Promote a game into `BOARD_READY_MINIGAME_IDS` only after code review and runtime verification.
 - Use `agent-skills/deutsch-party-board-ready-curator/SKILL.md` before changing board-ready, deferred, quarantined, or topic fallback pools.
 - Keep `QUARANTINED_MINIGAME_IDS` out of board-launched task pools.
@@ -70,6 +72,8 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap
 - clear timers, animation frames, intervals, listeners, and delayed visual effects in cleanup
 - when testing many board-ready games in sequence, guard external timers against stale callbacks so an old timer cannot finish a newly launched game
+- run `npm run validate:minigames` after changing direct-play groups, board-ready
+  IDs, deferred IDs, quarantined IDs, or minigame registry exports
 
 ## Output
 

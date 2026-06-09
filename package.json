@@ -6,7 +6,8 @@
   "main": "index.html",
   "scripts": {
     "start": "serve -s . -l tcp://0.0.0.0:${PORT:-4174}",
-    "validate:board": "node scripts/validate-board-layout.mjs"
+    "validate:board": "node scripts/validate-board-layout.mjs",
+    "validate:minigames": "node scripts/validate-minigame-curation.mjs"
   },
   "dependencies": {
     "serve": "^14.2.4"

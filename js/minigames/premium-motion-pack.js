@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
+import { SoundManager } from '../ui/sound-manager.js?v=premium-curation-32';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

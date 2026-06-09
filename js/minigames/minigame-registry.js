@@ -191,14 +191,14 @@ import {
   VerbTakt,
   WortartenOrchester,
   Wortfunkeln
-} from './premium-variety-pack.js?v=field-route-fullscreen-31';
+} from './premium-variety-pack.js?v=premium-curation-32';
 import {
   BuchstabenMagneten,
   ReimMemoryAquarell,
   SatzFlickwerk,
   SilbenTrommel,
   WortartenBand
-} from './premium-motion-pack.js?v=field-route-fullscreen-31';
+} from './premium-motion-pack.js?v=premium-curation-32';
 import {
   ArtikelBildjagd,
   BildwortGalerie,
@@ -206,7 +206,7 @@ import {
   KompositumAtelier,
   SatzStoryboard,
   WimmelbildDetektiv
-} from './premium-content-pack.js?v=field-route-fullscreen-31';
+} from './premium-content-pack.js?v=premium-curation-32';
 import {
   AlphabetKartenreihe,
   AnfangspaarJagd,
@@ -222,7 +222,7 @@ import {
   TierblattSpurensuche,
   WortkartenBlitzwahl,
   WortkartenDomino
-} from './premium-atelier-pack.js?v=field-route-fullscreen-31';
+} from './premium-atelier-pack.js?v=premium-curation-32';
 import {
   ArtikelInvaders,
   ArtikelGateRunner,
@@ -233,7 +233,8 @@ import {
   WortartenSprunglauf,
   WortLabyrinthJagd,
   WortTetrisStapel
-} from './premium-arcade-pack.js?v=field-route-fullscreen-31';
+} from './premium-arcade-pack.js?v=premium-curation-32';
+import { isBoardReadyMinigame } from './quality-gate.js?v=premium-curation-32';
 
 const MINIGAMES = {
   'wort-labyrinth-jagd': WortLabyrinthJagd,
@@ -487,32 +488,7 @@ const DIRECT_PLAY_CURATION = Object.freeze([
       'wimmelbild-detektiv',
       'bildwort-galerie',
       'satz-storyboard',
-      'dialog-spotlight',
-      'buchstaben-magneten'
-    ]
-  },
-  {
-    id: 'arcade-core',
-    label: 'Arcade & Regeln',
-    description: 'Schnelle, robuste Loops mit echtem Wiederspielwert.',
-    gameIds: [
-      'word-meteorites',
-      'word-type-sort',
-      'wort-stau',
-      'reim-battle',
-      'verbotener-buchstabe',
-      'wort-morph',
-      'fuenf-sec-triple'
-    ]
-  },
-  {
-    id: 'party-signature',
-    label: 'Party & Performance',
-    description: 'Die stärksten Social- und Showdown-Modi im Direktstart.',
-    gameIds: [
-      'kompositum-maschine',
-      'rollen-sprechen',
-      'taeusch-mich'
+      'dialog-spotlight'
     ]
   }
 ]);
@@ -523,6 +499,7 @@ const CURATED_DIRECT_PLAY_IDS = Object.freeze(
 
 function resolveGames(ids) {
   return ids
+    .filter((id) => isBoardReadyMinigame(id))
     .map((id) => MINIGAMES[id])
     .filter((game) => game?.supportsDirectPlay);
 }

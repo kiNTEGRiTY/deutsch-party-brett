@@ -4,7 +4,7 @@
  * Arcade style typing game. Words fall down, player must type them quickly.
  */
 
-import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
+import { SoundManager } from '../ui/sound-manager.js?v=premium-curation-32';
 
 const MAX_TARGETS = 5;
 const FALLBACK_WORDS = ['Haus', 'Baum', 'Katze', 'Auto', 'Blume'];
