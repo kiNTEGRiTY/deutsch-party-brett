@@ -23,9 +23,9 @@
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(90deg, rgba(251, 240, 216, 0.88), rgba(251, 240, 216, 0.56) 44%, rgba(251, 240, 216, 0.22)),
-    url("../../assets/img/premium/watercolor-premium-setup.png") center / cover no-repeat,
-    #efe0bf;
+    linear-gradient(90deg, rgba(241, 255, 242, 0.76), rgba(255, 250, 236, 0.48) 46%, rgba(255, 244, 220, 0.2)),
+    url("../../assets/img/premium/user-reference/original-word-cards-labeled-b.jpeg") center / cover no-repeat,
+    #dcefd8;
 }
 
 .setup-art::after {

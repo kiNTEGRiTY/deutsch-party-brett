@@ -59,7 +59,7 @@ export const BOARD_THEME = {
   subtitle: 'Ein durchgehendes 16:9-Brett: Das Bild entsteht aus den Feldern, nicht aus einer Kulisse.',
   art: {
     boardBackdrop: null,
-    startHero: 'assets/img/premium/watercolor-premium-start.png'
+    startHero: null
   },
   interactions: ['Würfeln', 'Ziehen', 'Deutschaufgabe', 'Belohnung'],
   values: ['Klarheit', 'Miteinander', 'Sorgfalt']
