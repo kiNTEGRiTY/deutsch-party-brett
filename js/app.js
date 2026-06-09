@@ -302,7 +302,7 @@ class App {
       if (detailEl) detailEl.textContent = 'Gespeicherte Einstellungen';
       continueBtn.title = 'Gespeicherte Spielprofile laden';
     } else {
-      if (labelEl) labelEl.textContent = 'Setup oeffnen';
+      if (labelEl) labelEl.textContent = 'Setup öffnen';
       if (detailEl) detailEl.textContent = 'Keine gespeicherte Partie';
       continueBtn.title = 'Direkt mit dem Setup weitergehen';
     }

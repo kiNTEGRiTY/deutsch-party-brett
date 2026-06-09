@@ -719,6 +719,10 @@
   color: #a84b37;
 }
 
+.setup-validation-short {
+  display: none;
+}
+
 .setup-footer-actions {
   display: flex;
   gap: 8px;
@@ -759,20 +763,42 @@
 
 @media (max-width: 760px) {
   .setup-shell {
+    gap: 10px;
     padding: 10px;
   }
 
   .setup-topbar {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .setup-home {
     justify-self: start;
+    min-width: 80px;
+    min-height: 42px;
   }
 
   .setup-stepper {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    border-radius: 20px;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 18px;
+  }
+
+  .setup-step {
+    gap: 5px;
+    min-height: 34px;
+    padding: 4px 7px 4px 5px;
+  }
+
+  .setup-step span {
+    width: 24px;
+    height: 24px;
+    font-size: 0.68rem;
+  }
+
+  .setup-step strong {
+    font-size: 0.76rem;
   }
 
   .setup-stage {
@@ -780,8 +806,23 @@
   }
 
   .setup-panel {
-    padding: 18px;
+    padding: 16px;
     border-radius: 22px;
+  }
+
+  .setup-kicker {
+    margin-bottom: 8px;
+  }
+
+  .setup-panel h2 {
+    font-size: clamp(2rem, 11vw, 3.2rem);
+    line-height: 0.92;
+  }
+
+  .setup-copy {
+    margin: 10px 0 14px;
+    font-size: 0.92rem;
+    line-height: 1.35;
   }
 
   .setup-mode-grid,
@@ -792,6 +833,20 @@
   .setup-ready-list,
   .setup-players-layout {
     grid-template-columns: 1fr;
+  }
+
+  .setup-mode,
+  .setup-choice,
+  .setup-topic,
+  .setup-moment,
+  .setup-ready-list article {
+    min-height: 112px;
+    padding: 14px;
+  }
+
+  .setup-duration {
+    min-height: 74px;
+    padding: 12px 14px;
   }
 
   .setup-character-bank {
@@ -808,19 +863,35 @@
   }
 
   .setup-footer {
-    grid-template-columns: 1fr;
-    border-radius: 22px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 18px;
   }
 
   .setup-validation {
-    white-space: normal;
+    padding-left: 8px;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .setup-validation-full {
+    display: none;
+  }
+
+  .setup-validation-short {
+    display: inline;
   }
 
   .setup-footer-actions {
+    gap: 6px;
     justify-content: stretch;
   }
 
   .setup-button {
     flex: 1;
+    min-height: 42px;
+    padding: 0 11px;
+    font-size: 0.86rem;
   }
 }

@@ -5,11 +5,11 @@ import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=game-feel-c
 const MAX_PLAYERS = 4;
 
 const CLASS_LEVELS = [
-  { id: 'vorschule', label: 'Vorschule', short: 'V', detail: 'Laute, Reime, erste Woerter' },
+  { id: 'vorschule', label: 'Vorschule', short: 'V', detail: 'Laute, Reime, erste Wörter' },
   { id: 'klasse1', label: 'Klasse 1', short: '1', detail: 'Kurze Muster und schnelle Erfolge' },
   { id: 'klasse2', label: 'Klasse 2', short: '2', detail: 'Ausgewogene Party-Runde' },
   { id: 'klasse3', label: 'Klasse 3', short: '3', detail: 'Mehr Satzarbeit und Tempo' },
-  { id: 'klasse4', label: 'Klasse 4', short: '4', detail: 'Laengere Texte und Regeln' },
+  { id: 'klasse4', label: 'Klasse 4', short: '4', detail: 'Längere Texte und Regeln' },
   { id: 'frei', label: 'Frei', short: '*', detail: 'Eigene Mischung ohne Klassenlogik' }
 ];
 
@@ -35,10 +35,10 @@ const DURATION_OPTIONS = [
 ];
 
 const MOMENT_OPTIONS = [
-  { id: 'duell', label: 'Duellfelder', detail: 'Zwei Figuren loesen gleichzeitig.' },
+  { id: 'duell', label: 'Duellfelder', detail: 'Zwei Figuren lösen gleichzeitig.' },
   { id: 'joker', label: 'Jokerkarten', detail: 'Einmal retten, tauschen oder verdoppeln.' },
-  { id: 'team', label: 'Teamruf', detail: 'Alle duerfen einen Hinweis geben.' },
-  { id: 'risiko', label: 'Risiko', detail: 'Mehr Punkte oder Rueckzug.' }
+  { id: 'team', label: 'Teamruf', detail: 'Alle dürfen einen Hinweis geben.' },
+  { id: 'risiko', label: 'Risiko', detail: 'Mehr Punkte oder Rückzug.' }
 ];
 
 const TOPIC_ACCENTS = ['#b95b42', '#6e825d', '#31546a', '#d29b36', '#82516c', '#4f7c78'];
@@ -62,6 +62,7 @@ export class SetupRenderer {
   render() {
     const step = STEP_META[this.currentStep];
     const validation = this._getValidationMessage();
+    const validationText = validation || '<span class="setup-validation-full">Bereit für den nächsten Schritt</span><span class="setup-validation-short">Bereit</span>';
 
     this.container.innerHTML = `
       <div class="setup-shell animate-screen">
@@ -110,9 +111,9 @@ export class SetupRenderer {
         </main>
 
         <footer class="setup-footer">
-          <div class="setup-validation ${validation ? 'is-visible' : ''}">${validation || 'Bereit fuer den naechsten Schritt'}</div>
+          <div class="setup-validation ${validation ? 'is-visible' : ''}">${validationText}</div>
           <div class="setup-footer-actions">
-            <button id="setup-back" class="setup-button setup-button--ghost" type="button" ${this.currentStep === 0 ? 'disabled' : ''}>Zurueck</button>
+            <button id="setup-back" class="setup-button setup-button--ghost" type="button" ${this.currentStep === 0 ? 'disabled' : ''}>Zurück</button>
             <button id="setup-next" class="setup-button setup-button--primary" type="button" ${validation ? 'disabled' : ''}>
               ${this.currentStep === STEP_META.length - 1 ? 'Spiel starten' : 'Weiter'}
             </button>
@@ -426,17 +427,17 @@ export class SetupRenderer {
 
   _getStepCopy() {
     return [
-      'Waehle zuerst das Gefuehl der Partie. Das Setup wirkt wie ein Spieltisch, nicht wie ein Formular.',
-      'Namen eintragen, Figur antippen und die passende Spielfarbe fuer jede Person festlegen.',
-      'Die Stufe bestimmt, welche Aufgaben spaeter auf dem Brett auftauchen.',
+      'Wähle zuerst das Gefühl der Partie. Das Setup wirkt wie ein Spieltisch, nicht wie ein Formular.',
+      'Namen eintragen, Figur antippen und die passende Spielfarbe für jede Person festlegen.',
+      'Die Stufe bestimmt, welche Aufgaben später auf dem Brett auftauchen.',
       'Mische Deutschbereiche so, dass die Runde abwechslungsreich bleibt und trotzdem klar lesbar ist.',
-      'Aktiviere besondere Spielmomente und stelle ein, wie viel Druck, Hinweis und Laenge passt.',
-      'Pruefe die Runde. Danach geht es direkt auf das gemalte Brett.'
+      'Aktiviere besondere Spielmomente und stelle ein, wie viel Druck, Hinweis und Länge passt.',
+      'Prüfe die Runde. Danach geht es direkt auf das gemalte Brett.'
     ][this.currentStep];
   }
 
   _getValidationMessage() {
-    if (this.players.length < 2) return 'Mindestens zwei Spieler waehlen.';
+    if (this.players.length < 2) return 'Mindestens zwei Spieler wählen.';
     if (this.players.some((player) => !String(player.name || '').trim())) return 'Alle Spieler brauchen einen Namen.';
     if (this._activeTopicCount() === 0) return 'Mindestens ein Thema aktivieren.';
     return '';
