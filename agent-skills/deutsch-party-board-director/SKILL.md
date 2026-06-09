@@ -18,6 +18,7 @@ Read these first:
 - `js/engine/game-controller.js`
 - `js/ui/render-board.js`
 - `css/screens/board.css`
+- `scripts/validate-board-layout.mjs`
 
 ## Board Principles
 
@@ -47,7 +48,7 @@ Use at minimum:
 
 - `node --check` on changed JS files
 - local HTTP 200 check
-- board route geometry check: field count, ordered sequence, and no self-intersections
+- `npm run validate:board` for field count, ordered sequence, no self-intersections, and no external board backdrop
 - Playwright desktop screenshot
 - Playwright mobile screenshot
 - inspect the desktop screenshot for a dead table-apron gap between the map and turn controls; keep the board map visually dominant without hiding start, goal, tokens, or the next action

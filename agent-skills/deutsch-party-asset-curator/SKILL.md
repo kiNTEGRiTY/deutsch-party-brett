@@ -18,13 +18,15 @@ Read these first:
 
 ## Decisions
 
-- Primary board: `assets/img/premium/functional-field-board.svg`
+- Primary board: function-first renderer using `js/engine/board-layouts.js`, `js/ui/render-board.js`, and `css/screens/board.css`.
 - Primary start/setup/table surfaces: the `assets/img/premium/watercolor-premium-*.png` set
 - Primary characters: transparent cutouts in `assets/img/premium/user-reference/cutouts/`
 - Word-card photos and crops are source/reference or handmade-mode material unless polished into a final card system.
+- `assets/img/premium/functional-field-board.svg` is retired reference material. Do not restore it as a separate board backdrop under rendered fields.
 
 ## Do Not Promote Without Review
 
+- `assets/img/premium/functional-field-board.svg`
 - `assets/img/premium/generated-wife-style/`
 - `assets/img/premium/characters/`
 - `assets/img/premium/watercolor-premium-board.png`

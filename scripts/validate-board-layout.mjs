@@ -1,0 +1,122 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { BOARD_THEME, STANDARD_BOARD_LAYOUT } from '../js/engine/board-layouts.js';
+
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const VIEWBOX = { width: 1672, height: 941 };
+const EXPECTED_FIELD_COUNT = 36;
+const SAFE_CENTER_BOUNDS = {
+  minX: 110,
+  maxX: VIEWBOX.width - 110,
+  minY: 120,
+  maxY: 660
+};
+const MAX_SEGMENT_LENGTH = 180;
+
+const failures = [];
+
+function fail(message) {
+  failures.push(message);
+}
+
+function distance(left, right) {
+  return Math.hypot(left.x - right.x, left.y - right.y);
+}
+
+function orientation(a, b, c) {
+  const value = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  if (Math.abs(value) < 0.0001) return 0;
+  return value > 0 ? 1 : -1;
+}
+
+function segmentsIntersect(a, b, c, d) {
+  const o1 = orientation(a, b, c);
+  const o2 = orientation(a, b, d);
+  const o3 = orientation(c, d, a);
+  const o4 = orientation(c, d, b);
+  return o1 !== o2 && o3 !== o4;
+}
+
+function assertBoardGeometry() {
+  if (STANDARD_BOARD_LAYOUT.length !== EXPECTED_FIELD_COUNT) {
+    fail(`Expected ${EXPECTED_FIELD_COUNT} fields, found ${STANDARD_BOARD_LAYOUT.length}.`);
+  }
+
+  STANDARD_BOARD_LAYOUT.forEach((field, index) => {
+    if (field.id !== index) {
+      fail(`Field ${index} has non-sequential id ${field.id}.`);
+    }
+
+    if (!Number.isFinite(field.x) || !Number.isFinite(field.y) || !Number.isFinite(field.angle)) {
+      fail(`Field ${index} has non-finite geometry: ${JSON.stringify(field)}.`);
+    }
+
+    if (
+      field.x < SAFE_CENTER_BOUNDS.minX ||
+      field.x > SAFE_CENTER_BOUNDS.maxX ||
+      field.y < SAFE_CENTER_BOUNDS.minY ||
+      field.y > SAFE_CENTER_BOUNDS.maxY
+    ) {
+      fail(`Field ${index} center is outside safe board bounds: (${field.x}, ${field.y}).`);
+    }
+  });
+
+  for (let index = 0; index < STANDARD_BOARD_LAYOUT.length - 1; index += 1) {
+    const segmentLength = distance(STANDARD_BOARD_LAYOUT[index], STANDARD_BOARD_LAYOUT[index + 1]);
+    if (segmentLength > MAX_SEGMENT_LENGTH) {
+      fail(`Path segment ${index}-${index + 1} is too long (${segmentLength.toFixed(1)}px).`);
+    }
+  }
+
+  for (let left = 0; left < STANDARD_BOARD_LAYOUT.length - 1; left += 1) {
+    for (let right = left + 1; right < STANDARD_BOARD_LAYOUT.length - 1; right += 1) {
+      if (Math.abs(left - right) <= 1) continue;
+
+      if (
+        segmentsIntersect(
+          STANDARD_BOARD_LAYOUT[left],
+          STANDARD_BOARD_LAYOUT[left + 1],
+          STANDARD_BOARD_LAYOUT[right],
+          STANDARD_BOARD_LAYOUT[right + 1]
+        )
+      ) {
+        fail(`Path self-intersection between segments ${left}-${left + 1} and ${right}-${right + 1}.`);
+      }
+    }
+  }
+}
+
+function assertFunctionFirstRendering() {
+  const renderer = readFileSync(resolve(rootDir, 'js/ui/render-board.js'), 'utf8');
+  const layout = readFileSync(resolve(rootDir, 'js/engine/board-layouts.js'), 'utf8');
+
+  if (BOARD_THEME.art?.boardBackdrop) {
+    fail('BOARD_THEME.art.boardBackdrop must stay empty; the board must be drawn from field geometry.');
+  }
+
+  if (renderer.includes('<image') || renderer.includes('board-artwork-image')) {
+    fail('render-board.js must not place fields over an external board image.');
+  }
+
+  if (!renderer.includes('_renderPath(fields)') || !renderer.includes('board-field-layer')) {
+    fail('render-board.js must draw the route and field layer from the same field list.');
+  }
+
+  if (!layout.includes('single sequential route') || !layout.includes('no branch art')) {
+    fail('board-layouts.js must document the single-route invariant.');
+  }
+}
+
+assertBoardGeometry();
+assertFunctionFirstRendering();
+
+if (failures.length) {
+  console.error('Board layout validation failed:');
+  for (const failure of failures) {
+    console.error(`- ${failure}`);
+  }
+  process.exit(1);
+}
+
+console.log(`Board layout validation passed: ${EXPECTED_FIELD_COUNT} fields, one route, no backdrop image.`);

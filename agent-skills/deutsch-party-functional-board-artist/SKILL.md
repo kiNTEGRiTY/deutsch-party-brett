@@ -28,6 +28,7 @@ Read these before changing board art:
 - `js/engine/board-layouts.js`
 - `js/ui/render-board.js`
 - `css/screens/board.css`
+- `scripts/validate-board-layout.mjs`
 - `agent-skills/deutsch-party-board-director/SKILL.md`
 
 ## Board-Art Workflow
@@ -37,7 +38,8 @@ Read these before changing board art:
 3. Reject self-intersections, branches, detached tiles, alternate scenic paths, and decorative roads.
 4. Create or update the board background only after the route is settled.
 5. Align the background slots and rendered field nodes to the same coordinates.
-6. Verify desktop and mobile screenshots with the debug board URL.
+6. Run `npm run validate:board` before visual sign-off.
+7. Verify desktop and mobile screenshots with the debug board URL.
 
 ## Quality Gate
 
@@ -50,6 +52,7 @@ Before reporting success, prove:
 - The direction is readable without guessing.
 - Tokens sit on the playable fields.
 - Mobile still reads as a 16:9 board, not a tiny preview.
+- `npm run validate:board` passes and reports one route with no backdrop image.
 
 ## Anti-Patterns
 
