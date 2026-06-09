@@ -16,6 +16,7 @@ export class MinigameRenderer {
     this.settings = settings;
     this.onComplete = null;
     this.timerInterval = null;
+    this.timerRunId = 0;
     this.activeCleanup = null;
     this.activeGameId = null;
   }
@@ -297,10 +298,16 @@ export class MinigameRenderer {
 
   _startTimer(seconds, onTimeout) {
     let remaining = seconds;
+    const runId = ++this.timerRunId;
     const timerEl = document.getElementById('timer-value');
     const timerContainer = document.getElementById('minigame-timer');
     
-    this.timerInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
+      if (this.timerRunId !== runId || this.timerInterval !== intervalId) {
+        clearInterval(intervalId);
+        return;
+      }
+
       remaining--;
       if (timerEl) timerEl.textContent = remaining;
       if (remaining > 0 && remaining <= 5) {
@@ -316,13 +323,23 @@ export class MinigameRenderer {
       }
       
       if (remaining <= 0) {
-        this._clearTimer();
+        clearInterval(intervalId);
+        if (this.timerInterval === intervalId) {
+          this.timerInterval = null;
+        }
+        if (this.timerRunId !== runId) {
+          return;
+        }
+        this.timerRunId++;
         onTimeout();
       }
     }, 1000);
+
+    this.timerInterval = intervalId;
   }
 
   _clearTimer() {
+    this.timerRunId++;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;

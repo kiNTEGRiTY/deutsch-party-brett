@@ -455,6 +455,11 @@ class App {
 
   async _ensureMinigameRenderer(settingsSnapshot) {
     const minigameContainer = document.getElementById('minigame-content');
+    if (this.minigameRenderer) {
+      this.minigameRenderer.settings = settingsSnapshot;
+      return;
+    }
+
     const MinigameRenderer = await this._getMinigameRendererClass();
     this.minigameRenderer = new MinigameRenderer(minigameContainer, settingsSnapshot);
   }

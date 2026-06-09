@@ -62,6 +62,7 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - when touching direct-play menus, scan desktop and mobile screenshots for English placeholders, ASCII transliterations, oversized first-viewport controls, and horizontal overflow
 - repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap
 - clear timers, animation frames, intervals, listeners, and delayed visual effects in cleanup
+- when testing many board-ready games in sequence, guard external timers against stale callbacks so an old timer cannot finish a newly launched game
 
 ## Output
 
