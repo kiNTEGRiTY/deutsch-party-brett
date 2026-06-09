@@ -56,7 +56,8 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - start the game and capture a live screenshot with active pieces visible
 - exercise one correct action and one wrong or miss state when the game supports both
 - complete the round and verify the result screen reports the expected score
-- repeat a mobile viewport around `390x844`, checking for horizontal overflow and HUD/input overlap
+- search visible German UI text for ASCII transliterations such as `waehlen`, `koennen`, `Maedchen`, or `Woerter`
+- repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap
 - clear timers, animation frames, intervals, listeners, and delayed visual effects in cleanup
 
 ## Output

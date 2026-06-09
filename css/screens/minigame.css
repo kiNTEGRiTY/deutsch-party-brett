@@ -12127,4 +12127,50 @@
   .arcade-game--runner .arcade-platform small {
     font-size: 0.6rem;
   }
+
+  .arcade-game--invaders .invaders-stage {
+    padding-bottom: 112px;
+  }
+
+  .arcade-game--invaders .invader-cannon {
+    left: 50%;
+    bottom: 20px;
+    width: calc(100% - 24px);
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .arcade-game--invaders .invader-hero .char-avatar {
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  .arcade-game--invaders .invader-cannon-body {
+    width: 48px;
+    height: 34px;
+    border-width: 3px;
+    border-radius: 14px 14px 18px 18px;
+  }
+
+  .arcade-game--invaders .invader-cannon-body span {
+    top: -26px;
+    width: 14px;
+    height: 34px;
+    border-width: 2px;
+  }
+
+  .arcade-game--invaders .invader-articles {
+    flex: 0 1 176px;
+    gap: 6px;
+    min-width: 0;
+    padding: 6px;
+  }
+
+  .arcade-game--invaders .invader-articles button {
+    min-width: 0;
+    width: 52px;
+    min-height: 44px;
+    border-radius: 14px;
+  }
 }

@@ -35,7 +35,7 @@ const ARTICLES = [
   { word: 'Mann', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/mann.jpg' },
   { word: 'Schmetterling', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/schmetterling.jpg' },
   { word: 'Schere', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/schere.jpg' },
-  { word: 'Maedchen', answer: 'das', image: 'assets/img/premium/user-reference/word-card-crops/maedchen.jpg' },
+  { word: 'Mädchen', answer: 'das', image: 'assets/img/premium/user-reference/word-card-crops/maedchen.jpg' },
   { word: 'Katze', answer: 'die', image: 'assets/img/premium/user-reference/word-card-crops/katze.jpg' },
   { word: 'Stuhl', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/stuhl.jpg' },
   { word: 'Baum', answer: 'der', image: 'assets/img/premium/user-reference/word-card-crops/baum.jpg' },
@@ -62,7 +62,7 @@ const SENTENCES = [
   ['Mila', 'findet', 'eine', 'rote', 'Blume'],
   ['Am', 'Fluss', 'steht', 'ein', 'alter', 'Baum'],
   ['Wir', 'bauen', 'einen', 'klaren', 'Satz'],
-  ['Die', 'Katze', 'schlaeft', 'auf', 'dem', 'Stuhl']
+  ['Die', 'Katze', 'schläft', 'auf', 'dem', 'Stuhl']
 ];
 
 const BOSS_QUESTIONS = [
@@ -106,7 +106,7 @@ const WORD_TYPE_CONFIG = [
     key: 'nomen',
     label: 'Nomen',
     topic: 'nomen',
-    rule: 'Nomen benennen Menschen, Tiere, Dinge oder Gedanken. Sie koennen einen Artikel haben.',
+    rule: 'Nomen benennen Menschen, Tiere, Dinge oder Gedanken. Sie können einen Artikel haben.',
     cue: 'Namenwort'
   },
   {
@@ -417,7 +417,7 @@ export const WortartenSprunglauf = {
 export const SchneeballWortschlacht = {
   id: 'schneeball-wortschlacht',
   name_de: 'Schneeball-Wortschlacht',
-  description: 'Ego-Shooter-Gefuehl ohne Gewalt: nur die passenden Wortarten mit Schneebaellen treffen.',
+  description: 'Ego-Shooter-Gefühl ohne Gewalt: nur die passenden Wortarten mit Schneebällen treffen.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -501,7 +501,7 @@ export const SchneeballWortschlacht = {
 export const ArtikelGateRunner = {
   id: 'artikel-gate-runner',
   name_de: 'Artikel-Gate-Runner',
-  description: 'Runner mit drei Toren: der, die oder das im richtigen Moment waehlen.',
+  description: 'Runner mit drei Toren: der, die oder das im richtigen Moment wählen.',
   topics: ['artikel', 'nomen'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -531,7 +531,7 @@ export const ArtikelGateRunner = {
         <div class="arcade-game arcade-game--gates">
           ${buildHud({
             kicker: 'Gate Runner',
-            title: `Artikel fuer: ${item.word}`,
+            title: `Artikel für: ${item.word}`,
             status: `${index + 1}/${questions.length} · ${score} Treffer`
           })}
           <div class="gate-road" data-lane="${lane}">
@@ -584,7 +584,7 @@ export const ArtikelGateRunner = {
           feedback.className = `gate-feedback ${hit ? 'is-hit' : 'is-miss'}`;
           feedback.innerHTML = hit
             ? `<strong>Tor offen!</strong><span>${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`
-            : `<strong>Tor klemmt.</strong><span>Richtig waere: ${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`;
+            : `<strong>Tor klemmt.</strong><span>Richtig wäre: ${escapeHtml(item.answer)} ${escapeHtml(item.word)}</span>`;
           road.appendChild(feedback);
         }
         score += hit ? 1 : 0;
@@ -680,7 +680,7 @@ export const SilbenBeatSurfer = {
 export const SatzJetpack = {
   id: 'satz-jetpack',
   name_de: 'Satz-Jetpack',
-  description: 'Baue Saetze im Flug: sammle die Woerter in richtiger Reihenfolge, bevor der Treibstoff sinkt.',
+  description: 'Baue Sätze im Flug: sammle die Wörter in richtiger Reihenfolge, bevor der Treibstoff sinkt.',
   topics: ['satzbau', 'lesen', 'grammatik'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -711,7 +711,7 @@ export const SatzJetpack = {
         ${buildHud({
           kicker: 'Jetpack',
           title: 'Sammle den Satz in Reihenfolge',
-          status: `${current}/${sentence.length} Woerter`
+          status: `${current}/${sentence.length} Wörter`
         })}
         <div class="jet-stage">
           <div class="jet-fuel"><span style="width:${fuel}%"></span></div>
@@ -729,7 +729,7 @@ export const SatzJetpack = {
     const updateHud = () => {
       const status = container.querySelector('.arcade-hud em');
       const fuelBar = container.querySelector('.jet-fuel span');
-      if (status) status.textContent = `${current}/${sentence.length} Woerter`;
+      if (status) status.textContent = `${current}/${sentence.length} Wörter`;
       if (fuelBar) fuelBar.style.width = `${fuel}%`;
     };
 
@@ -932,7 +932,7 @@ export const WortLabyrinthJagd = {
 export const ArtikelInvaders = {
   id: 'artikel-invaders',
   name_de: 'Artikel-Invaders',
-  description: 'Space-Invaders-inspiriert: waehle den Kanonen-Artikel und schiesse passende Wort-Ufos ab.',
+  description: 'Space-Invaders-inspiriert: wähle den Kanonen-Artikel und schieße passende Wort-Ufos ab.',
   topics: ['artikel', 'nomen'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
@@ -959,7 +959,7 @@ export const ArtikelInvaders = {
         ${buildHud({
           kicker: 'Invaders',
           title: 'Artikel-Kanone',
-          status: `0/${invaders.length} · Artikel waehlen`
+          status: `0/${invaders.length} · Artikel wählen`
         })}
         <div class="invaders-stage">
           <div class="invader-sky" aria-hidden="true"></div>
@@ -1043,7 +1043,7 @@ export const ArtikelInvaders = {
 export const WortTetrisStapel = {
   id: 'wort-tetris-stapel',
   name_de: 'Wort-Tetris',
-  description: 'Tetris-inspiriert: fallende Wortbloecke in die richtige Wortarten-Spalte sortieren und Reihen raeumen.',
+  description: 'Tetris-inspiriert: fallende Wortblöcke in die richtige Wortarten-Spalte sortieren und Reihen räumen.',
   topics: ['wortarten', 'nomen', 'verben', 'adjektive'],
   supportsDirectPlay: true,
   usesInternalTimer: true,
