@@ -156,7 +156,7 @@ const GermanModule = {
       'time-machine': 'In welche Zeitform gehört das Verb?',
       'punctuation-catcher': 'Welches Satzzeichen fehlt hier?',
       'compound-builder': 'Bilde ein zusammengesetztes Nomen!',
-      'word-ninja': 'Zerschneide die Nomen, aber pass auf die Verben auf!',
+      'word-ninja': 'Zerschneide die Nomen, aber pass auf die anderen Wörter auf!',
       'word-meteorites': 'Tippe die fallenden Wörter schnell ab!',
       'article-cannon': 'Feuere den richtigen Artikel auf das Wort!',
       'sentence-train': 'Bringe die Waggons in die richtige Reihenfolge!',
