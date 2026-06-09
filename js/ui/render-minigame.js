@@ -396,7 +396,8 @@ export class MinigameRenderer {
       '.reim-battle-shell',
       '.rollen-shell',
       '.word-type-sort-game',
-      '.article-choice-game'
+      '.article-choice-game',
+      '.sentence-order-game'
     ];
 
     const isModern = modernSelectors.some((selector) => root.matches(selector) || root.querySelector(selector));
