@@ -5,10 +5,10 @@
  * then generates the task content from the language module.
  */
 
-import GermanModule from './languages/de/index.js?v=invaders-mobile-43';
+import GermanModule from './languages/de/index.js?v=board-field-surface-44';
 import { getTimerDuration } from './difficulty.js';
 import { buildTaskPartyConfig } from '../minigames/core/party-game-core.js';
-import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=invaders-mobile-43';
+import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=board-field-surface-44';
 
 // Language module registry - future: add English here
 const LANGUAGE_MODULES = {

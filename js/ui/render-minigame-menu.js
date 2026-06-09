@@ -1,9 +1,9 @@
 import {
   getCuratedDirectPlayGroups,
   getMinigame
-} from '../minigames/minigame-registry.js?v=invaders-mobile-43';
-import { renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
-import { SoundManager } from './sound-manager.js?v=invaders-mobile-43';
+} from '../minigames/minigame-registry.js?v=board-field-surface-44';
+import { renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
+import { SoundManager } from './sound-manager.js?v=board-field-surface-44';
 
 function difficultyLabelFromSettings(settings) {
   const complexity = Number(settings?.difficulty?.languageComplexity ?? 2);

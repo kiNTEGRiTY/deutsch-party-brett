@@ -3,7 +3,7 @@
   "coordinateSpace": [1672, 941],
   "assets": [
     {
-      "id": "board.functional-renderer.v2",
+      "id": "board.functional-renderer.v3",
       "domain": "board",
       "role": "rendered-board-art",
       "src": "js/ui/render-board.js",
@@ -16,7 +16,7 @@
         "css/screens/board.css",
         "scripts/validate-board-layout.mjs"
       ],
-      "notes": "Primary board art is rendered from the playable field route. The board must remain one 36-field route with background sockets, short connectors, labels, and tokens sharing the same coordinate list."
+      "notes": "Primary board art is rendered from the playable field route. The board must remain one 36-field route with route bands, background sockets, connectors, labels, and tokens sharing the same coordinate list. No scenic road, branch, or generated backdrop is allowed under the fields."
     },
     {
       "id": "board.functional-fields.v1",

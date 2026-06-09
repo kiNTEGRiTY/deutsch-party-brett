@@ -54,9 +54,9 @@ function angleAt(index, points) {
 
 export const BOARD_THEME = {
   id: 'feld-first-festweg',
-  name: 'Feldzug',
+  name: 'Feldroute',
   worldLabel: '36 Felder bis zum Festpavillon',
-  subtitle: 'Ein durchgehendes 16:9-Brett: Die Route entsteht aus echten Spielfeldern.',
+  subtitle: 'Ein durchgehendes 16:9-Brett: Hintergrund, Route und Felder teilen dieselbe Geometrie.',
   art: {
     boardBackdrop: null,
     startHero: 'assets/img/premium/watercolor-premium-start.png'

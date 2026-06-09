@@ -68,100 +68,76 @@
   fill: url(#boardPaperPremium);
 }
 
-.board-hill--top {
-  fill: rgba(186, 205, 151, 0.72);
+.board-paper-texture {
+  pointer-events: none;
 }
 
-.board-hill--bottom {
-  fill: rgba(139, 166, 104, 0.28);
+.paper-wash {
+  fill: rgba(164, 184, 121, 0.26);
 }
 
-.board-pond--outer {
-  fill: rgba(120, 160, 166, 0.18);
+.paper-wash--top {
+  fill: rgba(165, 190, 128, 0.32);
 }
 
-.board-pond--inner {
-  fill: rgba(244, 252, 249, 0.34);
+.paper-wash--bottom {
+  fill: rgba(118, 146, 84, 0.18);
 }
 
-.board-scenery-trees path {
-  fill: rgba(83, 104, 62, 0.82);
-}
-
-.board-scenery-trees .tree-shadow {
-  fill: rgba(83, 64, 38, 0.11);
-}
-
-.board-map-decor .decor-sky {
-  fill: rgba(207, 225, 199, 0.72);
-}
-
-.board-map-decor .decor-hill--back {
-  fill: rgba(143, 174, 111, 0.34);
-}
-
-.board-map-decor .decor-hill--front {
-  fill: rgba(125, 158, 93, 0.3);
-}
-
-.board-map-decor .decor-river {
+.paper-fiber {
   fill: none;
-  stroke: rgba(144, 209, 235, 0.5);
-  stroke-width: 70;
+  stroke: rgba(99, 68, 35, 0.09);
+  stroke-width: 4;
   stroke-linecap: round;
 }
 
-.board-map-decor .decor-river-light {
-  fill: none;
-  stroke: rgba(241, 252, 255, 0.56);
-  stroke-width: 26;
-  stroke-linecap: round;
+.board-route-band-layer .route-band-shadow {
+  fill: rgba(64, 39, 19, 0.18);
 }
 
-.board-map-decor .decor-forest path {
-  fill: rgba(78, 111, 64, 0.74);
+.board-route-band-layer .route-band-paper {
+  fill: rgba(244, 220, 166, 0.96);
+  stroke: rgba(106, 70, 34, 0.34);
+  stroke-width: 7;
 }
 
-.board-map-decor .decor-fireflies circle {
-  fill: #ffe171;
-  opacity: 0.72;
+.board-route-band-layer .route-band-wash {
+  fill: rgba(255, 246, 206, 0.34);
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 2;
 }
 
 .board-field-route-background {
   pointer-events: none;
 }
 
-.board-field-connector-layer .field-connector-shadow {
-  fill: rgba(65, 42, 23, 0.16);
-}
-
 .board-field-connector-layer .field-connector-paper {
-  fill: rgba(244, 212, 151, 0.88);
-  stroke: rgba(124, 82, 42, 0.34);
-  stroke-width: 3;
+  fill: rgba(198, 142, 73, 0.22);
+  stroke: rgba(117, 76, 35, 0.34);
+  stroke-width: 3.5;
 }
 
 .board-field-connector-layer .field-connector-thread {
   fill: none;
-  stroke: rgba(255, 250, 222, 0.82);
-  stroke-width: 5;
+  stroke: rgba(102, 65, 31, 0.28);
+  stroke-width: 4;
   stroke-linecap: round;
-  stroke-dasharray: 2 20;
+  stroke-dasharray: 1 18;
 }
 
 .board-field-socket-layer .field-socket-shadow {
-  fill: rgba(58, 36, 18, 0.18);
+  fill: rgba(58, 36, 18, 0.2);
 }
 
 .board-field-socket-layer .field-socket-wash {
-  fill: color-mix(in srgb, var(--field-accent, #ef705d) 24%, #fff0bc);
-  opacity: 0.76;
+  fill: color-mix(in srgb, var(--field-accent, #ef705d) 30%, #fff0bc);
+  opacity: 0.86;
 }
 
 .board-field-socket-layer .field-socket-paper {
-  fill: rgba(255, 239, 192, 0.72);
-  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 42%, #7d552d);
-  stroke-width: 4.5;
+  fill: rgba(255, 239, 190, 0.86);
+  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 48%, #7d552d);
+  stroke-width: 5.5;
 }
 
 .board-field-socket-layer .field-socket-grain {
@@ -173,8 +149,8 @@
 
 .board-field-socket-layer .field-socket.is-start .field-socket-paper,
 .board-field-socket-layer .field-socket.is-finish .field-socket-paper {
-  fill: rgba(255, 239, 177, 0.86);
-  stroke-width: 5.5;
+  fill: rgba(255, 239, 177, 0.96);
+  stroke-width: 6.5;
 }
 
 .board-direction-markers path {
@@ -210,17 +186,17 @@
 }
 
 .board-field-node .field-shadow {
-  fill: rgba(54, 34, 18, 0.17);
+  fill: rgba(54, 34, 18, 0.2);
 }
 
 .board-field-node .field-wash {
   fill: color-mix(in srgb, var(--field-accent, #ef705d) 38%, transparent);
-  opacity: 0.5;
+  opacity: 0.56;
 }
 
 .board-field-node .field-body {
-  fill: rgba(255, 240, 199, 0.76);
-  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 58%, #6f4a24);
+  fill: rgba(255, 240, 199, 0.88);
+  stroke: color-mix(in srgb, var(--field-accent, #ef705d) 64%, #6f4a24);
   stroke-width: 3.8;
 }
 
@@ -273,14 +249,13 @@
 
 .board-landmarks path,
 .board-landmarks rect {
-  fill: #f4d797;
-  stroke: rgba(91, 57, 26, 0.58);
+  fill: rgba(248, 219, 153, 0.95);
+  stroke: rgba(91, 57, 26, 0.64);
   stroke-width: 6;
 }
 
-.board-landmarks .landmark-castle path:nth-of-type(2),
-.board-landmarks .landmark-castle rect {
-  fill: #fff0bc;
+.board-landmarks .landmark-goal path:nth-of-type(2) {
+  fill: rgba(204, 119, 64, 0.94);
 }
 
 .board-landmarks text {
@@ -288,14 +263,6 @@
   stroke-width: 6px;
   font-size: 30px;
   letter-spacing: 0;
-}
-
-.board-landmarks .landmark-goal path:nth-of-type(2) {
-  fill: #cc7740;
-}
-
-.board-landmarks .landmark-sign text {
-  font-size: 24px;
 }
 
 .board-current-target ellipse {

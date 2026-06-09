@@ -3,7 +3,7 @@
  */
 
 import { FieldType } from './field-types.js';
-import { getBoardLayoutForImage } from './board-layouts.js?v=invaders-mobile-43';
+import { getBoardLayoutForImage } from './board-layouts.js?v=board-field-surface-44';
 
 const TYPE_COUNTS = {
   [FieldType.NOMEN]: 8,

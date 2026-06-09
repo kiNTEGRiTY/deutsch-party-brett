@@ -3,12 +3,12 @@
  * No emojis - all illustrated SVG icons
  */
 
-import { getMinigame } from '../minigames/minigame-registry.js?v=invaders-mobile-43';
+import { getMinigame } from '../minigames/minigame-registry.js?v=board-field-surface-44';
 import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigames/core/party-game-core.js';
-import { createDirectTask, generateTask } from '../learning/task-generator.js?v=invaders-mobile-43';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=invaders-mobile-43';
-import { SoundManager } from './sound-manager.js?v=invaders-mobile-43';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
+import { createDirectTask, generateTask } from '../learning/task-generator.js?v=board-field-surface-44';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=board-field-surface-44';
+import { SoundManager } from './sound-manager.js?v=board-field-surface-44';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
 
 export class MinigameRenderer {

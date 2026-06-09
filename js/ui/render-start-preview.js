@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=invaders-mobile-43';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=invaders-mobile-43';
+import { Board } from '../engine/board.js?v=board-field-surface-44';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=board-field-surface-44';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
+import { renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
 
 const VIEWBOX = { width: 1672, height: 941 };
 

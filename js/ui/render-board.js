@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=invaders-mobile-43';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=board-field-surface-44';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
-import { SoundManager } from './sound-manager.js?v=invaders-mobile-43';
+import { renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
+import { SoundManager } from './sound-manager.js?v=board-field-surface-44';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -151,32 +151,21 @@ export class BoardRenderer {
     return `
       <g class="board-artwork-layer" aria-hidden="true">
         <rect class="board-paper-sheet" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}"></rect>
-        <path class="board-hill board-hill--top" d="M0 218C188 151 360 166 520 192C684 220 760 126 932 150C1080 171 1178 100 1322 127C1464 154 1558 122 1672 72V0H0Z"></path>
-        <path class="board-hill board-hill--bottom" d="M0 842C176 780 350 782 520 826C684 870 792 802 960 822C1118 841 1258 772 1408 804C1532 831 1608 801 1672 774V941H0Z"></path>
-        <ellipse class="board-pond board-pond--outer" cx="835" cy="585" rx="170" ry="58"></ellipse>
-        <ellipse class="board-pond board-pond--inner" cx="835" cy="585" rx="118" ry="34"></ellipse>
-        ${this._renderSceneryTrees()}
+        ${this._renderPaperTexture()}
         ${this._renderBoardLandmarks()}
         ${this._renderFieldRouteBackground(fields)}
       </g>
     `;
   }
 
-  _renderSceneryTrees() {
-    const trees = [
-      { x: 92, y: 396, scale: 1.08 },
-      { x: 505, y: 156, scale: 0.82 },
-      { x: 1590, y: 410, scale: 1.06 }
-    ];
-
+  _renderPaperTexture() {
     return `
-      <g class="board-scenery-trees">
-        ${trees.map((tree) => `
-          <g transform="translate(${tree.x} ${tree.y}) scale(${tree.scale})">
-            <path d="M0-126C-39-48-39 18-14 66L0 72L14 66C39 18 39-48 0-126Z"></path>
-            <path class="tree-shadow" d="M-36 73C-16 63 22 62 42 74C16 86-18 86-36 73Z"></path>
-          </g>
-        `).join('')}
+      <g class="board-paper-texture" aria-hidden="true">
+        <path class="paper-wash paper-wash--top" d="M0 232C196 176 334 184 498 216C662 248 760 172 922 198C1084 224 1200 178 1360 196C1494 212 1578 186 1672 154V0H0Z"></path>
+        <path class="paper-wash paper-wash--bottom" d="M0 783C166 740 330 736 502 772C672 808 788 744 960 766C1130 788 1244 720 1410 744C1536 762 1608 740 1672 710V941H0Z"></path>
+        <path class="paper-fiber" d="M102 104C294 78 476 116 660 92C840 68 1034 106 1220 78C1374 55 1515 76 1626 48"></path>
+        <path class="paper-fiber" d="M46 844C228 806 414 846 594 820C780 792 944 842 1138 808C1308 778 1476 802 1634 760"></path>
+        <path class="paper-fiber" d="M134 464C320 430 476 470 650 444C820 418 978 468 1158 436C1328 406 1470 434 1588 398"></path>
       </g>
     `;
   }
@@ -184,63 +173,14 @@ export class BoardRenderer {
   _renderBoardLandmarks() {
     return `
       <g class="board-landmarks" aria-hidden="true">
-        <g class="landmark-start" transform="translate(190 552)">
-          <path d="M-76 18H76L58-42H-56Z"></path>
-          <text y="6" text-anchor="middle">START</text>
+        <g class="landmark-start" transform="translate(191 526)">
+          <path d="M-92 -25H58L84 0L58 25H-92L-70 0Z"></path>
+          <text y="8" text-anchor="middle">START</text>
         </g>
-        <g class="landmark-goal" transform="translate(1492 118)">
-          <path d="M-98 52H98V0L64-14L31 0L0-28L-31 0L-64-14L-98 0Z"></path>
-          <path d="M-113 0L-64-45L-19 0ZM-40 0L0-56L42 0ZM42 0L64-45L113 0Z"></path>
-          <text y="24" text-anchor="middle">ZIEL</text>
-        </g>
-      </g>
-    `;
-  }
-
-  _renderDecor() {
-    return `
-      <g class="board-map-decor" aria-hidden="true">
-        <path class="decor-sky" d="M0 0H1672V246C1458 218 1362 244 1197 215C1020 184 940 228 770 190C590 150 468 220 290 178C184 153 92 176 0 220Z"></path>
-        <path class="decor-hill decor-hill--back" d="M0 650C170 590 332 620 492 672C642 721 744 671 900 682C1060 694 1190 758 1348 724C1465 698 1558 645 1672 662V941H0Z"></path>
-        <path class="decor-hill decor-hill--front" d="M0 771C156 700 296 710 456 760C626 812 772 770 928 782C1100 796 1216 872 1395 824C1502 795 1594 764 1672 786V941H0Z"></path>
-        <path class="decor-river" d="M1338 15C1294 82 1342 146 1392 199C1456 268 1442 354 1372 424C1300 496 1326 578 1392 650C1454 718 1446 802 1396 910"></path>
-        <path class="decor-river-light" d="M1349 30C1318 91 1360 149 1410 203C1465 264 1448 344 1384 411C1319 479 1346 566 1407 630C1474 699 1458 782 1412 908"></path>
-        <g class="decor-forest">
-          <path d="M112 690C74 594 118 512 139 425C168 514 211 594 166 699Z"></path>
-          <path d="M184 642C151 560 186 500 207 432C231 509 270 579 230 647Z"></path>
-          <path d="M260 604C232 538 260 482 280 424C302 488 335 548 302 608Z"></path>
-          <path d="M312 520C284 466 306 414 328 364C349 419 378 474 350 526Z"></path>
-          <path d="M166 412C134 346 168 286 190 228C214 295 252 356 214 420Z"></path>
-          <path d="M260 382C232 322 258 271 282 221C304 276 338 330 309 388Z"></path>
-        </g>
-        <g class="decor-fireflies">
-          <circle cx="242" cy="384" r="8"></circle>
-          <circle cx="302" cy="546" r="7"></circle>
-          <circle cx="708" cy="274" r="8"></circle>
-          <circle cx="968" cy="618" r="9"></circle>
-          <circle cx="1490" cy="338" r="7"></circle>
-        </g>
-      </g>
-    `;
-  }
-
-  _renderLandmarks() {
-    return `
-      <g class="board-landmarks" aria-hidden="true">
-        <g class="landmark-start" transform="translate(172 848)">
-          <path d="M-74 20H82L62-42H-52Z"></path>
-          <text y="7" text-anchor="middle">START</text>
-        </g>
-        <g class="landmark-castle" transform="translate(1452 272)">
-          <path d="M-110 82H110V-20L76-38L42-20L4-52L-34-20L-78-42L-110-18Z"></path>
-          <rect x="-74" y="8" width="34" height="74" rx="8"></rect>
-          <rect x="39" y="8" width="34" height="74" rx="8"></rect>
-          <path d="M-126-18L-78-74L-28-18ZM-42-20L4-92L50-20ZM50-18L78-72L126-18Z"></path>
-          <text y="22" text-anchor="middle">SCHLOSS</text>
-        </g>
-        <g class="landmark-sign" transform="translate(1322 96)">
-          <path d="M-96-26H96L82 30H-82Z"></path>
-          <text y="4" text-anchor="middle">ZIELPFAD</text>
+        <g class="landmark-goal" transform="translate(1328 96)">
+          <path d="M-116 -24H116L96 31H-96Z"></path>
+          <path d="M-74 -24L-48 -62L-12 -24ZM-18 -24L18 -76L54 -24ZM50 -24L76 -62L102 -24Z"></path>
+          <text y="13" text-anchor="middle">ZIEL</text>
         </g>
       </g>
     `;
@@ -249,6 +189,9 @@ export class BoardRenderer {
   _renderFieldRouteBackground(fields) {
     return `
       <g class="board-field-route-background" aria-hidden="true">
+        <g class="board-route-band-layer">
+          ${fields.slice(0, -1).map((field, index) => this._renderRouteBand(field, fields[index + 1])).join('')}
+        </g>
         <g class="board-field-connector-layer">
           ${fields.slice(0, -1).map((field, index) => this._renderFieldConnector(field, fields[index + 1])).join('')}
         </g>
@@ -259,18 +202,34 @@ export class BoardRenderer {
     `;
   }
 
+  _renderRouteBand(from, to) {
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const length = Math.max(76, Math.hypot(dx, dy) + 30);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    return `
+      <g class="route-band" transform="translate(${midX} ${midY}) rotate(${angle})">
+        <rect class="route-band-shadow" x="${-length / 2}" y="-51" width="${length}" height="102" rx="51"></rect>
+        <rect class="route-band-paper" x="${-length / 2}" y="-44" width="${length}" height="88" rx="44"></rect>
+        <rect class="route-band-wash" x="${-length / 2 + 14}" y="-28" width="${Math.max(28, length - 28)}" height="56" rx="28"></rect>
+      </g>
+    `;
+  }
+
   _renderFieldConnector(from, to) {
     const midX = (from.x + to.x) / 2;
     const midY = (from.y + to.y) / 2;
     const dx = to.x - from.x;
     const dy = to.y - from.y;
-    const length = Math.max(34, Math.hypot(dx, dy) - 78);
+    const length = Math.max(40, Math.hypot(dx, dy) - 66);
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
     return `
       <g class="field-connector" transform="translate(${midX} ${midY}) rotate(${angle})">
-        <rect class="field-connector-shadow" x="${-length / 2}" y="-16" width="${length}" height="32" rx="16"></rect>
-        <rect class="field-connector-paper" x="${-length / 2}" y="-12" width="${length}" height="24" rx="12"></rect>
+        <rect class="field-connector-paper" x="${-length / 2}" y="-19" width="${length}" height="38" rx="19"></rect>
         <path class="field-connector-thread" d="M ${-length / 2 + 13} 0 H ${length / 2 - 13}"></path>
       </g>
     `;
@@ -280,8 +239,8 @@ export class BoardRenderer {
     const style = this._fieldStyle(field);
     const isStart = field.id === 0;
     const isFinish = field.id === this.game.board.totalFields - 1;
-    const width = isStart || isFinish ? 158 : 128;
-    const height = isStart || isFinish ? 86 : 78;
+    const width = isStart || isFinish ? 178 : 146;
+    const height = isStart || isFinish ? 98 : 90;
     const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const shape = this._paperTilePath(width, height);
 

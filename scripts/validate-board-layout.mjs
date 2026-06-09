@@ -107,13 +107,28 @@ function assertFunctionFirstRendering() {
     fail('render-board.js must not draw a separate decorative path under the fields.');
   }
 
+  [
+    'board-hill',
+    'board-pond',
+    'board-scenery-trees',
+    'board-map-decor',
+    'decor-river',
+    '_renderSceneryTrees',
+    '_renderDecor'
+  ].forEach((token) => {
+    if (renderer.includes(token)) {
+      fail(`render-board.js must not render scenic backdrop token "${token}"; the board background must be built from fields.`);
+    }
+  });
+
   if (
     !renderer.includes('_renderFieldRouteBackground(fields)') ||
+    !renderer.includes('board-route-band-layer') ||
     !renderer.includes('board-field-socket-layer') ||
     !renderer.includes('board-field-connector-layer') ||
     !renderer.includes('board-field-layer')
   ) {
-    fail('render-board.js must draw sockets, connectors, and playable fields from the same field list.');
+    fail('render-board.js must draw route bands, sockets, connectors, and playable fields from the same field list.');
   }
 
   if (

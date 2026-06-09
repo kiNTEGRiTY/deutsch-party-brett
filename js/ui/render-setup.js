@@ -1,6 +1,6 @@
 import { getTopicsForLevel } from '../learning/topic-registry.js';
 import { AXIS_META } from '../learning/difficulty.js';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=board-field-surface-44';
 
 const MAX_PLAYERS = 4;
 

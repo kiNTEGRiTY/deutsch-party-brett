@@ -5,7 +5,7 @@
  * Setup -> Board Play -> Mini-Games -> Rewards -> End
  */
 
-import { Board } from './board.js?v=invaders-mobile-43';
+import { Board } from './board.js?v=board-field-surface-44';
 import { Dice } from './dice.js';
 import { Player } from './player.js';
 import { TurnManager, TurnPhase } from './turn.js';

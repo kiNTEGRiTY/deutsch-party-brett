@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=invaders-mobile-43';
-import { renderCharacterAvatar } from '../ui/characters.js?v=invaders-mobile-43';
+import { SoundManager } from '../ui/sound-manager.js?v=board-field-surface-44';
+import { renderCharacterAvatar } from '../ui/characters.js?v=board-field-surface-44';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
