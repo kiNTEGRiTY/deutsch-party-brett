@@ -51,6 +51,8 @@ Before reporting a curation change:
 - Run `node --check js/learning/task-generator.js`.
 - Run `npm run validate:routing` to sample every setup topic through
   `generateTask(...)` across normal, challenge, and team board field modes.
+- Run `npm run validate:game-loop` to prove board-launched tasks, rewards,
+  turn advance, and finish state still behave as a coherent dice loop.
 - Sample every topic in `js/learning/topic-registry.js` through
   `generateTask(..., explicitTopic)` and confirm the chosen mini-game is
   board-ready.

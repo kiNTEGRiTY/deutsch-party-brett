@@ -19,6 +19,7 @@ Read these first:
 - `js/ui/render-board.js`
 - `css/screens/board.css`
 - `scripts/validate-board-layout.mjs`
+- `scripts/validate-board-game-loop.mjs`
 
 ## Board Principles
 
@@ -38,10 +39,11 @@ Read these first:
 3. If board art or board backgrounds change, also use `agent-skills/deutsch-party-functional-board-artist/SKILL.md`.
 4. Preserve board-launched minigame selection through the quality gate.
 5. When a board roll launches a minigame, pass the landing player as the task actor; do not infer the actor from a later turn state.
-6. Use the debug URL:
+6. For dice flow, turn state, field events, rewards, or board-to-minigame handoff, also use `agent-skills/deutsch-party-board-playtest-agent/SKILL.md`.
+7. Use the debug URL:
    `http://127.0.0.1:4175/?debugBoard=1&debugPlayers=2&debugPositions=3,8&debugCurrent=0`
-7. Capture desktop and mobile screenshots after visual changes.
-8. Critique the screenshots before calling the work good.
+8. Capture desktop and mobile screenshots after visual changes.
+9. Critique the screenshots before calling the work good.
 
 ## Verification
 
@@ -50,6 +52,7 @@ Use at minimum:
 - `node --check` on changed JS files
 - local HTTP 200 check
 - `npm run validate:board` for field count, ordered sequence, no self-intersections, and no external board backdrop
+- `npm run validate:game-loop` for deterministic dice-loop, field-resolution, reward, turn-advance, finish, and board-ready task handoff checks
 - Playwright desktop screenshot
 - Playwright mobile screenshot
 - Playwright 16:9 landscape screenshot when board chrome or field scale changes; verify the route is not covered by status cards
