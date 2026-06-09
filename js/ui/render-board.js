@@ -96,6 +96,7 @@ export class BoardRenderer {
 
           <section class="board-player-rail" aria-label="Figuren"></section>
           <div class="board-progress-chip"></div>
+          <aside class="board-landing-card" aria-live="polite" aria-hidden="true"></aside>
 
           <footer class="board-action-dock">
             <button id="dice-roll-button" class="board-dice-button" type="button">
@@ -618,6 +619,8 @@ export class BoardRenderer {
       SoundManager.play(landedField.type === 'portal' ? 'portal' : 'fieldLand');
 
       if (result.action === 'minigame') {
+        await this._showLandingCard(player, landedField, result);
+        this._hideLandingCard();
         this.onMinigameNeeded?.(result);
         return;
       }
@@ -630,6 +633,52 @@ export class BoardRenderer {
       this._movementPreview = null;
       this._isResolvingMove = false;
     }
+  }
+
+  async _showLandingCard(player, field, result) {
+    const card = this.container.querySelector('.board-landing-card');
+    if (!card || !field || !player) {
+      return;
+    }
+
+    const style = this._fieldStyle(field);
+    const modeLabel = result?.mode === 'team'
+      ? 'Teamaufgabe'
+      : result?.mode === 'challenge'
+        ? 'Blitzaufgabe'
+        : 'Einzelaufgabe';
+
+    card.style.setProperty('--field-accent', style.color);
+    card.innerHTML = `
+      <div class="board-landing-player">
+        ${player.getTokenHTML(38)}
+        <span>${this._escape(player.name)} landet</span>
+      </div>
+      <div class="board-landing-copy">
+        <span>Feld ${field.id}/${this.game.board.totalFields - 1} · ${modeLabel}</span>
+        <strong>${this._escape(this._fieldTitle(field))}</strong>
+        <p>${this._escape(this._fieldPrompt(field))}</p>
+      </div>
+      <div class="board-landing-type">
+        <i>${this._escape(this._shortFieldLabel(field))}</i>
+        <span>${this._escape(this._fieldTypeLabel(field))}</span>
+      </div>
+    `;
+    card.classList.add('is-visible');
+    card.setAttribute('aria-hidden', 'false');
+    this._setDiceHelper(`${player.name}: Aufgabe auf ${this._fieldTitle(field)} startet.`);
+
+    await new Promise((resolve) => setTimeout(resolve, 900));
+  }
+
+  _hideLandingCard() {
+    const card = this.container.querySelector('.board-landing-card');
+    if (!card) {
+      return;
+    }
+
+    card.classList.remove('is-visible');
+    card.setAttribute('aria-hidden', 'true');
   }
 
   async _animateResolvedFieldEffect(player, landedPosition, result) {
