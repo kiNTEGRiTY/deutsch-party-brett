@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=board-material-cards-49';
-import { renderCharacterAvatar } from '../ui/characters.js?v=board-material-cards-49';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=board-material-cards-49';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+import { renderCharacterAvatar } from '../ui/characters.js?v=content-card-material-50';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

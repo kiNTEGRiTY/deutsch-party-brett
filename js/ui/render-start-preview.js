@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=board-material-cards-49';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=board-material-cards-49';
+import { Board } from '../engine/board.js?v=content-card-material-50';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=content-card-material-50';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=board-material-cards-49';
+import { renderCharacterAvatar } from './characters.js?v=content-card-material-50';
 
 const VIEWBOX = { width: 1672, height: 941 };
 

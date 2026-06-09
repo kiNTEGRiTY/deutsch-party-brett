@@ -21,6 +21,8 @@ Read these first:
 - Primary board: function-first renderer using `js/engine/board-layouts.js`, `js/ui/render-board.js`, and `css/screens/board.css`.
 - Primary start/setup/table surfaces: the `assets/img/premium/watercolor-premium-*.png` set
 - Primary characters: transparent cutouts in `assets/img/premium/user-reference/cutouts/`
+- Board-ready minigame scenes should prefer the real wife/user card photos,
+  word-card crops, and cutout sheets over generic generated table/backdrop art.
 - Start and onboarding board previews must render from the real board geometry or be removed. Do not use static decorative mini-paths that can drift away from the playable route.
 - Word-card photos and crops are source/reference or handmade-mode material unless polished into a final card system.
 - `assets/img/premium/functional-field-board.svg` is retired reference material. Do not restore it as a separate board backdrop under rendered fields.
@@ -33,6 +35,9 @@ Read these first:
 - `assets/img/premium/watercolor-premium-board.png`
 - `assets/img/premium/start-hero-forest.png`
 - `assets/img/premium/board-enchanted-backdrop.png`
+- `assets/img/premium/watercolor-premium-game-table.png` inside board-ready
+  minigames, unless the screen has been explicitly reviewed as a neutral UI
+  material rather than a fake game board/backdrop
 - HEIC files and raw source photos
 
 ## Workflow
@@ -44,7 +49,9 @@ Read these first:
 5. Avoid style mixing. One screen should not combine handmade cutouts, generic generated characters, and unrelated fantasy art.
 6. If a UI surface previews the board, verify it imports or derives from `js/engine/board-layouts.js`/`Board` rather than hand-drawn duplicate coordinates.
 7. Board-launched minigames should preserve the active player's original cutout identity in the shell, so the handoff still feels like a board turn instead of a generic worksheet.
-8. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
+8. Search changed minigame code for generic fallback assets before sign-off:
+   `rg -n "watercolor-premium-game-table|board-enchanted-backdrop" js css`.
+9. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
 
 ## Output
 

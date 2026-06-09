@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=board-material-cards-49';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

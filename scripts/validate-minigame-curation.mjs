@@ -80,6 +80,7 @@ if (extraDirectGames.length) {
 
 const menuRenderer = readFileSync(resolve(rootDir, 'js/ui/render-minigame-menu.js'), 'utf8');
 const menuCss = readFileSync(resolve(rootDir, 'css/screens/minigame.css'), 'utf8');
+const premiumContentPack = readFileSync(resolve(rootDir, 'js/minigames/premium-content-pack.js'), 'utf8');
 
 if (!menuRenderer.includes('getCuratedDirectPlayGroups')) {
   fail('Direct-play menu must render from getCuratedDirectPlayGroups().');
@@ -113,6 +114,10 @@ if (!menuRenderer.includes('getCuratedDirectPlayGroups')) {
 ].forEach((token) => {
   if (menuCss.includes(token)) {
     fail(`Minigame CSS must not use generic board/backdrop image "${token}" for premium arcade stages.`);
+  }
+
+  if (premiumContentPack.includes(token)) {
+    fail(`Premium content games must not fall back to generic board/backdrop image "${token}".`);
   }
 });
 

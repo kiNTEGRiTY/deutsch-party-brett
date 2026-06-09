@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=board-material-cards-49';
-import { renderCharacterAvatar } from '../ui/characters.js?v=board-material-cards-49';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+import { renderCharacterAvatar } from '../ui/characters.js?v=content-card-material-50';
 
 const DEFAULTS = {
   solo_arcade: { timeLimitSec: 54, scoringMode: 'arcade' },

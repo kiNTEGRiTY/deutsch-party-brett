@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=board-material-cards-49';
-import { renderCharacterAvatar } from '../ui/characters.js?v=board-material-cards-49';
+import { SoundManager } from '../ui/sound-manager.js?v=content-card-material-50';
+import { renderCharacterAvatar } from '../ui/characters.js?v=content-card-material-50';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -14,8 +14,9 @@ const DIRECT_DEFAULTS = {
 
 const WORD_CARD_A = '/assets/img/premium/user-reference/original-word-cards-labeled-a.jpeg';
 const WORD_CARD_B = '/assets/img/premium/user-reference/original-word-cards-labeled-b.jpeg';
+const WORD_CARD_CONTACT_SHEET = '/assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg';
 const OBJECT_TABLE = WORD_CARD_A;
-const BOARD_TABLE = '/assets/img/premium/watercolor-premium-game-table.png';
+const HANDMADE_STAGE_MATERIAL = WORD_CARD_CONTACT_SHEET;
 
 const OBJECTS = [
   { id: 'hund', word: 'Hund', article: 'der', clue: 'Das Tier mit Halsband und wedelndem Schwanz.', image: WORD_CARD_A, x: 12, y: 16, topics: ['nomen', 'artikel', 'wortschatz'] },
@@ -347,7 +348,7 @@ export const SatzStoryboard = {
       kicker: 'Storyboard',
       title: story.title,
       text: 'Tippe die Bildkarten in der richtigen Reihenfolge an.',
-      image: story.image || BOARD_TABLE,
+      image: story.image || HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-story-track">
           ${story.panels.map((_, index) => `<span data-slot="${index}"></span>`).join('')}
@@ -410,7 +411,7 @@ export const KompositumAtelier = {
       kicker: 'Wortatelier',
       title: 'Baue das Kompositum',
       text: item.meaning,
-      image: BOARD_TABLE,
+      image: HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-compound-board">
           <span>${escapeHtml(item.left)}</span>
@@ -448,7 +449,7 @@ export const DialogSpotlight = {
       kicker: 'Dialog',
       title: item.role,
       text: item.line,
-      image: BOARD_TABLE,
+      image: HANDMADE_STAGE_MATERIAL,
       body: `
         <div class="premium-dialog-stage">
           <div class="premium-dialog-portrait" aria-hidden="true">${renderCharacterAvatar(item.characterIndex ?? 0, 112)}</div>
