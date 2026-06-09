@@ -45,6 +45,7 @@ Use at minimum:
 - local HTTP 200 check
 - Playwright desktop screenshot
 - Playwright mobile screenshot
+- inspect the desktop screenshot for a dead table-apron gap between the map and turn controls; keep the board map visually dominant without hiding start, goal, tokens, or the next action
 - a board-task generator sample when task selection changes
 - for dice-flow changes, click the dice in the board debug route and verify rolling state, final value, token movement, landing feedback, and console cleanliness
 
