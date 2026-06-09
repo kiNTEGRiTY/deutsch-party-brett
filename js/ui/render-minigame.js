@@ -530,6 +530,11 @@ export class MinigameRenderer {
     const fieldNumber = Number.isFinite(field.id) ? `Feld ${field.id}` : 'Brettaufgabe';
     const playerName = this._escape(player.name || `Spieler ${Number(player.id) + 1 || 1}`);
     const avatarName = player.avatarName || CHARACTERS[characterIndex]?.name_de || 'Spielfigur';
+    const cardLabel = placement === 'stage' ? 'Brettzug' : 'Am Zug';
+    const cardTitle = placement === 'stage' ? `${fieldNumber} · ${playerName}` : playerName;
+    const cardDetail = placement === 'stage'
+      ? `${this._escape(avatarName)} spielt jetzt: ${fieldTitle}${fieldSubtitle}`
+      : `${this._escape(avatarName)} · ${this._escape(fieldNumber)} · ${fieldTitle}${fieldSubtitle}`;
     const placementClass = placement === 'stage'
       ? ' minigame-player-card--stage'
       : ' minigame-player-card--sidebar';
@@ -538,9 +543,9 @@ export class MinigameRenderer {
       <div class="minigame-player-card${placementClass}" aria-label="Aktiver Spieler der Brettaufgabe">
         <div class="minigame-player-avatar">${renderCharacterAvatar(characterIndex, 58)}</div>
         <div class="minigame-player-copy">
-          <span>Am Zug</span>
-          <strong>${playerName}</strong>
-          <small>${this._escape(avatarName)} · ${this._escape(fieldNumber)} · ${fieldTitle}${fieldSubtitle}</small>
+          <span>${cardLabel}</span>
+          <strong>${cardTitle}</strong>
+          <small>${cardDetail}</small>
         </div>
       </div>
     `;

@@ -4826,7 +4826,52 @@
 }
 
 .minigame-player-card--stage {
-  display: none;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 9px;
+  align-self: stretch;
+  margin: -4px 0 10px;
+  padding: 7px 10px;
+  border-color: color-mix(in srgb, var(--minigame-accent, #b9563e) 34%, rgba(72, 54, 35, 0.24));
+  border-radius: 10px 12px 10px 14px;
+  background:
+    linear-gradient(90deg, rgba(255, 251, 236, 0.94), rgba(255, 248, 230, 0.64)),
+    radial-gradient(circle at 3% 50%, color-mix(in srgb, var(--minigame-accent, #b9563e) 18%, transparent), transparent 22%);
+  box-shadow: 0 8px 16px rgba(70, 44, 22, 0.08);
+}
+
+.minigame-player-card--stage .minigame-player-avatar {
+  min-width: 56px;
+  height: 48px;
+}
+
+.minigame-player-card--stage .minigame-player-avatar .char-cutout {
+  transform: scale(1.18);
+}
+
+.minigame-player-card--stage .minigame-player-copy {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+}
+
+.minigame-player-card--stage .minigame-player-copy span {
+  color: color-mix(in srgb, var(--minigame-accent, #b9563e) 68%, #5b4228);
+  font-size: 0.64rem;
+}
+
+.minigame-player-card--stage .minigame-player-copy strong {
+  overflow: hidden;
+  font-size: 0.95rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.minigame-player-card--stage .minigame-player-copy small {
+  overflow: hidden;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .minigame-player-avatar {
@@ -12586,6 +12631,30 @@
     font-size: 0.7rem;
     line-height: 1;
     white-space: nowrap;
+  }
+
+  .minigame-overlay--arcade .minigame-player-card--stage {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 7px;
+    margin: 48px 6px 8px;
+    padding: 6px 8px;
+  }
+
+  .minigame-overlay--arcade .minigame-player-card--stage .minigame-player-avatar {
+    min-width: 44px;
+    height: 40px;
+  }
+
+  .minigame-overlay--arcade .minigame-player-card--stage .minigame-player-copy span {
+    font-size: 0.58rem;
+  }
+
+  .minigame-overlay--arcade .minigame-player-card--stage .minigame-player-copy strong {
+    font-size: 0.78rem;
+  }
+
+  .minigame-overlay--arcade .minigame-player-card--stage .minigame-player-copy small {
+    font-size: 0.62rem;
   }
 
   .minigame-overlay--arcade .arcade-game--runner .arcade-hud {

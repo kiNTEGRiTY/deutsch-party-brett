@@ -28,6 +28,9 @@ A board-ready minigame needs:
 - cleanup for timers/listeners/animation loops
 - no auto-win, single-button completion, or purely decorative interaction
 - visual fit with the Aquarell/cutout product direction
+- board-launched games must preserve the active player's cutout identity in
+  visible hero/player elements; avoid hardcoded placeholder avatars when
+  `task.players` and `task.currentPlayerId` are available
 - the first viewport contains the actual play material and player choices; no primary card, board, target, or control may sit below the fold in the tested desktop or mobile launch
 
 ## Curation Rules

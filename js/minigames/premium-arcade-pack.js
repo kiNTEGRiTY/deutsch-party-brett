@@ -170,6 +170,19 @@ function roundCount(task, fallback = 7) {
   return clamp(Number(task.partyConfig?.rounds || task.rounds || fallback), 4, 10);
 }
 
+function activeCharacterIndex(task, fallbackIndex = 0) {
+  const players = Array.isArray(task.players) ? task.players : [];
+  const activePlayer = players.find((player) => player.id === task.currentPlayerId) || players[0];
+  if (Number.isFinite(activePlayer?.colorIndex)) {
+    return activePlayer.colorIndex;
+  }
+  return fallbackIndex;
+}
+
+function renderTaskCharacterAvatar(task, fallbackIndex, size) {
+  return renderCharacterAvatar(activeCharacterIndex(task, fallbackIndex), size);
+}
+
 function resultFrom(score, maxScore, misses = 0) {
   const percentage = clamp(Math.round((score / Math.max(maxScore, 1)) * 100) - misses * 4, 0, 100);
   return {
@@ -354,7 +367,7 @@ export const WortartenSprunglauf = {
               <p>${escapeHtml(targetConfig.rule)}</p>
             </div>
             <div class="arcade-runner-hero" data-hero-lane="${heroLane}">
-              ${renderCharacterAvatar(4, 78)}
+              ${renderTaskCharacterAvatar(task, 4, 78)}
               <span></span>
             </div>
             ${platforms.map((item, index) => `
@@ -487,7 +500,7 @@ export const SchneeballWortschlacht = {
             </button>
           `).join('')}
           <div class="snow-blaster">
-            ${renderCharacterAvatar(1, 74)}
+            ${renderTaskCharacterAvatar(task, 1, 74)}
             <span>Schneeball</span>
           </div>
         </div>
@@ -571,7 +584,7 @@ export const ArtikelGateRunner = {
             </div>
             <div class="gate-start-flag" aria-hidden="true">Start</div>
             <div class="gate-finish-banner" aria-hidden="true">Artikel-Tore</div>
-            <div class="gate-runner">${renderCharacterAvatar(3, 116)}<span></span><i></i></div>
+            <div class="gate-runner">${renderTaskCharacterAvatar(task, 3, 116)}<span></span><i></i></div>
             ${['der', 'die', 'das'].map((article, gateIndex) => `
               <button class="gate-option gate-option--${gateIndex}" type="button" data-answer="${article}">
                 <strong>${article}</strong>
@@ -739,7 +752,7 @@ export const SatzJetpack = {
         })}
         <div class="jet-stage">
           <div class="jet-fuel"><span style="width:${fuel}%"></span></div>
-          <div class="jet-hero">${renderCharacterAvatar(8, 84)}<i></i></div>
+          <div class="jet-hero">${renderTaskCharacterAvatar(task, 8, 84)}<i></i></div>
           <div class="jet-slots">${sentence.map((_, index) => `<span data-slot="${index}"></span>`).join('')}</div>
           ${words.map((entry, index) => `
             <button class="jet-word jet-word--${index % 6}" type="button" data-index="${entry.index}">
@@ -853,7 +866,7 @@ export const WortLabyrinthJagd = {
               </button>
             `).join('')}
             ${MAZE_TRAPS.map(([x, y], index) => `<span class="maze-chaser maze-chaser--${index}" style="--c:${x + 1}; --r:${y + 1};"></span>`).join('')}
-            <div class="maze-player" style="--c:${player.x + 1}; --r:${player.y + 1};">${renderCharacterAvatar(2, 60)}</div>
+            <div class="maze-player" style="--c:${player.x + 1}; --r:${player.y + 1};">${renderTaskCharacterAvatar(task, 2, 60)}</div>
           </div>
           <div class="maze-controls" aria-label="Labyrinth-Steuerung">
             <button type="button" data-move="up">↑</button>
@@ -997,7 +1010,7 @@ export const ArtikelInvaders = {
             `).join('')}
           </div>
           <div class="invader-cannon">
-            <div class="invader-hero">${renderCharacterAvatar(1, 72)}</div>
+            <div class="invader-hero">${renderTaskCharacterAvatar(task, 1, 72)}</div>
             <div class="invader-cannon-body" aria-hidden="true"><span></span></div>
             <div class="invader-articles">
               ${['der', 'die', 'das'].map((article) => `<button class="${article === selected ? 'is-active' : ''}" type="button" data-article="${article}">${article}</button>`).join('')}
@@ -1208,7 +1221,7 @@ export const GrammatikBossfight = {
           <div class="boss-stage" style="--boss-hp:${(hp / questions.length) * 100}%">
             <div class="boss-health"><span></span></div>
             <div class="boss-creature">
-              <div class="boss-face">${renderCharacterAvatar(10, 128)}</div>
+              <div class="boss-face">${renderTaskCharacterAvatar(task, 10, 128)}</div>
               <strong>Wortmonster</strong>
             </div>
             <div class="boss-shields">
