@@ -1,6 +1,6 @@
 import { getTopicsForLevel } from '../learning/topic-registry.js';
 import { AXIS_META } from '../learning/difficulty.js';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=start-live-preview-35';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=setup-mobile-36';
 
 const MAX_PLAYERS = 4;
 
@@ -25,7 +25,7 @@ const STEP_META = [
 const GAME_MODES = [
   { id: 'partyreise', title: 'Partyreise', detail: 'Ausgewogen: Solo-Aufgaben, Duelle, Joker und kurze Teamrufe.', tone: 'Sage' },
   { id: 'teamruf', title: 'Teamruf', detail: 'Mehr gemeinsame Momente und schnelle Zurufe am Tisch.', tone: 'Blau' },
-  { id: 'risikopfad', title: 'Risikopfad', detail: 'Mehr Bonus, Falle, Portal und knappe Entscheidungen.', tone: 'Terracotta' }
+  { id: 'risikopfad', title: 'Risikopfad', detail: 'Mehr Bonus, Falle, Portal und knappe Entscheidungen.', tone: 'Mut' }
 ];
 
 const DURATION_OPTIONS = [

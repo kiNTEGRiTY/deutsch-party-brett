@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=start-live-preview-35';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-live-preview-35';
+import { Board } from '../engine/board.js?v=setup-mobile-36';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=setup-mobile-36';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=start-live-preview-35';
+import { renderCharacterAvatar } from './characters.js?v=setup-mobile-36';
 
 const VIEWBOX = { width: 1672, height: 941 };
 

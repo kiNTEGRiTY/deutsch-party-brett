@@ -191,14 +191,14 @@ import {
   VerbTakt,
   WortartenOrchester,
   Wortfunkeln
-} from './premium-variety-pack.js?v=start-live-preview-35';
+} from './premium-variety-pack.js?v=setup-mobile-36';
 import {
   BuchstabenMagneten,
   ReimMemoryAquarell,
   SatzFlickwerk,
   SilbenTrommel,
   WortartenBand
-} from './premium-motion-pack.js?v=start-live-preview-35';
+} from './premium-motion-pack.js?v=setup-mobile-36';
 import {
   ArtikelBildjagd,
   BildwortGalerie,
@@ -206,7 +206,7 @@ import {
   KompositumAtelier,
   SatzStoryboard,
   WimmelbildDetektiv
-} from './premium-content-pack.js?v=start-live-preview-35';
+} from './premium-content-pack.js?v=setup-mobile-36';
 import {
   AlphabetKartenreihe,
   AnfangspaarJagd,
@@ -222,7 +222,7 @@ import {
   TierblattSpurensuche,
   WortkartenBlitzwahl,
   WortkartenDomino
-} from './premium-atelier-pack.js?v=start-live-preview-35';
+} from './premium-atelier-pack.js?v=setup-mobile-36';
 import {
   ArtikelInvaders,
   ArtikelGateRunner,
@@ -233,8 +233,8 @@ import {
   WortartenSprunglauf,
   WortLabyrinthJagd,
   WortTetrisStapel
-} from './premium-arcade-pack.js?v=start-live-preview-35';
-import { isBoardReadyMinigame } from './quality-gate.js?v=start-live-preview-35';
+} from './premium-arcade-pack.js?v=setup-mobile-36';
+import { isBoardReadyMinigame } from './quality-gate.js?v=setup-mobile-36';
 
 const MINIGAMES = {
   'wort-labyrinth-jagd': WortLabyrinthJagd,

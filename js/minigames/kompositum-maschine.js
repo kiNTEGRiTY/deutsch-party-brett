@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=start-live-preview-35';
+import { SoundManager } from '../ui/sound-manager.js?v=setup-mobile-36';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {

@@ -3,12 +3,12 @@
  * No emojis - all illustrated SVG icons
  */
 
-import { getMinigame } from '../minigames/minigame-registry.js?v=start-live-preview-35';
+import { getMinigame } from '../minigames/minigame-registry.js?v=setup-mobile-36';
 import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigames/core/party-game-core.js';
-import { createDirectTask, generateTask } from '../learning/task-generator.js?v=start-live-preview-35';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-live-preview-35';
-import { SoundManager } from './sound-manager.js?v=start-live-preview-35';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=start-live-preview-35';
+import { createDirectTask, generateTask } from '../learning/task-generator.js?v=setup-mobile-36';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=setup-mobile-36';
+import { SoundManager } from './sound-manager.js?v=setup-mobile-36';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=setup-mobile-36';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
 
 export class MinigameRenderer {
