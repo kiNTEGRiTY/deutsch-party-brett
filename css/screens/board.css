@@ -659,6 +659,22 @@
   transform: translateY(0) scale(1);
 }
 
+@media (min-width: 1061px) and (min-height: 900px) {
+  .board-player-rail {
+    left: 162px;
+    bottom: 164px;
+    min-height: 56px;
+  }
+
+  .board-progress-chip {
+    bottom: 164px;
+  }
+
+  .board-landing-card {
+    bottom: 226px;
+  }
+}
+
 .board-landing-player {
   display: grid;
   justify-items: center;
