@@ -1518,6 +1518,7 @@
   min-height: 86px;
   display: grid;
   place-items: center;
+  gap: 4px;
   padding: 16px;
   border-radius: 24px;
   border: 3px dashed rgba(120, 123, 255, 0.32);
@@ -1525,6 +1526,38 @@
   color: rgba(78, 82, 132, 0.8);
   font-weight: 900;
   text-align: center;
+  appearance: none;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.kompositum-slot:hover,
+.kompositum-slot:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(120, 123, 255, 0.52);
+  box-shadow: 0 18px 40px rgba(77, 83, 143, 0.12);
+  outline: none;
+}
+
+.kompositum-slot.is-target {
+  border-style: solid;
+  border-color: rgba(255, 139, 85, 0.72);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 224, 158, 0.45), transparent 42%),
+    rgba(255, 252, 242, 0.94);
+}
+
+.kompositum-slot.is-filled {
+  border-style: solid;
+  border-color: rgba(72, 154, 109, 0.38);
+  background: linear-gradient(180deg, rgba(235, 255, 240, 0.96), rgba(218, 247, 228, 0.9));
+  color: #2b7a49;
+}
+
+.kompositum-slot span {
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .kompositum-slot strong {
@@ -1550,11 +1583,33 @@
   color: var(--text-primary);
   cursor: grab;
   touch-action: none;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+}
+
+.kompositum-tile:hover,
+.kompositum-tile:focus-visible {
+  transform: translateY(-3px) rotate(-1deg);
+  box-shadow: 0 24px 50px rgba(58, 74, 109, 0.16);
+  outline: none;
+}
+
+.kompositum-tile.is-selected {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 228, 151, 0.55), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 242, 215, 0.96));
+  box-shadow: 0 22px 54px rgba(202, 124, 52, 0.2);
+  transform: translateY(-4px) rotate(-2deg);
 }
 
 .kompositum-tile.is-dragging {
   cursor: grabbing;
   box-shadow: 0 28px 60px rgba(58, 74, 109, 0.18);
+  z-index: 4;
+}
+
+.kompositum-tile.is-locked {
+  pointer-events: none;
+  opacity: 0.35;
 }
 
 .kompositum-preview-card {
@@ -1565,6 +1620,13 @@
   font-weight: 900;
 }
 
+.kompositum-preview-card p,
+.kompositum-feedback p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
 .kompositum-preview-card.success {
   background: rgba(224, 255, 232, 0.92);
   color: #2b7a49;
@@ -1573,6 +1635,55 @@
 .kompositum-preview-card.fail {
   background: rgba(255, 230, 233, 0.92);
   color: #8f3851;
+}
+
+.kompositum-feedback {
+  min-height: 0;
+  display: none;
+  gap: 5px;
+  padding: 15px 18px;
+  border-radius: 22px;
+  font-weight: 900;
+}
+
+.kompositum-feedback.is-success,
+.kompositum-feedback.is-fail {
+  display: grid;
+}
+
+.kompositum-feedback.is-success {
+  background:
+    linear-gradient(180deg, rgba(224, 255, 232, 0.96), rgba(205, 244, 218, 0.9)),
+    #dff9e8;
+  color: #2b7a49;
+}
+
+.kompositum-feedback.is-fail {
+  background:
+    linear-gradient(180deg, rgba(255, 236, 228, 0.96), rgba(255, 219, 211, 0.9)),
+    #ffe4dc;
+  color: #8f3851;
+}
+
+.kompositum-feedback span,
+.kompositum-preview-card span {
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.kompositum-feedback strong,
+.kompositum-preview-card strong {
+  font-size: clamp(1.25rem, 4vw, 2rem);
+}
+
+.kompositum-shell .showcase-controls .btn:disabled,
+.kompositum-shell .showcase-controls .btn[disabled] {
+  cursor: not-allowed;
+  filter: saturate(0.45);
+  opacity: 0.58;
+  transform: none;
+  box-shadow: 0 8px 18px rgba(74, 74, 74, 0.08);
 }
 
 .taeusch-shell {
@@ -4996,6 +5107,126 @@
   .mission-chip {
     width: 100%;
     justify-content: center;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-stage {
+    padding: 10px;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-stage-topbar {
+    display: grid;
+    gap: 8px;
+    min-height: 0;
+    margin-bottom: 8px;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-stage-title {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-stage-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-nav-btn {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .minigame-timer-area {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .minigame-overlay[data-game="kompositum-maschine"] .timer {
+    min-height: 40px;
+    padding: 7px 14px;
+    font-size: 0.95rem;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] {
+    padding: 8px !important;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-shell {
+    gap: 8px;
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-header {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .premium-kicker {
+    font-size: 0.72rem;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-title {
+    max-width: 100%;
+    font-size: 2.35rem;
+    line-height: 0.92;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-status-pill {
+    padding: 8px 13px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-round-card {
+    gap: 7px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-prompt {
+    font-size: 1.18rem;
+    line-height: 1.17;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-secondary {
+    font-size: 0.88rem;
+    line-height: 1.28;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-slots {
+    gap: 10px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-slot {
+    min-height: 56px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-tile-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .kompositum-tile {
+    min-width: 0;
+    min-height: 46px;
+    padding: 8px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-controls {
+    gap: 8px;
+  }
+
+  .minigame-game-area[data-game="kompositum-maschine"] .showcase-controls .btn {
+    min-height: 46px;
+    padding: 8px 12px;
+    font-size: 0.95rem;
   }
 }
 

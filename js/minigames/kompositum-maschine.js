@@ -44,6 +44,16 @@ const MEANING_BANK = {
   }
 };
 
+const GERMAN_CHARACTERS = {
+  ä: 'ae',
+  ö: 'oe',
+  ü: 'ue',
+  Ä: 'ae',
+  Ö: 'oe',
+  Ü: 'ue',
+  ß: 'ss'
+};
+
 function shuffle(items) {
   const copy = [...items];
   for (let index = copy.length - 1; index > 0; index -= 1) {
@@ -53,14 +63,49 @@ function shuffle(items) {
   return copy;
 }
 
+function escapeHTML(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function normalizeMeaningKey(value) {
+  return String(value || '')
+    .replace(/[äöüÄÖÜß]/g, (character) => GERMAN_CHARACTERS[character] || character)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+const NORMALIZED_MEANING_BANK = Object.entries(MEANING_BANK).reduce((lookup, [word, entry]) => {
+  lookup.set(normalizeMeaningKey(word), entry);
+  return lookup;
+}, new Map());
+
+function buildMeaningEntry(item, resultWord) {
+  const directEntry = MEANING_BANK[resultWord];
+  const normalizedEntry = NORMALIZED_MEANING_BANK.get(normalizeMeaningKey(resultWord));
+
+  return directEntry || normalizedEntry || {
+    correct: `Ein zusammengesetztes Nomen aus ${item.part1} und ${item.part2}.`,
+    decoys: [
+      `Ein einzelnes Wort ohne Verbindung zu ${item.part1}.`,
+      `Zwei Woerter, die in dieser Reihenfolge kein neues Nomen bilden.`
+    ]
+  };
+}
+
 function pickRounds() {
   return shuffle(COMPOUND_CONTENT).slice(0, 3).map((item) => {
     const resultWord = item.result || `${item.part1}${item.part2}`;
-    const meanings = MEANING_BANK[resultWord];
     return {
       ...item,
       resultWord,
-      meanings
+      meanings: buildMeaningEntry(item, resultWord)
     };
   });
 }
@@ -77,8 +122,158 @@ export const KompositumMaschine = {
     let roundIndex = 0;
     let score = 0;
     let selectedParts = [null, null];
+    let selectedTile = null;
+    let disposed = false;
+    let roundCleanups = [];
+    const activeTimeouts = new Set();
+
+    function addRoundCleanup(cleanup) {
+      roundCleanups.push(cleanup);
+    }
+
+    function cleanupRound() {
+      activeTimeouts.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      activeTimeouts.clear();
+      roundCleanups.forEach((cleanup) => cleanup());
+      roundCleanups = [];
+      selectedTile = null;
+    }
+
+    function addListener(node, type, handler, options) {
+      node.addEventListener(type, handler, options);
+      addRoundCleanup(() => node.removeEventListener(type, handler, options));
+    }
+
+    function schedule(callback, delay) {
+      const timeoutId = window.setTimeout(() => {
+        activeTimeouts.delete(timeoutId);
+        if (!disposed) {
+          callback();
+        }
+      }, delay);
+      activeTimeouts.add(timeoutId);
+      return timeoutId;
+    }
+
+    function getTileByPart(part) {
+      return Array.from(container.querySelectorAll('.kompositum-tile'))
+        .find((tile) => tile.dataset.part === part);
+    }
+
+    function updateCheckButton() {
+      const checkButton = container.querySelector('#kompositum-check');
+      if (checkButton) {
+        checkButton.disabled = !(selectedParts[0] && selectedParts[1]);
+      }
+    }
+
+    function updateSlotTargets() {
+      container.querySelectorAll('.kompositum-slot').forEach((slot) => {
+        slot.classList.toggle('is-target', Boolean(selectedTile));
+      });
+    }
+
+    function clearSelectedTile() {
+      if (selectedTile) {
+        selectedTile.classList.remove('is-selected');
+        selectedTile.setAttribute('aria-pressed', 'false');
+        selectedTile = null;
+      }
+      updateSlotTargets();
+    }
+
+    function selectTile(tile) {
+      if (tile.classList.contains('is-locked')) {
+        return;
+      }
+
+      if (selectedTile === tile) {
+        clearSelectedTile();
+        return;
+      }
+
+      clearSelectedTile();
+      selectedTile = tile;
+      tile.classList.add('is-selected');
+      tile.setAttribute('aria-pressed', 'true');
+      updateSlotTargets();
+      SoundManager.play('pop');
+    }
+
+    function renderSlot(slotIndex) {
+      const slot = container.querySelector(`.kompositum-slot[data-slot="${slotIndex}"]`);
+      if (!slot) {
+        return;
+      }
+
+      const part = selectedParts[slotIndex];
+      slot.classList.toggle('is-filled', Boolean(part));
+      slot.innerHTML = part
+        ? `<span>Teil ${slotIndex + 1}</span><strong>${escapeHTML(part)}</strong>`
+        : `<span>Teil ${slotIndex + 1}</span>`;
+    }
+
+    function returnPartToTile(part) {
+      const tile = getTileByPart(part);
+      if (!tile) {
+        return;
+      }
+
+      tile.classList.remove('is-locked');
+      tile.style.visibility = '';
+      tile.style.transform = '';
+      tile.setAttribute('aria-pressed', 'false');
+    }
+
+    function placeTileInSlot(tile, slotIndex) {
+      if (!tile || tile.classList.contains('is-locked')) {
+        return;
+      }
+
+      if (selectedTile && selectedTile !== tile) {
+        clearSelectedTile();
+      }
+
+      const part = tile.dataset.part;
+      const previousPart = selectedParts[slotIndex];
+      if (previousPart && previousPart !== part) {
+        returnPartToTile(previousPart);
+      }
+
+      const previousSlotIndex = selectedParts.findIndex((selectedPart) => selectedPart === part);
+      if (previousSlotIndex !== -1) {
+        selectedParts[previousSlotIndex] = null;
+        renderSlot(previousSlotIndex);
+      }
+
+      selectedParts[slotIndex] = part;
+      renderSlot(slotIndex);
+      tile.classList.remove('is-selected');
+      tile.classList.add('is-locked');
+      tile.style.visibility = 'hidden';
+      tile.style.transform = '';
+      tile.setAttribute('aria-pressed', 'false');
+      selectedTile = null;
+      updateSlotTargets();
+      updateCheckButton();
+      SoundManager.play('pop');
+    }
+
+    function clearSlot(slotIndex) {
+      const part = selectedParts[slotIndex];
+      if (!part) {
+        return;
+      }
+
+      selectedParts[slotIndex] = null;
+      returnPartToTile(part);
+      renderSlot(slotIndex);
+      updateCheckButton();
+      SoundManager.play('pop');
+    }
 
     function finishGame() {
+      cleanupRound();
       const percentage = Math.round((score / (rounds.length * 2)) * 100);
       onComplete({
         correct: percentage >= 75,
@@ -92,45 +287,56 @@ export const KompositumMaschine = {
     }
 
     function renderMeaningStep(round) {
+      cleanupRound();
       const options = shuffle([round.meanings.correct, ...round.meanings.decoys]);
       container.querySelector('#kompositum-stage').innerHTML = `
         <div class="kompositum-preview-card success">
           <span>Gebautes Wort</span>
-          <strong>${round.resultWord}</strong>
+          <strong>${escapeHTML(round.resultWord)}</strong>
+          <p>${escapeHTML(round.part1)} + ${escapeHTML(round.part2)} wird zu ${escapeHTML(round.resultWord)}.</p>
         </div>
         <div class="showcase-round-card">
           <p class="showcase-prompt">Was bedeutet dieses Kompositum am besten?</p>
         </div>
         <div class="showcase-score-grid">
-          ${options.map((option) => `
-            <button class="showcase-score-button tone-mid kompositum-meaning" data-answer="${option}" type="button">
-              <strong>${option}</strong>
+          ${options.map((option, optionIndex) => `
+            <button class="showcase-score-button tone-mid kompositum-meaning" data-answer-index="${optionIndex}" type="button">
+              <strong>${escapeHTML(option)}</strong>
             </button>
           `).join('')}
         </div>
       `;
 
       container.querySelectorAll('.kompositum-meaning').forEach((button) => {
-        button.addEventListener('click', () => {
-          if (button.dataset.answer === round.meanings.correct) {
+        addListener(button, 'click', () => {
+          const answer = options[Number(button.dataset.answerIndex)];
+          const isCorrect = answer === round.meanings.correct;
+
+          container.querySelectorAll('.kompositum-meaning').forEach((optionButton) => {
+            optionButton.disabled = true;
+            const optionAnswer = options[Number(optionButton.dataset.answerIndex)];
+            optionButton.classList.toggle('is-correct', optionAnswer === round.meanings.correct);
+          });
+
+          if (isCorrect) {
             score += 1;
             SoundManager.play('success');
-            button.classList.add('is-correct');
           } else {
             SoundManager.play('error');
             button.classList.add('is-wrong');
           }
 
-          setTimeout(() => {
+          schedule(() => {
             roundIndex += 1;
             renderRound();
-          }, 900);
+          }, 1100);
         });
       });
     }
 
     function attachTileDrag(tile, slotNodes) {
       let drag = null;
+      let removeDragListeners = null;
 
       const onMove = (event) => {
         if (!drag || drag.pointerId !== event.pointerId) {
@@ -139,6 +345,14 @@ export const KompositumMaschine = {
         const dx = event.clientX - drag.startX;
         const dy = event.clientY - drag.startY;
         tile.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx / 14}deg)`;
+      };
+
+      const stopDragListeners = () => {
+        if (!removeDragListeners) {
+          return;
+        }
+        removeDragListeners();
+        removeDragListeners = null;
       };
 
       const onUp = (event) => {
@@ -153,28 +367,21 @@ export const KompositumMaschine = {
 
         tile.classList.remove('is-dragging');
         tile.releasePointerCapture?.(event.pointerId);
-        window.removeEventListener('pointermove', onMove);
-        window.removeEventListener('pointerup', onUp);
+        stopDragListeners();
 
         if (slot) {
           const slotIndex = Number(slot.dataset.slot);
-          selectedParts[slotIndex] = tile.dataset.part;
-          slot.innerHTML = `<strong>${tile.dataset.part}</strong>`;
-          tile.classList.add('is-locked');
-          tile.style.visibility = 'hidden';
-          SoundManager.play('pop');
+          placeTileInSlot(tile, slotIndex);
         } else {
           tile.style.transform = 'translate(0, 0)';
         }
 
         drag = null;
-
-        if (selectedParts[0] && selectedParts[1]) {
-          container.querySelector('#kompositum-check').disabled = false;
-        }
       };
 
-      tile.addEventListener('pointerdown', (event) => {
+      addRoundCleanup(stopDragListeners);
+
+      addListener(tile, 'pointerdown', (event) => {
         if (tile.classList.contains('is-locked')) {
           return;
         }
@@ -189,10 +396,16 @@ export const KompositumMaschine = {
         SoundManager.play('whoosh');
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
+        removeDragListeners = () => {
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('pointerup', onUp);
+        };
       });
     }
 
     function renderRound() {
+      cleanupRound();
+
       if (roundIndex >= rounds.length) {
         finishGame();
         return;
@@ -200,7 +413,8 @@ export const KompositumMaschine = {
 
       selectedParts = [null, null];
       const round = rounds[roundIndex];
-      const partOptions = shuffle([round.part1, round.part2, round.decoy1 || round.decoy2 || 'Mond']);
+      const decoys = [round.decoy1, round.decoy2].filter(Boolean);
+      const partOptions = shuffle([round.part1, round.part2, ...decoys]).slice(0, 4);
 
       container.innerHTML = `
         <div class="kompositum-shell">
@@ -215,20 +429,22 @@ export const KompositumMaschine = {
 
           <div id="kompositum-stage">
             <div class="showcase-round-card">
-              <p class="showcase-prompt">Zieh zwei Wortbausteine in die Maschine und baue ein sinnvolles Kompositum.</p>
-              <p class="showcase-secondary">Erst bauen, dann die Bedeutung sauber erklaeren.</p>
+              <p class="showcase-prompt">Baue ein sinnvolles Kompositum aus zwei Wortbausteinen.</p>
+              <p class="showcase-secondary">Erst entsteht das neue Nomen, dann zaehlt die passende Bedeutung.</p>
             </div>
 
             <div class="kompositum-slots">
-              <div class="kompositum-slot" data-slot="0"><span>Teil 1</span></div>
-              <div class="kompositum-slot" data-slot="1"><span>Teil 2</span></div>
+              <button class="kompositum-slot" data-slot="0" type="button" aria-label="Erster Wortbaustein"><span>Teil 1</span></button>
+              <button class="kompositum-slot" data-slot="1" type="button" aria-label="Zweiter Wortbaustein"><span>Teil 2</span></button>
             </div>
 
             <div class="kompositum-tile-row">
               ${partOptions.map((part) => `
-                <button class="kompositum-tile" data-part="${part}" type="button">${part}</button>
+                <button class="kompositum-tile" data-part="${escapeHTML(part)}" type="button" aria-pressed="false">${escapeHTML(part)}</button>
               `).join('')}
             </div>
+
+            <div class="kompositum-feedback" id="kompositum-feedback" aria-live="polite"></div>
 
             <div class="showcase-controls">
               <button class="btn btn-secondary" id="kompositum-reset" type="button">Neu bauen</button>
@@ -241,29 +457,57 @@ export const KompositumMaschine = {
       const slotNodes = Array.from(container.querySelectorAll('.kompositum-slot'));
       container.querySelectorAll('.kompositum-tile').forEach((tile) => {
         attachTileDrag(tile, slotNodes);
+        addListener(tile, 'click', () => selectTile(tile));
       });
 
-      container.querySelector('#kompositum-reset').addEventListener('click', renderRound);
+      slotNodes.forEach((slot) => {
+        addListener(slot, 'click', () => {
+          const slotIndex = Number(slot.dataset.slot);
+          if (selectedTile) {
+            placeTileInSlot(selectedTile, slotIndex);
+            return;
+          }
+          clearSlot(slotIndex);
+        });
+      });
 
-      container.querySelector('#kompositum-check').addEventListener('click', () => {
-        const assembled = `${selectedParts[0] || ''}${selectedParts[1] || ''}`;
-        const preview = document.createElement('div');
-        preview.className = `kompositum-preview-card ${assembled === round.resultWord ? 'success' : 'fail'}`;
-        preview.innerHTML = `<span>Maschine</span><strong>${assembled}</strong>`;
-        container.querySelector('#kompositum-stage').prepend(preview);
+      addListener(container.querySelector('#kompositum-reset'), 'click', renderRound);
 
-        if (assembled === round.resultWord) {
+      addListener(container.querySelector('#kompositum-check'), 'click', () => {
+        const isCorrectBuild = selectedParts[0] === round.part1 && selectedParts[1] === round.part2;
+        const checkButton = container.querySelector('#kompositum-check');
+        const feedback = container.querySelector('#kompositum-feedback');
+        checkButton.disabled = true;
+
+        feedback.className = `kompositum-feedback ${isCorrectBuild ? 'is-success' : 'is-fail'}`;
+        feedback.innerHTML = isCorrectBuild
+          ? `
+            <span>Maschine</span>
+            <strong>${escapeHTML(round.resultWord)}</strong>
+            <p>${escapeHTML(round.part1)} + ${escapeHTML(round.part2)} wird als Kompositum zu ${escapeHTML(round.resultWord)}.</p>
+          `
+          : `
+            <span>Noch nicht rund</span>
+            <strong>${escapeHTML(selectedParts[0])} + ${escapeHTML(selectedParts[1])}</strong>
+            <p>Richtig ist ${escapeHTML(round.part1)} + ${escapeHTML(round.part2)} -> ${escapeHTML(round.resultWord)}.</p>
+          `;
+
+        if (isCorrectBuild) {
           score += 1;
           SoundManager.play('success');
-          setTimeout(() => renderMeaningStep(round), 650);
+          schedule(() => renderMeaningStep(round), 850);
           return;
         }
 
         SoundManager.play('error');
-        setTimeout(renderRound, 900);
+        schedule(renderRound, 1400);
       });
     }
 
     renderRound();
+    return () => {
+      disposed = true;
+      cleanupRound();
+    };
   }
 };
