@@ -5,7 +5,7 @@
  * Setup -> Board Play -> Mini-Games -> Rewards -> End
  */
 
-import { Board } from './board.js?v=start-fullscreen-47';
+import { Board } from './board.js?v=arcade-stage-paper-48';
 import { Dice } from './dice.js';
 import { Player } from './player.js';
 import { TurnManager, TurnPhase } from './turn.js';

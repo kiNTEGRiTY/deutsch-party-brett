@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=start-fullscreen-47';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-fullscreen-47';
+import { Board } from '../engine/board.js?v=arcade-stage-paper-48';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=arcade-stage-paper-48';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
+import { renderCharacterAvatar } from './characters.js?v=arcade-stage-paper-48';
 
 const VIEWBOX = { width: 1672, height: 941 };
 

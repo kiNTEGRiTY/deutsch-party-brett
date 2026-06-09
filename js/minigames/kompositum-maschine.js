@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=start-fullscreen-47';
+import { SoundManager } from '../ui/sound-manager.js?v=arcade-stage-paper-48';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {

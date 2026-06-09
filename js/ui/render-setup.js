@@ -1,6 +1,6 @@
 import { getTopicsForLevel } from '../learning/topic-registry.js';
 import { AXIS_META } from '../learning/difficulty.js';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=arcade-stage-paper-48';
 
 const MAX_PLAYERS = 4;
 

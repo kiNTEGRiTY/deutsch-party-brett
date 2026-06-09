@@ -3,12 +3,12 @@
  * No emojis - all illustrated SVG icons
  */
 
-import { getMinigame } from '../minigames/minigame-registry.js?v=start-fullscreen-47';
+import { getMinigame } from '../minigames/minigame-registry.js?v=arcade-stage-paper-48';
 import { buildTaskPartyConfig, getModeLabel, getScoringLabel } from '../minigames/core/party-game-core.js';
-import { createDirectTask, generateTask } from '../learning/task-generator.js?v=start-fullscreen-47';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-fullscreen-47';
-import { SoundManager } from './sound-manager.js?v=start-fullscreen-47';
-import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
+import { createDirectTask, generateTask } from '../learning/task-generator.js?v=arcade-stage-paper-48';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=arcade-stage-paper-48';
+import { SoundManager } from './sound-manager.js?v=arcade-stage-paper-48';
+import { CHARACTERS, renderCharacterAvatar } from './characters.js?v=arcade-stage-paper-48';
 import { iconTask, iconChallenge, iconTeam, iconCoin, iconCheck, iconTimer, iconParty, iconBack, iconHome } from '../ui/icons.js';
 
 export class MinigameRenderer {

@@ -107,6 +107,15 @@ if (!menuRenderer.includes('getCuratedDirectPlayGroups')) {
   }
 });
 
+[
+  'watercolor-premium-game-table.png',
+  'board-enchanted-backdrop'
+].forEach((token) => {
+  if (menuCss.includes(token)) {
+    fail(`Minigame CSS must not use generic board/backdrop image "${token}" for premium arcade stages.`);
+  }
+});
+
 if (failures.length) {
   console.error('Minigame curation validation failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));

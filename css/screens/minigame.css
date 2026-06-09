@@ -4832,10 +4832,11 @@
 
 .minigame-game-area::before {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 22%),
-    url("../../assets/img/premium/board-enchanted-backdrop.webp") center center / cover no-repeat;
-  opacity: 0.14;
-  filter: saturate(1.1) blur(1px);
+    radial-gradient(circle at 18% 20%, rgba(255, 247, 215, 0.28), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(196, 222, 206, 0.18), transparent 22%),
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 28%);
+  opacity: 0.82;
+  filter: none;
 }
 
 .minigame-game-area::after {
@@ -10232,8 +10233,7 @@
   background:
     radial-gradient(circle at 18% 24%, rgba(255, 252, 232, 0.2), transparent 22%),
     linear-gradient(90deg, rgba(255, 248, 218, 0.18), rgba(255, 248, 218, 0.34) 54%, rgba(218, 165, 88, 0.16)),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
-    #ead6a6;
+    linear-gradient(180deg, #f4e5bc, #ddbb7e);
   background-size: cover, cover, cover;
   background-position: center, center, center;
   height: 100%;
@@ -10471,15 +10471,41 @@
 }
 
 .snow-arena {
+  isolation: isolate;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.08)),
-    radial-gradient(circle at 70% 18%, rgba(225, 246, 255, 0.34), transparent 26%),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
-    linear-gradient(180deg, #dceff5, #efd7a3);
-  background-size: cover, cover, cover, cover;
-  background-position: center, center, center, center;
+    radial-gradient(circle at 80% 16%, rgba(255, 252, 232, 0.46), transparent 21%),
+    radial-gradient(circle at 16% 82%, rgba(184, 216, 226, 0.28), transparent 22%),
+    linear-gradient(145deg, #f4e9c8 0%, #e9d2a1 58%, #cda36a 100%);
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
   height: 100%;
   min-height: 620px;
+}
+
+.snow-arena::before,
+.snow-arena::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.snow-arena::before {
+  background:
+    linear-gradient(8deg, transparent 0 44%, rgba(255, 248, 220, 0.26) 44% 55%, transparent 55%),
+    linear-gradient(174deg, transparent 0 62%, rgba(115, 83, 48, 0.08) 62% 63%, transparent 63%),
+    repeating-linear-gradient(98deg, rgba(91, 62, 35, 0.055) 0 1px, transparent 1px 32px);
+  opacity: 0.7;
+}
+
+.snow-arena::after {
+  background:
+    url("../../assets/img/premium/user-reference/word-card-crops/hund.jpg") 88% 77% / 122px auto no-repeat,
+    url("../../assets/img/premium/user-reference/word-card-crops/baum.jpg") 95% 17% / 108px auto no-repeat,
+    url("../../assets/img/premium/user-reference/word-card-crops/blume.jpg") 11% 20% / 106px auto no-repeat;
+  opacity: 0.2;
+  filter: saturate(0.9) sepia(0.08) drop-shadow(0 12px 10px rgba(69, 45, 24, 0.12));
 }
 
 .snow-horizon {
@@ -10487,6 +10513,7 @@
   left: -4%;
   right: -4%;
   bottom: 17%;
+  z-index: 1;
   height: 38%;
   border-radius: 50% 50% 0 0;
   background: rgba(255, 255, 255, 0.18);
@@ -10592,10 +10619,9 @@
   isolation: isolate;
   background:
     linear-gradient(90deg, rgba(255, 242, 202, 0.08), rgba(255, 247, 220, 0.34) 54%, rgba(218, 163, 86, 0.18)),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
     linear-gradient(180deg, #cfe3cf 0 34%, #f4dea3 34% 70%, #cf8e42 70% 100%);
-  background-size: cover, cover, cover;
-  background-position: center, left center, center;
+  background-size: cover, cover;
+  background-position: center, center;
   height: 100%;
   min-height: 620px;
 }
@@ -11006,8 +11032,7 @@
   background:
     radial-gradient(circle at 50% 44%, rgba(255, 255, 234, 0.32), transparent 32%),
     linear-gradient(145deg, rgba(143, 197, 186, 0.52), rgba(236, 209, 147, 0.42)),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
-    #a8d5d7;
+    linear-gradient(180deg, #c5e2d7, #e9cf9a);
   background-size: cover, cover, cover;
   background-position: center, center, center;
 }
@@ -11071,8 +11096,7 @@
   background:
     radial-gradient(circle at 76% 20%, rgba(255, 241, 151, 0.24), transparent 18%),
     linear-gradient(180deg, rgba(203, 228, 234, 0.56), rgba(239, 215, 163, 0.36)),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
-    #cbe4ea;
+    linear-gradient(180deg, #cbe4ea, #e8cf9c);
   background-size: cover, cover, cover;
   background-position: center, center, center;
   height: 100%;
@@ -11185,8 +11209,7 @@
   background:
     radial-gradient(circle at 22% 42%, rgba(255, 239, 168, 0.22), transparent 28%),
     radial-gradient(circle at 70% 58%, rgba(239, 112, 93, 0.12), transparent 32%),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
-    #e2c184;
+    linear-gradient(145deg, #ecd49d, #d9b06f);
   background-size: cover, cover, cover;
   background-position: center;
 }
@@ -11561,10 +11584,9 @@
   background:
     linear-gradient(90deg, rgba(255, 246, 216, 0.12), rgba(255, 248, 226, 0.42) 55%, rgba(224, 158, 74, 0.16)),
     radial-gradient(circle at 16% 20%, rgba(255, 239, 102, 0.32), transparent 13%),
-    url("../../assets/img/premium/watercolor-premium-game-table.png"),
     linear-gradient(180deg, #cfe0c6 0 31%, #eed49a 31% 68%, #ca8c45 68% 100%);
-  background-position: center, center, left center, center;
-  background-size: cover, cover, cover, cover;
+  background-position: center, center, center;
+  background-size: cover, cover, cover;
   background-repeat: no-repeat;
 }
 

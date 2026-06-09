@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-fullscreen-47';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=arcade-stage-paper-48';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=start-fullscreen-47';
-import { SoundManager } from './sound-manager.js?v=start-fullscreen-47';
+import { renderCharacterAvatar } from './characters.js?v=arcade-stage-paper-48';
+import { SoundManager } from './sound-manager.js?v=arcade-stage-paper-48';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
