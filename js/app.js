@@ -144,6 +144,7 @@ class App {
 
     await this._ensureMinigameRenderer(minigameSettings);
     const runtimeContext = {
+      source: 'board',
       players: this.gameController.getPlayers().map((player) => ({
         id: player.id,
         name: player.name,
@@ -177,6 +178,7 @@ class App {
     SoundManager.play('launch');
     await this._ensureMinigameRenderer(this.settings.getSnapshot());
     const runtimeContext = {
+      source: 'direct',
       players: Array.isArray(payload.players) ? payload.players : [],
       currentPlayerId: payload.players?.[0]?.id ?? null,
       exitOptions: {

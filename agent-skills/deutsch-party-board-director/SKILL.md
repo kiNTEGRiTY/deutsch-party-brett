@@ -49,6 +49,7 @@ Use at minimum:
 - on mobile, preserve compact player-state feedback near the dice when space allows; hiding all player slips makes the board feel less like a multi-player dice game
 - a board-task generator sample when task selection changes
 - for dice-flow changes, click the dice in the board debug route and verify rolling state, final value, token movement, landing feedback, and console cleanliness
+- when a board roll launches a minigame, verify the minigame shell still reads as a board-launched task, not a generic standalone worksheet
 
 ## Output
 

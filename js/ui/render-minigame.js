@@ -91,6 +91,7 @@ export class MinigameRenderer {
     const partyConfig = task.partyConfig;
     const useExternalTimer = task.timerSeconds > 0 && !minigame.usesInternalTimer;
     const exitOptions = runtimeContext.exitOptions || {};
+    const shellContext = this._getShellContext(runtimeContext, exitOptions, mode);
     const titleClassName = minigame.name_de.length > 14
       ? 'minigame-title minigame-title--compact'
       : 'minigame-title';
@@ -116,7 +117,7 @@ export class MinigameRenderer {
       " data-topic="${task.topic || 'wortschatz'}" data-mode="${mode}" data-game="${task.miniGameId || 'deutsch'}" data-world="${BOARD_THEME.id}">
         <div class="minigame-shell">
           <aside class="minigame-sidebar">
-            <div class="minigame-kicker">${modeIcon}<span>${this._getModeLabel(mode)}</span></div>
+            <div class="minigame-kicker">${modeIcon}<span>${shellContext.kicker}</span></div>
             <div class="minigame-title-row">
               <div class="minigame-title-icon">${modeIcon}</div>
               <div>
@@ -137,7 +138,7 @@ export class MinigameRenderer {
 
           <section class="minigame-stage">
             <div class="minigame-stage-topbar">
-              <div class="minigame-stage-title">Aufgabenblatt</div>
+              <div class="minigame-stage-title">${shellContext.stageTitle}</div>
               <div class="minigame-stage-actions">
                 ${exitOptions.backLabel ? `
                   <button class="btn btn-secondary btn-sm minigame-nav-btn" id="btn-minigame-back-out" type="button">
@@ -155,7 +156,7 @@ export class MinigameRenderer {
                       ${iconTimer(16)} <span id="timer-value">${task.timerSeconds}</span>s
                     </div>
                   </div>
-                ` : '<div class="mission-chip">Live-Show</div>'}
+                ` : `<div class="mission-chip">${shellContext.untimedLabel}</div>`}
               </div>
             </div>
             <div id="minigame-game-area" class="minigame-game-area"></div>
@@ -462,6 +463,30 @@ export class MinigameRenderer {
     if (mode === 'challenge') return 'Challenge';
     if (mode === 'team') return 'Team-Mission';
     return 'Solo-Mission';
+  }
+
+  _getShellContext(runtimeContext = {}, exitOptions = {}, mode = 'normal') {
+    if (runtimeContext.source === 'board' || exitOptions.backLabel === 'Zum Brett') {
+      return {
+        kicker: 'Brett-Mission',
+        stageTitle: 'Brettaufgabe',
+        untimedLabel: 'Brettmoment'
+      };
+    }
+
+    if (runtimeContext.source === 'direct' || exitOptions.backLabel === 'Zu Minigames') {
+      return {
+        kicker: 'Direktspiel',
+        stageTitle: 'Direktspiel',
+        untimedLabel: 'Freies Spiel'
+      };
+    }
+
+    return {
+      kicker: this._getModeLabel(mode),
+      stageTitle: 'Aufgabenblatt',
+      untimedLabel: 'Freies Spiel'
+    };
   }
 
   _getTopicLabel(topic) {
