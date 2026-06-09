@@ -72,6 +72,14 @@ const TOPIC_MINIGAME_MAP = {
   _default:       ['article-choice']
 };
 
+const TOPIC_ALIASES = {
+  adjektiv: 'adjektive'
+};
+
+function normalizeTopicId(topic) {
+  return TOPIC_ALIASES[topic] || topic;
+}
+
 const FEATURED_MODE_MINIGAME_MAP = {
   challenge: [
     'wimmelbild-detektiv',
@@ -157,11 +165,15 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
   const lang = getLanguageModule();
   
   let topic;
-  if (explicitTopic && TOPIC_MINIGAME_MAP[explicitTopic]) {
-    topic = explicitTopic;
+  const normalizedExplicitTopic = normalizeTopicId(explicitTopic);
+  if (normalizedExplicitTopic && TOPIC_MINIGAME_MAP[normalizedExplicitTopic]) {
+    topic = normalizedExplicitTopic;
   } else {
     // Pick a random active topic
-    const validTopics = activeTopics.filter(t => TOPIC_MINIGAME_MAP[t]);
+    const candidateTopics = Array.isArray(activeTopics) ? activeTopics : [];
+    const validTopics = candidateTopics
+      .map((candidate) => normalizeTopicId(candidate))
+      .filter((candidate) => TOPIC_MINIGAME_MAP[candidate]);
     if (validTopics.length === 0) {
       // Fallback to article choice
       validTopics.push('artikel');
@@ -212,7 +224,7 @@ export function createDirectTask({
   custom = {}
 }) {
   const lang = getLanguageModule();
-  const resolvedTopic = topic || 'wortschatz';
+  const resolvedTopic = normalizeTopicId(topic) || 'wortschatz';
   const timerSeconds = Number(timeLimitSec || getTimerDuration(difficulty.timePressure || 0));
   const task = {
     miniGameId,

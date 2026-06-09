@@ -168,8 +168,8 @@ export class GameController {
         return { action: 'minigame', mode: 'single', topic: 'verben', difficulty: fieldDifficulty, field };
 
       case 'minigame_adjektiv':
-        this._emit('minigameStart', { mode: 'single', player, field, topic: 'adjektiv', difficulty: fieldDifficulty });
-        return { action: 'minigame', mode: 'single', topic: 'adjektiv', difficulty: fieldDifficulty, field };
+        this._emit('minigameStart', { mode: 'single', player, field, topic: 'adjektive', difficulty: fieldDifficulty });
+        return { action: 'minigame', mode: 'single', topic: 'adjektive', difficulty: fieldDifficulty, field };
 
       case 'minigame_all':
         this._emit('minigameStart', { 
