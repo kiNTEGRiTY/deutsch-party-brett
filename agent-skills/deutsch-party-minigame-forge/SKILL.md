@@ -47,6 +47,18 @@ A board-ready minigame needs:
 6. Verify via direct launch and board launch where relevant.
 7. Update `quality-gate.js` only when evidence supports promotion or quarantine.
 
+## Arcade Verification Checklist
+
+For games that render an `.arcade-stage`, verify the rendered product, not only module syntax:
+
+- direct-launch the game with `?debugMinigame=<id>` and capture a desktop screenshot
+- confirm the stage and play area have non-zero width and height in the DOM
+- start the game and capture a live screenshot with active pieces visible
+- exercise one correct action and one wrong or miss state when the game supports both
+- complete the round and verify the result screen reports the expected score
+- repeat a mobile viewport around `390x844`, checking for horizontal overflow and HUD/input overlap
+- clear timers, animation frames, intervals, listeners, and delayed visual effects in cleanup
+
 ## Output
 
 Report:

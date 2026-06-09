@@ -806,10 +806,37 @@
 }
 
 .meteor-stage {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
   background:
     radial-gradient(circle at 20% 16%, rgba(255,255,255,0.4), transparent 22%),
     radial-gradient(circle at 84% 14%, rgba(255,212,90,0.22), transparent 20%),
     linear-gradient(180deg, #d2ebff 0%, #b6d9ff 36%, #a6d2df 60%, #fbe8b6 100%);
+}
+
+.minigame-game-area[data-game="word-meteorites"] {
+  place-items: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+
+.meteor-overlay-title {
+  margin-top: 12px;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.meteor-overlay-copy {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.meteor-overlay-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
 }
 
 .meteor-stage::before {
@@ -827,7 +854,7 @@
 
 .meteor-game-area {
   position: absolute;
-  inset: 0 0 118px;
+  inset: 68px 0 118px;
   overflow: hidden;
 }
 
@@ -847,8 +874,14 @@
 }
 
 .meteor-word {
+  --meteor-y: -48px;
+  --meteor-scale: 1;
+  --meteor-rotate: 0deg;
   position: absolute;
+  top: 0;
+  left: 50%;
   min-width: 110px;
+  max-width: min(220px, calc(100% - 28px));
   padding: 10px 16px;
   border-radius: 22px;
   text-align: center;
@@ -858,6 +891,9 @@
   color: white;
   background: linear-gradient(135deg, #ff8e68, #ff5b7c);
   box-shadow: 0 16px 26px rgba(255, 91, 124, 0.26);
+  transform: translate(-50%, var(--meteor-y)) scale(var(--meteor-scale)) rotate(var(--meteor-rotate));
+  transition: opacity 0.18s ease, filter 0.18s ease;
+  will-change: transform, opacity;
 }
 
 .meteor-word.matching {
@@ -866,8 +902,14 @@
 }
 
 .meteor-word.burst {
-  transform: scale(1.24);
+  --meteor-scale: 1.24;
+  --meteor-rotate: 10deg;
   opacity: 0;
+  filter: saturate(1.35);
+}
+
+.meteor-word span {
+  overflow-wrap: anywhere;
 }
 
 .meteor-word .met-typed {
@@ -879,6 +921,7 @@
   left: 18px;
   right: 18px;
   bottom: 18px;
+  z-index: 12;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -893,6 +936,66 @@
 
 .meteor-input.invalid {
   box-shadow: 0 0 0 4px rgba(255, 91, 124, 0.18), 0 14px 24px rgba(31,107,56,0.12);
+}
+
+@media (max-width: 760px) {
+  .minigame-overlay[data-game="word-meteorites"] .minigame-shell {
+    height: calc(100dvh - 16px);
+    min-height: calc(100dvh - 16px) !important;
+  }
+
+  .minigame-overlay[data-game="word-meteorites"] .minigame-stage {
+    height: calc(100dvh - 16px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .meteor-stage {
+    min-height: 0;
+    border-radius: 16px 20px 14px 18px;
+  }
+
+  .meteor-game-area {
+    inset: 62px 0 128px;
+  }
+
+  .meteor-ground-line {
+    left: 14px;
+    right: 14px;
+    bottom: 124px;
+  }
+
+  .meteor-word {
+    min-width: 82px;
+    padding: 9px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+  }
+
+  .meteor-input-shell {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .meteor-input-shell label {
+    font-size: 0.76rem;
+  }
+
+  .meteor-input {
+    padding: 10px 12px;
+    border-radius: 16px;
+    font-size: 1rem;
+  }
+
+  .meteor-overlay-actions .btn {
+    width: min(230px, 100%);
+    white-space: nowrap;
+    font-size: 1.1rem;
+  }
 }
 
 .lie-detector-shell {
@@ -1232,8 +1335,8 @@
     bottom: 12px;
   }
 
-  .meteor-game-area {
-    inset: 0 0 126px;
+  .minigame-game-area[data-game="word-meteorites"] .meteor-game-area {
+    inset: 62px 0 126px;
   }
 
   .meteor-ground-line {
