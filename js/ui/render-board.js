@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=arcade-mobile-shell-41';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=invaders-mobile-43';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=arcade-mobile-shell-41';
-import { SoundManager } from './sound-manager.js?v=arcade-mobile-shell-41';
+import { renderCharacterAvatar } from './characters.js?v=invaders-mobile-43';
+import { SoundManager } from './sound-manager.js?v=invaders-mobile-43';
 
 const VIEWBOX = { width: 1672, height: 941 };
 

@@ -12200,6 +12200,18 @@
     padding: 182px 10px 114px;
   }
 
+  .arcade-game--invaders .invaders-stage {
+    padding: 198px 14px 112px;
+  }
+
+  .invader-fleet {
+    gap: 8px;
+  }
+
+  .invader-target {
+    min-height: clamp(50px, 6.2vh, 64px);
+  }
+
   .maze-word-token {
     border-width: 2px;
     font-size: 0.58rem;

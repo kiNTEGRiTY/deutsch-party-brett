@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=arcade-mobile-shell-41';
-import { renderCharacterAvatar } from '../ui/characters.js?v=arcade-mobile-shell-41';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=arcade-mobile-shell-41';
+import { SoundManager } from '../ui/sound-manager.js?v=invaders-mobile-43';
+import { renderCharacterAvatar } from '../ui/characters.js?v=invaders-mobile-43';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=invaders-mobile-43';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -1028,13 +1028,17 @@ export const ArtikelInvaders = {
     let misses = 0;
     let pressure = 0;
     let done = false;
+    let pressureStarted = false;
+    const pressureLimitSec = clamp(Number(task.timerSeconds || task.partyConfig?.timeLimitSec || DIRECT_DEFAULTS.solo_arcade.timeLimitSec), 18, 60);
+    const pressureTickMs = 1300;
+    const pressureStep = Math.max(1, Math.ceil(100 / Math.max(1, Math.round((pressureLimitSec * 1000) / pressureTickMs))));
 
     container.innerHTML = `
       <div class="arcade-game arcade-game--invaders">
         ${buildHud({
           kicker: 'Invaders',
           title: 'Artikel-Kanone',
-          status: `0/${invaders.length} · Artikel wählen`
+          status: `0/${invaders.length} · Druck startet beim ersten Schuss`
         })}
         <div class="invaders-stage">
           <div class="invader-sky" aria-hidden="true"></div>
@@ -1069,11 +1073,26 @@ export const ArtikelInvaders = {
     const update = () => {
       const hudStatus = container.querySelector('.arcade-hud em');
       const pressureBar = container.querySelector('.invader-pressure span');
-      if (hudStatus) hudStatus.textContent = `${score}/${invaders.length} · Fehler ${misses}`;
+      if (hudStatus) {
+        const pressureText = pressureStarted ? `Druck ${pressure}%` : 'Druck startet beim ersten Schuss';
+        hudStatus.textContent = `${score}/${invaders.length} · ${pressureText} · Fehler ${misses}`;
+      }
       if (pressureBar) pressureBar.style.width = `${pressure}%`;
       container.querySelectorAll('[data-article]').forEach((button) => {
         button.classList.toggle('is-active', button.dataset.article === selected);
       });
+    };
+
+    const startPressure = () => {
+      if (pressureStarted || done) return;
+      pressureStarted = true;
+      update();
+      cleanup.timer(setInterval(() => {
+        if (done) return;
+        pressure = Math.min(100, pressure + pressureStep);
+        update();
+        if (pressure >= 100) finish();
+      }, pressureTickMs));
     };
 
     container.querySelectorAll('[data-article]').forEach((button) => {
@@ -1087,6 +1106,7 @@ export const ArtikelInvaders = {
     container.querySelectorAll('.invader-target').forEach((button) => {
       cleanup.on(button, 'click', () => {
         if (done || button.disabled) return;
+        startPressure();
         const hit = button.dataset.answer === selected;
         button.classList.add(hit ? 'is-hit' : 'is-miss');
         SoundManager.play(hit ? 'whoosh' : 'error');
@@ -1103,13 +1123,6 @@ export const ArtikelInvaders = {
         if (score >= invaders.length || pressure >= 100) finish();
       });
     });
-
-    cleanup.timer(setInterval(() => {
-      if (done) return;
-      pressure = Math.min(100, pressure + 2);
-      update();
-      if (pressure >= 100) finish();
-    }, 1300));
 
     return () => cleanup.clear();
   }

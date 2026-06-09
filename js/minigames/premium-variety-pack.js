@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=arcade-mobile-shell-41';
+import { SoundManager } from '../ui/sound-manager.js?v=invaders-mobile-43';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

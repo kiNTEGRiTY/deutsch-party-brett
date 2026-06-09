@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=arcade-mobile-shell-41';
-import { renderCharacterAvatar } from '../ui/characters.js?v=arcade-mobile-shell-41';
+import { SoundManager } from '../ui/sound-manager.js?v=invaders-mobile-43';
+import { renderCharacterAvatar } from '../ui/characters.js?v=invaders-mobile-43';
 
 const DEFAULTS = {
   solo_arcade: { timeLimitSec: 54, scoringMode: 'arcade' },

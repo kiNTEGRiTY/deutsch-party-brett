@@ -4,7 +4,7 @@
  * Uses hand-drawn illustrated animal characters instead of emojis.
  */
 
-import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js?v=arcade-mobile-shell-41';
+import { CHARACTERS, getCharacter, renderCharacterAvatar, renderCharacterToken } from '../ui/characters.js?v=invaders-mobile-43';
 
 const PLAYER_COLORS = [
   'var(--player-1)', 'var(--player-2)', 'var(--player-3)',

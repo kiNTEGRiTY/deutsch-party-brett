@@ -191,14 +191,14 @@ import {
   VerbTakt,
   WortartenOrchester,
   Wortfunkeln
-} from './premium-variety-pack.js?v=arcade-mobile-shell-41';
+} from './premium-variety-pack.js?v=invaders-mobile-43';
 import {
   BuchstabenMagneten,
   ReimMemoryAquarell,
   SatzFlickwerk,
   SilbenTrommel,
   WortartenBand
-} from './premium-motion-pack.js?v=arcade-mobile-shell-41';
+} from './premium-motion-pack.js?v=invaders-mobile-43';
 import {
   ArtikelBildjagd,
   BildwortGalerie,
@@ -206,7 +206,7 @@ import {
   KompositumAtelier,
   SatzStoryboard,
   WimmelbildDetektiv
-} from './premium-content-pack.js?v=arcade-mobile-shell-41';
+} from './premium-content-pack.js?v=invaders-mobile-43';
 import {
   AlphabetKartenreihe,
   AnfangspaarJagd,
@@ -222,7 +222,7 @@ import {
   TierblattSpurensuche,
   WortkartenBlitzwahl,
   WortkartenDomino
-} from './premium-atelier-pack.js?v=arcade-mobile-shell-41';
+} from './premium-atelier-pack.js?v=invaders-mobile-43';
 import {
   ArtikelInvaders,
   ArtikelGateRunner,
@@ -233,8 +233,8 @@ import {
   WortartenSprunglauf,
   WortLabyrinthJagd,
   WortTetrisStapel
-} from './premium-arcade-pack.js?v=arcade-mobile-shell-41';
-import { isBoardReadyMinigame } from './quality-gate.js?v=arcade-mobile-shell-41';
+} from './premium-arcade-pack.js?v=invaders-mobile-43';
+import { isBoardReadyMinigame } from './quality-gate.js?v=invaders-mobile-43';
 
 const MINIGAMES = {
   'wort-labyrinth-jagd': WortLabyrinthJagd,
