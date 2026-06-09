@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=labyrinth-timer-38';
-import { renderCharacterAvatar } from '../ui/characters.js?v=labyrinth-timer-38';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=labyrinth-timer-38';
+import { SoundManager } from '../ui/sound-manager.js?v=arcade-mobile-shell-41';
+import { renderCharacterAvatar } from '../ui/characters.js?v=arcade-mobile-shell-41';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=arcade-mobile-shell-41';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

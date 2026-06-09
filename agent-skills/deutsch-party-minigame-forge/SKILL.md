@@ -72,6 +72,9 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - search visible German UI text for ASCII transliterations such as `waehlen`, `koennen`, `Maedchen`, or `Woerter`
 - when touching direct-play menus, scan desktop and mobile screenshots for English placeholders, ASCII transliterations, oversized first-viewport controls, and horizontal overflow
 - repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap
+- for arcade games, measure the mobile topbar, game HUD, playfield, and controls;
+  navigation must not overlap the objective HUD, and the main playfield must
+  not be hidden by `overflow: hidden` clipping
 - clear timers, animation frames, intervals, listeners, and delayed visual effects in cleanup
 - when testing many board-ready games in sequence, guard external timers against stale callbacks so an old timer cannot finish a newly launched game
 - run `npm run validate:minigames` after changing direct-play groups, board-ready

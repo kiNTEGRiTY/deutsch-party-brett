@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=labyrinth-timer-38';
-import { renderCharacterAvatar } from '../ui/characters.js?v=labyrinth-timer-38';
+import { SoundManager } from '../ui/sound-manager.js?v=arcade-mobile-shell-41';
+import { renderCharacterAvatar } from '../ui/characters.js?v=arcade-mobile-shell-41';
 
 const DEFAULTS = {
   solo_arcade: { timeLimitSec: 54, scoringMode: 'arcade' },
