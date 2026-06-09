@@ -622,7 +622,7 @@ export class BoardRenderer {
       if (result.action === 'minigame') {
         await this._showLandingCard(player, landedField, result);
         this._hideLandingCard();
-        this.onMinigameNeeded?.(result);
+        this.onMinigameNeeded?.({ ...result, player });
         return;
       }
 

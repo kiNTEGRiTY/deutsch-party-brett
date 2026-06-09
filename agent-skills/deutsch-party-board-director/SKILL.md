@@ -25,6 +25,7 @@ Read these first:
 - Start, goal, direction, current player, and next action must be visible without guessing.
 - Tokens must feel like cutout standees on the board, not icons inside badges.
 - The right/bottom UI should support the turn, not cover the board's important path.
+- On mobile, the board art should still read as a dominant 16:9 game surface; secondary panels must become compact overlays instead of pushing the image into a small preview strip.
 - Simulation state belongs in `js/engine`; rendering belongs in `js/ui`.
 
 ## Workflow
@@ -32,10 +33,11 @@ Read these first:
 1. Identify whether the change is simulation, rendering, layout, or feedback.
 2. Keep board coordinates in the `1672 x 941` image space.
 3. Preserve board-launched minigame selection through the quality gate.
-4. Use the debug URL:
+4. When a board roll launches a minigame, pass the landing player as the task actor; do not infer the actor from a later turn state.
+5. Use the debug URL:
    `http://127.0.0.1:4175/?debugBoard=1&debugPlayers=2&debugPositions=3,8&debugCurrent=0`
-5. Capture desktop and mobile screenshots after visual changes.
-6. Critique the screenshots before calling the work good.
+6. Capture desktop and mobile screenshots after visual changes.
+7. Critique the screenshots before calling the work good.
 
 ## Verification
 

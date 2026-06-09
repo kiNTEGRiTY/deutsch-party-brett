@@ -141,6 +141,7 @@ class App {
     const minigameSettings = resolvedRequest.difficulty
       ? { ...settingsSnapshot, difficulty: { ...resolvedRequest.difficulty } }
       : settingsSnapshot;
+    const taskPlayer = resolvedRequest.player || this.gameController.getCurrentPlayer();
 
     await this._ensureMinigameRenderer(minigameSettings);
     const runtimeContext = {
@@ -153,7 +154,7 @@ class App {
         avatarName: player.avatarName,
         position: player.position
       })),
-      currentPlayerId: this.gameController.getCurrentPlayer()?.id ?? null,
+      currentPlayerId: taskPlayer?.id ?? null,
       field: resolvedRequest.field ? {
         id: resolvedRequest.field.id,
         title: resolvedRequest.field.focusTitle || resolvedRequest.field.type || '',
