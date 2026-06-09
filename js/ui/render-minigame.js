@@ -427,7 +427,8 @@ export class MinigameRenderer {
       '.syllable-counter-game',
       '.sentence-order-game',
       '.fill-blanks-game',
-      '.spelling-detective-game'
+      '.spelling-detective-game',
+      '.atelier-game'
     ];
 
     const isModern = modernSelectors.some((selector) => root.matches(selector) || root.querySelector(selector));

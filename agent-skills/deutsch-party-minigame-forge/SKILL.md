@@ -28,6 +28,7 @@ A board-ready minigame needs:
 - cleanup for timers/listeners/animation loops
 - no auto-win, single-button completion, or purely decorative interaction
 - visual fit with the Aquarell/cutout product direction
+- the first viewport contains the actual play material and player choices; no primary card, board, target, or control may sit below the fold in the tested desktop or mobile launch
 
 ## Curation Rules
 
@@ -58,6 +59,7 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - exercise one correct action and one wrong or miss state when the game supports both
 - complete the round and verify the result screen reports the expected score
 - for games promoted into board flow, verify they do not auto-complete before the first player action and that any timer is either clearly external or deliberately internal
+- confirm the first screenshot is already playable: target, real game material, and the main answer/action controls are visible without scrolling
 - search visible German UI text for ASCII transliterations such as `waehlen`, `koennen`, `Maedchen`, or `Woerter`
 - when touching direct-play menus, scan desktop and mobile screenshots for English placeholders, ASCII transliterations, oversized first-viewport controls, and horizontal overflow
 - repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap

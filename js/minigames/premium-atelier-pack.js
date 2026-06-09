@@ -55,8 +55,11 @@ function esc(value) {
   return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
-function finish(done, correct, delay = 740) {
-  setTimeout(() => done({ correct, partial: false, score: correct ? 100 : 0 }), delay);
+function finish(done, correct, delay = 740, cleanup = null) {
+  const timerId = setTimeout(() => done({ correct, partial: false, score: correct ? 100 : 0 }), delay);
+  if (cleanup?.timer) {
+    cleanup.timer(timerId);
+  }
 }
 
 function makeInteractionCleanup() {
@@ -103,9 +106,9 @@ function cardButton(card, extraClass = '') {
   return `<button class="atelier-card-choice ${extraClass}" type="button" data-id="${esc(card.id)}" data-answer="${esc(card.id)}" data-article="${esc(card.article)}" aria-label="${esc(card.word)}, Artikel ${esc(card.article)}">${thumb(card)}</button>`;
 }
 
-function bindButtons(container, selector, answer, done) {
+function bindButtons(container, selector, answer, done, cleanup = null) {
   container.querySelectorAll(selector).forEach((button) => {
-    button.addEventListener('click', () => {
+    const handleClick = () => {
       const correct = button.dataset.answer === answer;
       container.querySelectorAll(selector).forEach((entry) => {
         entry.disabled = true;
@@ -113,8 +116,13 @@ function bindButtons(container, selector, answer, done) {
       });
       button.classList.add(correct ? 'is-hit' : 'is-miss');
       SoundManager.play(correct ? 'paintBloom' : 'error');
-      finish(done, correct, correct ? 680 : 1040);
-    });
+      finish(done, correct, correct ? 680 : 1040, cleanup);
+    };
+    if (cleanup?.on) {
+      cleanup.on(button, 'click', handleClick);
+    } else {
+      button.addEventListener('click', handleClick);
+    }
   });
 }
 
@@ -189,6 +197,7 @@ export const ArtikelStempelstudio = {
   directPlayDefaults: DEFAULTS,
   defaultRounds: 5,
   setup(container, task, done) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('woodBlock');
     const target = pick(CARDS);
     scene(container, {
@@ -197,9 +206,20 @@ export const ArtikelStempelstudio = {
       title: `Artikel für ${target.word}`,
       text: 'Setze den passenden Stempel auf die Karte.',
       image: target.image,
-      body: `<div class="atelier-stamp-layout">${thumb(target, 'atelier-card-thumb--large')}<div class="atelier-stamp-pad">${['der', 'die', 'das'].map((a) => `<button class="atelier-stamp" data-answer="${a}" type="button">${a}</button>`).join('')}</div></div>`
+      body: `
+        <div class="atelier-stamp-layout atelier-stamp-layout--hero">
+          <div class="atelier-stamp-card">
+            ${thumb(target, 'atelier-card-thumb--large')}
+            <span class="atelier-stamp-card-slot" aria-hidden="true">?</span>
+          </div>
+          <div class="atelier-stamp-pad" aria-label="Artikel-Stempel">
+            ${['der', 'die', 'das'].map((a) => `<button class="atelier-stamp" data-answer="${a}" type="button">${a}</button>`).join('')}
+          </div>
+        </div>
+      `
     });
-    bindButtons(container, '.atelier-stamp', target.article, done);
+    bindButtons(container, '.atelier-stamp', target.article, done, cleanup);
+    return cleanup.clear;
   }
 };
 
