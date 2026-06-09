@@ -1,17 +1,7 @@
-export const BACKGROUNDS = [
-  {
-    id: 'wortgarten',
-    url: 'assets/img/backgrounds/standard_board_preview.svg',
-    name: 'Zauberwald'
-  }
-];
+export const BACKGROUNDS = [];
 
 export function getDefaultBackground() {
-  return BACKGROUNDS[0] || {
-    id: 'wortgarten',
-    url: 'assets/img/backgrounds/standard_board_preview.svg',
-    name: 'Zauberwald'
-  };
+  return BACKGROUNDS[0] || null;
 }
 
 export function getBackgroundById(id) {

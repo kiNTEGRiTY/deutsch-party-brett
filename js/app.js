@@ -4,11 +4,11 @@
  */
 
 import { ScreenManager } from './ui/screen-manager.js';
-import { GameController } from './engine/game-controller.js?v=board-fullscreen-33';
+import { GameController } from './engine/game-controller.js?v=start-live-preview-35';
 import { SettingsManager } from './settings/settings-manager.js';
 import { GameSessionStorage } from './settings/game-session.js';
 import { ProfileManager } from './settings/profiles.js';
-import { SoundManager } from './ui/sound-manager.js?v=board-fullscreen-33';
+import { SoundManager } from './ui/sound-manager.js?v=start-live-preview-35';
 import { 
   iconDice, iconHome, iconCoin, iconStar,
   iconGold, iconSilver, iconBronze
@@ -32,6 +32,7 @@ class App {
     this.boardRenderer = null;
     this.minigameRenderer = null;
     this.minigameMenuRenderer = null;
+    this.startPreview = null;
     this.resultsTimeoutId = null;
     this._setupRendererClass = null;
     this._boardRendererClass = null;
@@ -62,6 +63,7 @@ class App {
 
   _setupStartScreen() {
     this._refreshStartScreenCta();
+    void this._mountStartPreview();
 
     document.getElementById('btn-new-game')?.addEventListener('click', () => {
       GameSessionStorage.clear();
@@ -318,6 +320,24 @@ class App {
     }
   }
 
+  async _mountStartPreview() {
+    if (this.startPreview) {
+      return;
+    }
+
+    const root = document.getElementById('start-live-board');
+    if (!root) {
+      return;
+    }
+
+    try {
+      const { mountStartPreview } = await import('./ui/render-start-preview.js?v=start-live-preview-35');
+      this.startPreview = mountStartPreview(root);
+    } catch (error) {
+      console.warn('Start board preview could not be mounted.', error);
+    }
+  }
+
   _applyDebugRoute() {
     const params = new URLSearchParams(window.location.search);
     const requestedScreen = params.get('screen') || params.get('debugScreen');
@@ -372,7 +392,7 @@ class App {
     const rounds = Number(params.get('debugRounds') || 1);
 
     window.setTimeout(async () => {
-      const { getMinigame } = await import('./minigames/minigame-registry.js?v=board-fullscreen-33');
+      const { getMinigame } = await import('./minigames/minigame-registry.js?v=start-live-preview-35');
       const minigame = getMinigame(miniGameId);
       const topic = requestedTopic || minigame?.topics?.[0] || 'wortschatz';
       void this._launchStandaloneMinigame({
@@ -533,7 +553,7 @@ class App {
 
   async _getSetupRendererClass() {
     if (!this._setupRendererClass) {
-      const module = await import('./ui/render-setup.js?v=board-fullscreen-33');
+      const module = await import('./ui/render-setup.js?v=start-live-preview-35');
       this._setupRendererClass = module.SetupRenderer;
     }
     return this._setupRendererClass;
@@ -541,7 +561,7 @@ class App {
 
   async _getBoardRendererClass() {
     if (!this._boardRendererClass) {
-      const module = await import('./ui/render-board.js?v=board-fullscreen-33');
+      const module = await import('./ui/render-board.js?v=start-live-preview-35');
       this._boardRendererClass = module.BoardRenderer;
     }
     return this._boardRendererClass;
@@ -549,7 +569,7 @@ class App {
 
   async _getMinigameRendererClass() {
     if (!this._minigameRendererClass) {
-      const module = await import('./ui/render-minigame.js?v=board-fullscreen-33');
+      const module = await import('./ui/render-minigame.js?v=start-live-preview-35');
       this._minigameRendererClass = module.MinigameRenderer;
     }
     return this._minigameRendererClass;
@@ -557,7 +577,7 @@ class App {
 
   async _getMinigameMenuRendererClass() {
     if (!this._minigameMenuRendererClass) {
-      const module = await import('./ui/render-minigame-menu.js?v=board-fullscreen-33');
+      const module = await import('./ui/render-minigame-menu.js?v=start-live-preview-35');
       this._minigameMenuRendererClass = module.MinigameMenuRenderer;
     }
     return this._minigameMenuRendererClass;

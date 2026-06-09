@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=board-fullscreen-33';
-import { renderCharacterAvatar } from '../ui/characters.js?v=board-fullscreen-33';
+import { SoundManager } from '../ui/sound-manager.js?v=start-live-preview-35';
+import { renderCharacterAvatar } from '../ui/characters.js?v=start-live-preview-35';
 
 const DEFAULTS = {
   solo_arcade: { timeLimitSec: 54, scoringMode: 'arcade' },
