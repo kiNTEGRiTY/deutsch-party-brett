@@ -14,6 +14,7 @@ Read these first:
 - `assets/visual-manifest.json`
 - `js/engine/board-layouts.js`
 - `js/ui/characters.js`
+- `js/minigames/quality-gate.js`
 - Relevant CSS under `css/screens/`
 
 ## Decisions
@@ -49,9 +50,14 @@ Read these first:
 5. Avoid style mixing. One screen should not combine handmade cutouts, generic generated characters, and unrelated fantasy art.
 6. If a UI surface previews the board, verify it imports or derives from `js/engine/board-layouts.js`/`Board` rather than hand-drawn duplicate coordinates.
 7. Board-launched minigames should preserve the active player's original cutout identity in the shell, so the handoff still feels like a board turn instead of a generic worksheet.
-8. Search changed minigame code for generic fallback assets before sign-off:
+8. Any minigame promoted to `BOARD_READY_MINIGAME_IDS` must also have a matching
+   `BOARD_READY_MINIGAME_EVIDENCE` entry with source module, wife/user asset
+   families, proof, and quality reason.
+9. Search changed minigame code for generic fallback assets before sign-off:
    `rg -n "watercolor-premium-game-table|board-enchanted-backdrop" js css`.
-9. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
+10. Run `npm run validate:minigames`; it rejects board-ready games without
+    wife/user asset evidence or with forbidden generated/backdrop assets.
+11. After integration, capture desktop and mobile screenshots and inspect the actual rendered result.
 
 ## Output
 

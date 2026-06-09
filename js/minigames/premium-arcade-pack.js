@@ -685,6 +685,9 @@ export const SilbenBeatSurfer = {
           })}
           <div class="beat-stage">
             <div class="beat-wave"><span></span></div>
+            <div class="beat-surfer-rider" aria-hidden="true">
+              ${renderTaskCharacterAvatar(task, 7, 76)}
+            </div>
             <div class="beat-word">${escapeHtml(item.word)}</div>
             <div class="beat-pads">
               ${[1, 2, 3, 4].map((beat) => `
@@ -1178,6 +1181,9 @@ export const WortTetrisStapel = {
           <div class="wordtris-stage">
             <div class="wordtris-score-ribbon" aria-hidden="true">
               <span>1</span><span>2</span><span>3</span>
+            </div>
+            <div class="wordtris-helper" aria-hidden="true">
+              ${renderTaskCharacterAvatar(task, 6, 72)}
             </div>
             <div class="wordtris-piece">
               <strong>${escapeHtml(piece.word)}</strong>

@@ -11023,11 +11023,13 @@
 }
 
 .beat-stage {
+  position: relative;
   display: grid;
   align-content: center;
   gap: 24px;
   height: 100%;
   min-height: 620px;
+  overflow: hidden;
   padding: clamp(120px, 12vh, 170px) clamp(38px, 5vw, 80px) 48px;
   background:
     radial-gradient(circle at 50% 44%, rgba(255, 255, 234, 0.32), transparent 32%),
@@ -11037,8 +11039,25 @@
   background-position: center, center, center;
 }
 
+.beat-surfer-rider {
+  position: absolute;
+  top: clamp(82px, 10vh, 128px);
+  right: clamp(24px, 6vw, 84px);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  pointer-events: none;
+}
+
+.beat-surfer-rider .char-avatar {
+  filter: drop-shadow(0 14px 14px rgba(44, 35, 24, 0.2));
+}
+
 .beat-wave {
   position: relative;
+  z-index: 3;
   height: 24px;
   overflow: hidden;
   border-radius: 999px;
@@ -11057,6 +11076,8 @@
 }
 
 .beat-word {
+  position: relative;
+  z-index: 3;
   justify-self: center;
   padding: 28px 42px;
   border: 4px solid rgba(67, 47, 29, 0.2);
@@ -11070,6 +11091,8 @@
 }
 
 .beat-pads {
+  position: relative;
+  z-index: 3;
   display: grid;
   grid-template-columns: repeat(4, minmax(86px, 1fr));
   gap: 14px;
@@ -11447,6 +11470,11 @@
 
   .beat-stage {
     padding: 18px;
+  }
+
+  .beat-surfer-rider,
+  .wordtris-helper {
+    display: none;
   }
 
   .beat-pads {
@@ -12264,13 +12292,31 @@
 }
 
 .arcade-game--wordtris .wordtris-stage {
+  position: relative;
   display: grid;
   gap: 22px;
   align-content: end;
+  overflow: hidden;
   padding: clamp(112px, 12vh, 150px) clamp(24px, 5vw, 72px) 38px;
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 238, 96, 0.28), transparent 13%),
     linear-gradient(160deg, #d9e7ca 0 38%, #f3dfaa 38% 72%, #d9a062 72% 100%);
+}
+
+.wordtris-helper {
+  position: absolute;
+  top: clamp(120px, 15vh, 168px);
+  left: clamp(42px, 6vw, 112px);
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  pointer-events: none;
+}
+
+.wordtris-helper .char-avatar {
+  filter: drop-shadow(0 14px 14px rgba(44, 35, 24, 0.2));
 }
 
 .wordtris-piece {

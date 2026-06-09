@@ -35,6 +35,8 @@ Read these first:
   game IDs only.
 - Board-ready games should either use the wife/user assets directly or provide
   a strong game-first loop that has been playtested.
+- Every board-ready game must have a `BOARD_READY_MINIGAME_EVIDENCE` entry in
+  `js/minigames/quality-gate.js`; comments near the ID list are not enough.
 - If a setup topic has no verified board-ready game, route it through an
   explicit fallback topic instead of silently leaking weak games into board
   flow.
@@ -49,6 +51,8 @@ Before reporting a curation change:
 
 - Run `node --check js/minigames/quality-gate.js`.
 - Run `node --check js/learning/task-generator.js`.
+- Run `npm run validate:minigames`; it checks board-ready asset evidence,
+  curated direct-play exposure, stale cache tokens, and mobile menu guards.
 - Run `npm run validate:routing` to sample every setup topic through
   `generateTask(...)` across normal, challenge, and team board field modes.
 - Run `npm run validate:game-loop` to prove board-launched tasks, rewards,
