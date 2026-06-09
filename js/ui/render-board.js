@@ -21,8 +21,6 @@ const FIELD_STYLE = {
   normal: { label: '.', title: 'Aufgabe', color: '#f2d9a2', deep: '#8c6330', icon: '*' }
 };
 
-const DIRECTION_MARKERS = [2, 5, 8, 11, 14, 17, 19];
-
 const MOMENT_DECK = [
   { title: 'Blitzduell', text: 'Zwei Spieler antworten gleichzeitig.' },
   { title: 'Jokerzug', text: 'Ein Hinweis, Tausch oder Bonus kann retten.' },
@@ -142,10 +140,10 @@ export class BoardRenderer {
     const fields = this.game.board.getAllFields();
     return `
       ${this._renderBoardArtwork()}
+      ${this._renderDirectionMarkers(fields)}
       <g class="board-field-layer">
         ${fields.map((field) => this._renderFieldTile(field)).join('')}
       </g>
-      ${this._renderDirectionMarkers(fields)}
     `;
   }
 
@@ -220,9 +218,11 @@ export class BoardRenderer {
   }
 
   _renderDirectionMarkers(fields) {
+    const markerIndexes = new Set([2, 6, 10, 14, 18, 22, 26, 30, fields.length - 2]);
     return `
       <g class="board-direction-markers" aria-hidden="true">
-        ${DIRECTION_MARKERS.map((index) => {
+        ${fields.slice(0, -1).map((field, index) => {
+          if (!markerIndexes.has(index)) return '';
           const from = fields[index];
           const to = fields[Math.min(index + 1, fields.length - 1)];
           if (!from || !to) return '';
@@ -250,6 +250,12 @@ export class BoardRenderer {
     const isPortalReturn = field.portalRole === 'return';
     const displayType = isStart ? 'Start' : isFinish ? 'Ziel' : this._fieldTitle(field);
     const shortLabel = this._shortFieldLabel(field);
+    const tileWidth = isStart || isFinish ? 118 : 98;
+    const tileHeight = isStart || isFinish ? 68 : 60;
+    const tileRadius = isStart || isFinish ? 20 : 18;
+    const tileX = -tileWidth / 2;
+    const tileY = -tileHeight / 2;
+    const angle = Number.isFinite(field.angle) ? field.angle : 0;
     const className = [
       'board-field-node',
       `board-field-node--${field.type}`,
@@ -259,46 +265,21 @@ export class BoardRenderer {
       isPortalReturn ? 'is-portal-return' : ''
     ].filter(Boolean).join(' ');
 
-    const radius = isStart || isFinish ? 52 : 34;
-    const stonePath = this._fieldStonePath(field.id, radius);
-    const innerPath = this._fieldStonePath(field.id + 4, radius - 9);
-    const washPath = this._fieldStonePath(field.id + 11, radius + 4);
-
     return `
       <g class="${className}" transform="translate(${field.x} ${field.y})" style="--field-accent:${style.color}; --field-deep:${style.deep};">
-        <path class="field-shadow" d="${stonePath}"></path>
-        <path class="field-wash" d="${washPath}"></path>
-        <path class="field-body" d="${stonePath}"></path>
-        <path class="field-glaze" d="${innerPath}"></path>
-        <circle class="field-type-dot" cx="${isStart || isFinish ? -18 : -18}" cy="${isStart || isFinish ? -24 : -18}" r="${isStart || isFinish ? 12 : 9}"></circle>
-        <text class="field-icon" x="${isStart || isFinish ? -18 : -18}" y="${isStart || isFinish ? -24 : -18}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
-        <text class="field-index" x="${isStart || isFinish ? 20 : 17}" y="${isStart || isFinish ? -27 : -21}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
-        <text class="field-main" y="${isStart || isFinish ? 9 : 8}" text-anchor="middle">${this._escape(shortLabel)}</text>
+        <g class="field-shape" transform="rotate(${angle})">
+          <rect class="field-shadow" x="${tileX}" y="${tileY + 7}" width="${tileWidth}" height="${tileHeight}" rx="${tileRadius}"></rect>
+          <rect class="field-wash" x="${tileX - 4}" y="${tileY - 4}" width="${tileWidth + 8}" height="${tileHeight + 8}" rx="${tileRadius + 4}"></rect>
+          <rect class="field-body" x="${tileX}" y="${tileY}" width="${tileWidth}" height="${tileHeight}" rx="${tileRadius}"></rect>
+          <rect class="field-glaze" x="${tileX + 7}" y="${tileY + 7}" width="${tileWidth - 14}" height="${tileHeight - 14}" rx="${Math.max(10, tileRadius - 5)}"></rect>
+        </g>
+        <circle class="field-type-dot" cx="${isStart || isFinish ? -29 : -25}" cy="${isStart || isFinish ? -22 : -19}" r="${isStart || isFinish ? 12 : 9}"></circle>
+        <text class="field-icon" x="${isStart || isFinish ? -29 : -25}" y="${isStart || isFinish ? -22 : -19}" text-anchor="middle" dominant-baseline="central">${this._escape(style.icon)}</text>
+        <text class="field-index" x="${isStart || isFinish ? 31 : 27}" y="${isStart || isFinish ? -23 : -19}" text-anchor="middle">${String(field.id).padStart(2, '0')}</text>
+        <text class="field-main" y="${isStart || isFinish ? 10 : 9}" text-anchor="middle">${this._escape(shortLabel)}</text>
+        <title>${this._escape(`Feld ${field.id}: ${displayType}`)}</title>
       </g>
     `;
-  }
-
-  _fieldStonePath(seed = 0, radius = 36) {
-    const points = Array.from({ length: 12 }, (_, index) => {
-      const angle = -Math.PI / 2 + (Math.PI * 2 * index) / 12;
-      const wobble = 1 + Math.sin(seed * 1.73 + index * 1.91) * 0.075 + Math.cos(seed * 0.91 + index * 2.37) * 0.045;
-      return {
-        x: Math.cos(angle) * radius * wobble,
-        y: Math.sin(angle) * radius * 0.74 * wobble
-      };
-    });
-
-    const first = points[0];
-    return [
-      `M${first.x.toFixed(1)} ${first.y.toFixed(1)}`,
-      ...points.map((point, index) => {
-        const next = points[(index + 1) % points.length];
-        const midX = (point.x + next.x) / 2;
-        const midY = (point.y + next.y) / 2;
-        return `Q${point.x.toFixed(1)} ${point.y.toFixed(1)} ${midX.toFixed(1)} ${midY.toFixed(1)}`;
-      }),
-      'Z'
-    ].join(' ');
   }
 
   _getBoardSignature() {

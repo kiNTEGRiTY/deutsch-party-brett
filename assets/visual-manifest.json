@@ -3,15 +3,15 @@
   "coordinateSpace": [1672, 941],
   "assets": [
     {
-      "id": "board.aquarell.path.v1",
+      "id": "board.functional-fields.v1",
       "domain": "board",
       "role": "backdrop",
-      "src": "assets/img/premium/watercolor-premium-board.png",
+      "src": "assets/img/premium/functional-field-board.svg",
       "dimensions": [1672, 941],
       "coordinateSpace": [1672, 941],
       "status": "production",
-      "provenance": "premium-watercolor-derived",
-      "notes": "Primary board art. Board field coordinates are authored in this image coordinate space."
+      "provenance": "function-first-vector-board",
+      "notes": "Primary board art. The background is authored around the 36 playable field slots; do not replace it with decorative scenery that implies branches, dead ends, or a second path."
     },
     {
       "id": "ui.start.aquarell.v1",
@@ -73,6 +73,7 @@
     }
   ],
   "doNotPromoteAsPrimary": [
+    "assets/img/premium/watercolor-premium-board.png",
     "assets/img/premium/generated-wife-style/",
     "assets/img/premium/characters/",
     "assets/img/premium/start-hero-forest.png",

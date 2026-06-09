@@ -22,6 +22,7 @@ Read these first:
 ## Board Principles
 
 - The board image is the map. Do not draw a second competing path.
+- Board art must be authored from field slots first. Do not use decorative scenery that creates branches, dead ends, or a path that is not playable.
 - Start, goal, direction, current player, and next action must be visible without guessing.
 - Tokens must feel like cutout standees on the board, not icons inside badges.
 - The right/bottom UI should support the turn, not cover the board's important path.
@@ -32,12 +33,13 @@ Read these first:
 
 1. Identify whether the change is simulation, rendering, layout, or feedback.
 2. Keep board coordinates in the `1672 x 941` image space.
-3. Preserve board-launched minigame selection through the quality gate.
-4. When a board roll launches a minigame, pass the landing player as the task actor; do not infer the actor from a later turn state.
-5. Use the debug URL:
+3. If board art or board backgrounds change, also use `agent-skills/deutsch-party-functional-board-artist/SKILL.md`.
+4. Preserve board-launched minigame selection through the quality gate.
+5. When a board roll launches a minigame, pass the landing player as the task actor; do not infer the actor from a later turn state.
+6. Use the debug URL:
    `http://127.0.0.1:4175/?debugBoard=1&debugPlayers=2&debugPositions=3,8&debugCurrent=0`
-6. Capture desktop and mobile screenshots after visual changes.
-7. Critique the screenshots before calling the work good.
+7. Capture desktop and mobile screenshots after visual changes.
+8. Critique the screenshots before calling the work good.
 
 ## Verification
 
@@ -45,6 +47,7 @@ Use at minimum:
 
 - `node --check` on changed JS files
 - local HTTP 200 check
+- board route geometry check: field count, ordered sequence, and no self-intersections
 - Playwright desktop screenshot
 - Playwright mobile screenshot
 - inspect the desktop screenshot for a dead table-apron gap between the map and turn controls; keep the board map visually dominant without hiding start, goal, tokens, or the next action

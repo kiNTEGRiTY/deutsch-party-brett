@@ -167,7 +167,7 @@
 
 .board-field-node .field-shadow {
   fill: rgba(54, 34, 18, 0.17);
-  transform: translate(0, 7px);
+  transform: none;
 }
 
 .board-field-node .field-wash {
@@ -1010,11 +1010,11 @@
 
 @media (max-width: 760px) {
   .board-map-frame {
-    inset: 104px auto auto 50%;
-    width: min(760px, 190vw);
+    inset: 104px auto auto -5vw;
+    width: min(590px, 138vw);
     max-width: none;
     aspect-ratio: 1672 / 941;
-    transform: translateX(-50%);
+    transform: none;
     filter: drop-shadow(0 16px 24px rgba(68, 45, 24, 0.18));
   }
 
