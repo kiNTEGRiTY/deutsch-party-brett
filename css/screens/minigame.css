@@ -5134,8 +5134,8 @@
 
 .arcade-runner-stage {
   background:
-    linear-gradient(90deg, rgba(255, 248, 218, 0.1), rgba(255, 248, 218, 0.28) 54%, rgba(218, 165, 88, 0.14)),
-    url("../../assets/img/premium/generated-wife-style/wife-style-runner-meadow.png"),
+    radial-gradient(circle at 18% 24%, rgba(255, 252, 232, 0.2), transparent 22%),
+    linear-gradient(90deg, rgba(255, 248, 218, 0.18), rgba(255, 248, 218, 0.34) 54%, rgba(218, 165, 88, 0.16)),
     url("../../assets/img/premium/watercolor-premium-game-table.png"),
     #ead6a6;
   background-size: cover, cover, cover;
@@ -5174,6 +5174,47 @@
   border-radius: 999px;
   background: rgba(255, 248, 219, 0.45);
   box-shadow: 0 0 0 8px rgba(255, 248, 219, 0.12);
+}
+
+.arcade-runner-target {
+  position: absolute;
+  left: 24px;
+  top: 104px;
+  z-index: 4;
+  width: min(285px, calc(100% - 48px));
+  padding: 12px 14px;
+  border: 2px solid rgba(82, 57, 34, 0.16);
+  border-radius: 18px 14px 20px 16px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 246, 0.82), transparent 42%),
+    rgba(255, 246, 218, 0.88);
+  box-shadow: 0 10px 0 rgba(83, 57, 33, 0.11), 0 18px 28px rgba(65, 42, 24, 0.12);
+}
+
+.arcade-runner-target span {
+  display: block;
+  color: #8a5a35;
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.arcade-runner-target strong {
+  display: block;
+  margin-top: 2px;
+  color: #2f2418;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.arcade-runner-target p {
+  margin: 5px 0 0;
+  color: rgba(56, 40, 24, 0.74);
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1.18;
 }
 
 .arcade-runner-hero {
@@ -5314,8 +5355,11 @@
 }
 
 .arcade-feedback span {
+  display: block;
+  max-width: 360px;
   font-size: 0.82rem;
   font-weight: 900;
+  line-height: 1.2;
 }
 
 .arcade-feedback.is-hit {
@@ -5333,10 +5377,11 @@
 .snow-arena {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.08)),
-    url("../../assets/img/premium/generated-wife-style/wife-style-snowfield.png"),
-    #dceff5;
-  background-size: cover, cover;
-  background-position: center;
+    radial-gradient(circle at 70% 18%, rgba(225, 246, 255, 0.34), transparent 26%),
+    url("../../assets/img/premium/watercolor-premium-game-table.png"),
+    linear-gradient(180deg, #dceff5, #efd7a3);
+  background-size: cover, cover, cover, cover;
+  background-position: center, center, center, center;
   height: 100%;
   min-height: 620px;
 }
@@ -5864,10 +5909,11 @@
   padding: clamp(120px, 12vh, 170px) clamp(38px, 5vw, 80px) 48px;
   background:
     radial-gradient(circle at 50% 44%, rgba(255, 255, 234, 0.32), transparent 32%),
-    url("../../assets/img/premium/generated-wife-style/wife-style-beat-pond.png"),
+    linear-gradient(145deg, rgba(143, 197, 186, 0.52), rgba(236, 209, 147, 0.42)),
+    url("../../assets/img/premium/watercolor-premium-game-table.png"),
     #a8d5d7;
-  background-size: cover, cover;
-  background-position: center;
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
 }
 
 .beat-wave {
@@ -5928,10 +5974,11 @@
 .jet-stage {
   background:
     radial-gradient(circle at 76% 20%, rgba(255, 241, 151, 0.24), transparent 18%),
-    url("../../assets/img/premium/generated-wife-style/wife-style-jetpack-sky.png"),
+    linear-gradient(180deg, rgba(203, 228, 234, 0.56), rgba(239, 215, 163, 0.36)),
+    url("../../assets/img/premium/watercolor-premium-game-table.png"),
     #cbe4ea;
-  background-size: cover, cover;
-  background-position: center;
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
   height: 100%;
   min-height: 620px;
 }
@@ -6042,7 +6089,7 @@
   background:
     radial-gradient(circle at 22% 42%, rgba(255, 239, 168, 0.22), transparent 28%),
     radial-gradient(circle at 70% 58%, rgba(239, 112, 93, 0.12), transparent 32%),
-    url("../../assets/img/premium/generated-wife-style/wife-style-boss-theater.png"),
+    url("../../assets/img/premium/watercolor-premium-game-table.png"),
     #e2c184;
   background-size: cover, cover, cover;
   background-position: center;
@@ -7632,4 +7679,85 @@
   box-shadow:
     0 0 0 7px rgba(255, 240, 161, 0.46),
     0 16px 28px rgba(70, 45, 28, 0.22);
+}
+
+@media (max-width: 860px) {
+  .minigame-overlay--arcade .minigame-stage-topbar {
+    left: 14px !important;
+    right: 14px !important;
+    top: 14px !important;
+  }
+
+  .minigame-overlay--arcade .minigame-stage-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .minigame-overlay--arcade .minigame-nav-btn,
+  .minigame-overlay--arcade .mission-chip {
+    min-height: 36px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .minigame-overlay--arcade .arcade-game--runner .arcade-hud {
+    left: 14px !important;
+    right: 14px !important;
+    top: 60px !important;
+    width: auto !important;
+    padding: 10px 12px;
+  }
+
+  .minigame-overlay--arcade .arcade-game--runner .arcade-hud strong {
+    font-size: clamp(1.28rem, 7vw, 1.8rem);
+  }
+
+  .arcade-game--runner .arcade-runner-target {
+    left: 14px;
+    top: 176px;
+    width: min(260px, calc(100% - 28px));
+    padding: 9px 11px;
+  }
+
+  .arcade-game--runner .arcade-runner-target p {
+    font-size: 0.66rem;
+    line-height: 1.12;
+  }
+
+  .arcade-game--runner .arcade-runner-hero {
+    left: 6%;
+    width: 106px;
+    height: 126px;
+  }
+
+  .arcade-game--runner .arcade-runner-hero .char-avatar {
+    width: 94px !important;
+    height: 94px !important;
+  }
+
+  .arcade-game--runner .arcade-platform {
+    min-width: 124px;
+    max-width: 138px;
+    min-height: 58px;
+    padding: 8px 10px;
+    border-width: 3px;
+  }
+
+  .arcade-game--runner .arcade-platform--lane-0 { left: 53%; top: 34%; }
+  .arcade-game--runner .arcade-platform--lane-1 { left: 57%; top: 54%; }
+  .arcade-game--runner .arcade-platform--lane-2 { left: 53%; top: 73%; }
+
+  .arcade-game--runner .arcade-platform span {
+    font-size: 0.9rem;
+    line-height: 1.05;
+  }
+
+  .arcade-game--runner .arcade-platform small {
+    font-size: 0.6rem;
+  }
 }

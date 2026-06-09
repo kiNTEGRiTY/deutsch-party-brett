@@ -1,5 +1,6 @@
 import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
 import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=game-feel-cutouts-30';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -100,6 +101,30 @@ const MAZE_TRAPS = [
 
 const WORD_TYPE_LABELS = ['Nomen', 'Verb', 'Adjektiv'];
 
+const WORD_TYPE_CONFIG = [
+  {
+    key: 'nomen',
+    label: 'Nomen',
+    topic: 'nomen',
+    rule: 'Nomen benennen Menschen, Tiere, Dinge oder Gedanken. Sie koennen einen Artikel haben.',
+    cue: 'Namenwort'
+  },
+  {
+    key: 'verben',
+    label: 'Verb',
+    topic: 'verben',
+    rule: 'Verben sagen, was jemand tut oder was geschieht. Man kann sie beugen.',
+    cue: 'Tunwort'
+  },
+  {
+    key: 'adjektive',
+    label: 'Adjektiv',
+    topic: 'adjektive',
+    rule: 'Adjektive beschreiben, wie etwas ist. Sie passen zu Fragen wie: Wie ist es?',
+    cue: 'Wie-Wort'
+  }
+];
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -149,6 +174,69 @@ function buildHud({ kicker, title, status }) {
       <em>${escapeHtml(status)}</em>
     </div>
   `;
+}
+
+function difficultyKeyFromTask(task) {
+  const level = Number(task.difficulty?.languageComplexity ?? 2);
+  if (level <= 2) return 'easy';
+  if (level <= 4) return 'medium';
+  return 'hard';
+}
+
+function uniqueWords(words) {
+  return [...new Set(words.map((word) => String(word || '').trim()).filter(Boolean))];
+}
+
+function wordTypeConfigForTopic(topic) {
+  return WORD_TYPE_CONFIG.find((entry) => entry.topic === topic || entry.key === topic || entry.label.toLowerCase() === topic);
+}
+
+function makeWordTypeItem(word, config) {
+  return {
+    word,
+    type: config.label,
+    hint: 'Wortkarte',
+    cue: config.cue,
+    explanation: config.rule
+  };
+}
+
+function buildWordTypeDeck(task) {
+  const difficultyKey = difficultyKeyFromTask(task);
+  const contentWords = Array.isArray(task.content?.words) ? task.content.words : [];
+  const focusConfig = wordTypeConfigForTopic(task.topic);
+
+  return WORD_TYPE_CONFIG.reduce((deck, config) => {
+    const configuredWords = [
+      ...(WORTARTEN_CONTENT[config.key]?.[difficultyKey] || []),
+      ...(difficultyKey !== 'easy' ? WORTARTEN_CONTENT[config.key]?.easy || [] : [])
+    ];
+    const topicWords = focusConfig?.label === config.label ? contentWords : [];
+    const words = uniqueWords([...topicWords, ...configuredWords, ...WORD_TYPES.filter((item) => item.type === config.label).map((item) => item.word)]);
+    deck[config.label] = words.map((word) => makeWordTypeItem(word, config));
+    return deck;
+  }, {});
+}
+
+function buildTargetTypeSequence(task, total) {
+  const focusConfig = wordTypeConfigForTopic(task.topic);
+  const rotation = shuffle(WORD_TYPE_CONFIG.map((entry) => entry.label));
+  return Array.from({ length: total }, (_, index) => {
+    if (focusConfig && index % 2 === 0) {
+      return focusConfig.label;
+    }
+    return rotation[index % rotation.length];
+  });
+}
+
+function takeWordTypeItem(deck, type, usedWords) {
+  const entries = deck[type] || [];
+  const available = shuffle(entries.filter((item) => !usedWords.has(`${item.type}:${item.word}`)));
+  const item = available[0] || pick(entries);
+  if (item) {
+    usedWords.add(`${item.type}:${item.word}`);
+  }
+  return item;
 }
 
 function makeCleanupBag() {
@@ -202,13 +290,18 @@ export const WortartenSprunglauf = {
     let heroLane = 1;
     let done = false;
 
-    const lanes = ['Oben', 'Mitte', 'Unten'];
+    const deck = buildWordTypeDeck(task);
+    const targetTypes = buildTargetTypeSequence(task, total);
+    const usedWords = new Set();
 
     const finish = () => {
       if (done) return;
       done = true;
       SoundManager.play(score >= Math.ceil(total * 0.75) ? 'finish' : 'failSoft');
-      cleanup.timer(setTimeout(() => onComplete(resultFrom(score, total, misses)), 760));
+      cleanup.timer(setTimeout(() => onComplete({
+        ...resultFrom(score, total, misses),
+        details: { score, misses, total, topic: 'wortarten' }
+      }), 760));
     };
 
     const renderRound = () => {
@@ -217,9 +310,13 @@ export const WortartenSprunglauf = {
         return;
       }
 
-      const targetType = ['Nomen', 'Verb', 'Adjektiv'][round % 3];
-      const correct = pick(WORD_TYPES.filter((item) => item.type === targetType));
-      const wrongPool = shuffle(WORD_TYPES.filter((item) => item.type !== targetType)).slice(0, 2);
+      const targetType = targetTypes[round] || pick(WORD_TYPE_LABELS);
+      const targetConfig = WORD_TYPE_CONFIG.find((entry) => entry.label === targetType) || WORD_TYPE_CONFIG[0];
+      const correct = takeWordTypeItem(deck, targetType, usedWords);
+      const wrongPool = shuffle(WORD_TYPE_LABELS.filter((type) => type !== targetType))
+        .map((type) => takeWordTypeItem(deck, type, usedWords))
+        .filter(Boolean)
+        .slice(0, 2);
       const platforms = shuffle([correct, ...wrongPool]).map((item, index) => ({
         ...item,
         lane: index
@@ -236,14 +333,19 @@ export const WortartenSprunglauf = {
           <div class="arcade-runner-stage">
             <div class="arcade-parallax arcade-parallax--back"></div>
             <div class="arcade-runner-hitline"></div>
+            <div class="arcade-runner-target">
+              <span>Gesucht</span>
+              <strong>${escapeHtml(targetType)}</strong>
+              <p>${escapeHtml(targetConfig.rule)}</p>
+            </div>
             <div class="arcade-runner-hero" data-hero-lane="${heroLane}">
               ${renderCharacterAvatar(4, 78)}
               <span></span>
             </div>
             ${platforms.map((item, index) => `
-              <button class="arcade-platform arcade-platform--lane-${index}" type="button" data-type="${escapeHtml(item.type)}">
+              <button class="arcade-platform arcade-platform--lane-${index}" type="button" data-type="${escapeHtml(item.type)}" data-cue="${escapeHtml(item.cue)}" data-explanation="${escapeHtml(item.explanation)}" aria-label="${escapeHtml(item.word)}">
                 <span>${escapeHtml(item.word)}</span>
-                <small>${escapeHtml(item.type)}</small>
+                <small>${escapeHtml(item.hint || 'Wortkarte')}</small>
               </button>
             `).join('')}
             <div class="arcade-runner-help">Tippe die richtige Plattform, der Charakter springt dorthin.</div>
@@ -280,12 +382,18 @@ export const WortartenSprunglauf = {
             ? `Treffer! ${score + 1}/${total}`
             : `Falsch: ${button.dataset.type || 'Auswahl'} statt ${targetType}`;
         }
+
+        const smallLabel = button.querySelector('small');
+        if (smallLabel) {
+          smallLabel.textContent = button.dataset.type || targetType;
+        }
+
         if (stage) {
           const feedback = document.createElement('div');
           feedback.className = `arcade-feedback ${hit ? 'is-hit' : 'is-miss'}`;
           feedback.innerHTML = hit
-            ? `<strong>Treffer!</strong><span>${escapeHtml(word)} ist ${escapeHtml(targetType)}</span>`
-            : `<strong>Noch nicht.</strong><span>Gesucht war ${escapeHtml(targetType)}</span>`;
+            ? `<strong>Treffer!</strong><span>${escapeHtml(word)} ist ${escapeHtml(targetType)}. ${escapeHtml(button.dataset.explanation || '')}</span>`
+            : `<strong>Noch nicht.</strong><span>${escapeHtml(word)} ist ${escapeHtml(button.dataset.type || 'eine andere Wortart')}. Gesucht war ${escapeHtml(targetType)}.</span>`;
           stage.appendChild(feedback);
         }
         SoundManager.play(hit ? 'pop' : 'error');
