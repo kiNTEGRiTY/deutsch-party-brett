@@ -357,11 +357,14 @@ class App {
     }
 
     const playMode = params.get('debugMode') || 'solo_arcade';
-    const topic = params.get('debugTopic') || 'satzbau';
+    const requestedTopic = params.get('debugTopic');
     const timeLimitSec = Number(params.get('debugTimeLimit') || 8);
     const rounds = Number(params.get('debugRounds') || 1);
 
-    window.setTimeout(() => {
+    window.setTimeout(async () => {
+      const { getMinigame } = await import('./minigames/minigame-registry.js?v=game-feel-cutouts-30');
+      const minigame = getMinigame(miniGameId);
+      const topic = requestedTopic || minigame?.topics?.[0] || 'wortschatz';
       void this._launchStandaloneMinigame({
         miniGameId,
         playMode,
