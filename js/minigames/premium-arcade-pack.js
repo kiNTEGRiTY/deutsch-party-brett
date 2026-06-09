@@ -1,6 +1,6 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
-import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
-import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
+import { renderCharacterAvatar } from '../ui/characters.js?v=field-route-fullscreen-31';
+import { WORTARTEN_CONTENT } from '../learning/languages/de/content-wortarten.js?v=field-route-fullscreen-31';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {
@@ -443,13 +443,21 @@ export const SchneeballWortschlacht = {
   setup(container, task, onComplete) {
     SoundManager.play('gameStart');
     const cleanup = makeCleanupBag();
-    const targetType = pick(['Nomen', 'Verb', 'Adjektiv']);
+    const focusConfig = wordTypeConfigForTopic(task.topic);
+    const targetType = focusConfig?.label || pick(WORD_TYPE_LABELS);
+    const wordDeck = buildWordTypeDeck(task);
     const requestedCorrect = roundCount(task, 8);
-    const correctTargets = shuffle(WORD_TYPES.filter((item) => item.type === targetType)).slice(0, requestedCorrect);
+    const correctPool = wordDeck[targetType]?.length
+      ? wordDeck[targetType]
+      : WORD_TYPES.filter((item) => item.type === targetType);
+    const correctTargets = shuffle(correctPool).slice(0, requestedCorrect);
     const targetGoal = correctTargets.length;
+    const decoyTargets = WORD_TYPE_LABELS
+      .filter((type) => type !== targetType)
+      .flatMap((type) => wordDeck[type]?.length ? wordDeck[type] : WORD_TYPES.filter((item) => item.type === type));
     const targets = shuffle([
       ...correctTargets,
-      ...shuffle(WORD_TYPES.filter((item) => item.type !== targetType)).slice(0, 7)
+      ...shuffle(decoyTargets).slice(0, 7)
     ]).slice(0, 12);
     let hits = 0;
     let misses = 0;

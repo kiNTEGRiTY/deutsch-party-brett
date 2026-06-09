@@ -5,7 +5,7 @@
  */
 
 import { CardboardUtils } from '../ui/cardboard-utils.js';
-import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { renderCharacterAvatar } from '../ui/characters.js?v=field-route-fullscreen-31';
 
 export const SyllableFishing = {
   id: 'syllable-fishing',

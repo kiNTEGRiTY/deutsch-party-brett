@@ -6,6 +6,8 @@
  */
 
 export const BOARD_READY_MINIGAME_IDS = Object.freeze([
+  // Premium arcade loops: game-first interactions with screenshot coverage in
+  // the current foundation pass.
   'wort-labyrinth-jagd',
   'artikel-invaders',
   'wort-tetris-stapel',
@@ -15,6 +17,9 @@ export const BOARD_READY_MINIGAME_IDS = Object.freeze([
   'silben-beat-surfer',
   'satz-jetpack',
   'grammatik-bossfight',
+
+  // Wife/user asset games: real card photos, figure cutouts, and polished
+  // visual content stages.
   'karten-klick-labor',
   'kartenlupe-wortfang',
   'wortkarten-blitzwahl',
@@ -34,7 +39,13 @@ export const BOARD_READY_MINIGAME_IDS = Object.freeze([
   'artikel-bildjagd',
   'satz-storyboard',
   'kompositum-atelier',
-  'dialog-spotlight',
+  'dialog-spotlight'
+]);
+
+export const BOARD_DEFERRED_MINIGAME_IDS = Object.freeze([
+  // These are kept in the repo and may remain direct-play ideas, but they are
+  // not allowed into board flow until each one has first-viewport screenshots,
+  // cleanup, and a verified success/failure path.
   'silben-trommel',
   'buchstaben-magneten',
   'wortarten-band',

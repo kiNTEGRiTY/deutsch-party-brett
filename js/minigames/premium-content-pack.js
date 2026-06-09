@@ -1,5 +1,5 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
-import { renderCharacterAvatar } from '../ui/characters.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
+import { renderCharacterAvatar } from '../ui/characters.js?v=field-route-fullscreen-31';
 
 const DIRECT_DEFAULTS = {
   solo_arcade: {

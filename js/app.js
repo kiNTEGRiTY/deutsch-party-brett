@@ -4,11 +4,11 @@
  */
 
 import { ScreenManager } from './ui/screen-manager.js';
-import { GameController } from './engine/game-controller.js?v=game-feel-cutouts-30';
+import { GameController } from './engine/game-controller.js?v=field-route-fullscreen-31';
 import { SettingsManager } from './settings/settings-manager.js';
 import { GameSessionStorage } from './settings/game-session.js';
 import { ProfileManager } from './settings/profiles.js';
-import { SoundManager } from './ui/sound-manager.js?v=game-feel-cutouts-30';
+import { SoundManager } from './ui/sound-manager.js?v=field-route-fullscreen-31';
 import { 
   iconDice, iconHome, iconCoin, iconStar,
   iconGold, iconSilver, iconBronze
@@ -372,7 +372,7 @@ class App {
     const rounds = Number(params.get('debugRounds') || 1);
 
     window.setTimeout(async () => {
-      const { getMinigame } = await import('./minigames/minigame-registry.js?v=game-feel-cutouts-30');
+      const { getMinigame } = await import('./minigames/minigame-registry.js?v=field-route-fullscreen-31');
       const minigame = getMinigame(miniGameId);
       const topic = requestedTopic || minigame?.topics?.[0] || 'wortschatz';
       void this._launchStandaloneMinigame({
@@ -533,7 +533,7 @@ class App {
 
   async _getSetupRendererClass() {
     if (!this._setupRendererClass) {
-      const module = await import('./ui/render-setup.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-setup.js?v=field-route-fullscreen-31');
       this._setupRendererClass = module.SetupRenderer;
     }
     return this._setupRendererClass;
@@ -541,7 +541,7 @@ class App {
 
   async _getBoardRendererClass() {
     if (!this._boardRendererClass) {
-      const module = await import('./ui/render-board.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-board.js?v=field-route-fullscreen-31');
       this._boardRendererClass = module.BoardRenderer;
     }
     return this._boardRendererClass;
@@ -549,7 +549,7 @@ class App {
 
   async _getMinigameRendererClass() {
     if (!this._minigameRendererClass) {
-      const module = await import('./ui/render-minigame.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-minigame.js?v=field-route-fullscreen-31');
       this._minigameRendererClass = module.MinigameRenderer;
     }
     return this._minigameRendererClass;
@@ -557,7 +557,7 @@ class App {
 
   async _getMinigameMenuRendererClass() {
     if (!this._minigameMenuRendererClass) {
-      const module = await import('./ui/render-minigame-menu.js?v=game-feel-cutouts-30');
+      const module = await import('./ui/render-minigame-menu.js?v=field-route-fullscreen-31');
       this._minigameMenuRendererClass = module.MinigameMenuRenderer;
     }
     return this._minigameMenuRendererClass;

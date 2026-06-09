@@ -1,4 +1,4 @@
-import { SoundManager } from '../ui/sound-manager.js?v=game-feel-cutouts-30';
+import { SoundManager } from '../ui/sound-manager.js?v=field-route-fullscreen-31';
 import { COMPOUND_CONTENT } from '../learning/languages/de/content-zusammengesetzt.js';
 
 const MEANING_BANK = {

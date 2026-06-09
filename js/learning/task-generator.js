@@ -5,10 +5,10 @@
  * then generates the task content from the language module.
  */
 
-import GermanModule from './languages/de/index.js?v=game-feel-cutouts-30';
+import GermanModule from './languages/de/index.js?v=field-route-fullscreen-31';
 import { getTimerDuration } from './difficulty.js';
 import { buildTaskPartyConfig } from '../minigames/core/party-game-core.js';
-import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=game-feel-cutouts-30';
+import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=field-route-fullscreen-31';
 
 // Language module registry - future: add English here
 const LANGUAGE_MODULES = {
@@ -76,8 +76,25 @@ const TOPIC_ALIASES = {
   adjektiv: 'adjektive'
 };
 
+const BOARD_TOPIC_FALLBACK_MAP = Object.freeze({
+  pronomen: 'satzbau',
+  satzglieder: 'satzbau',
+  singular_plural: 'nomen',
+  hoerverstehen: 'lesen',
+  zeitformen: 'verben',
+  satzzeichen: 'satzbau',
+  lueckentexte: 'satzbau',
+  fehlerkorrektur: 'rechtschreibung',
+  reime: 'wortschatz',
+  wortbildung: 'zusammengesetzte_nomen'
+});
+
 function normalizeTopicId(topic) {
   return TOPIC_ALIASES[topic] || topic;
+}
+
+function isGeneratableBoardTopic(topic) {
+  return Boolean(TOPIC_MINIGAME_MAP[topic] || BOARD_TOPIC_FALLBACK_MAP[topic]);
 }
 
 const FEATURED_MODE_MINIGAME_MAP = {
@@ -106,16 +123,29 @@ const FEATURED_MODE_MINIGAME_MAP = {
 const recentMiniGameIds = [];
 
 function getGamePool(topic, fieldType) {
-  const rawPool = FEATURED_MODE_MINIGAME_MAP[fieldType]?.length
-    ? FEATURED_MODE_MINIGAME_MAP[fieldType]
-    : TOPIC_MINIGAME_MAP[topic] || TOPIC_MINIGAME_MAP._default;
-
-  const qualityPool = filterBoardReadyMinigames(rawPool);
-  if (qualityPool.length) {
-    return qualityPool;
+  const featuredPool = FEATURED_MODE_MINIGAME_MAP[fieldType];
+  if (featuredPool?.length) {
+    const qualityFeaturedPool = filterBoardReadyMinigames(featuredPool);
+    if (qualityFeaturedPool.length) {
+      return { games: qualityFeaturedPool, topic };
+    }
   }
 
-  return filterBoardReadyMinigames(TOPIC_MINIGAME_MAP._default);
+  const qualityPool = filterBoardReadyMinigames(TOPIC_MINIGAME_MAP[topic] || []);
+  if (qualityPool.length) {
+    return { games: qualityPool, topic };
+  }
+
+  const fallbackTopic = BOARD_TOPIC_FALLBACK_MAP[topic];
+  const fallbackPool = fallbackTopic
+    ? filterBoardReadyMinigames(TOPIC_MINIGAME_MAP[fallbackTopic] || [])
+    : [];
+
+  if (fallbackPool.length) {
+    return { games: fallbackPool, topic: fallbackTopic, requestedTopic: topic };
+  }
+
+  return { games: filterBoardReadyMinigames(TOPIC_MINIGAME_MAP._default), topic: 'artikel', requestedTopic: topic };
 }
 
 function pickMiniGameId(games) {
@@ -144,14 +174,14 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
   
   let topic;
   const normalizedExplicitTopic = normalizeTopicId(explicitTopic);
-  if (normalizedExplicitTopic && TOPIC_MINIGAME_MAP[normalizedExplicitTopic]) {
+  if (normalizedExplicitTopic && isGeneratableBoardTopic(normalizedExplicitTopic)) {
     topic = normalizedExplicitTopic;
   } else {
     // Pick a random active topic
     const candidateTopics = Array.isArray(activeTopics) ? activeTopics : [];
     const validTopics = candidateTopics
       .map((candidate) => normalizeTopicId(candidate))
-      .filter((candidate) => TOPIC_MINIGAME_MAP[candidate]);
+      .filter((candidate) => isGeneratableBoardTopic(candidate));
     if (validTopics.length === 0) {
       // Fallback to a premium article task.
       validTopics.push('artikel');
@@ -160,11 +190,13 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
   }
   
   // Pick a mini-game for the topic
-  const games = getGamePool(topic, fieldType);
+  const pool = getGamePool(topic, fieldType);
+  const games = pool.games;
   const miniGameId = pickMiniGameId(games);
+  const resolvedTopic = pool.topic || topic;
   
   // Get content from language module
-  const content = lang.getContent(topic, difficulty);
+  const content = lang.getContent(resolvedTopic, difficulty);
   const instructions = lang.getInstructions(miniGameId);
   
   // Calculate timer
@@ -172,7 +204,7 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
   
   const task = {
     miniGameId,
-    topic,
+    topic: resolvedTopic,
     content,
     instructions,
     difficulty,
@@ -181,6 +213,10 @@ export function generateTask(activeTopics, difficulty, fieldType = 'normal', exp
     answerOptions: difficulty.answerOptions || 3,
     inputMode: difficulty.inputMode || 0 // 0 = choice, 1 = free
   };
+
+  if (pool.requestedTopic && pool.requestedTopic !== resolvedTopic) {
+    task.requestedTopic = pool.requestedTopic;
+  }
 
   task.partyConfig = buildTaskPartyConfig(task, {
     id: miniGameId,

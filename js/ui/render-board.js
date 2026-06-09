@@ -1,9 +1,9 @@
-import { BOARD_THEME } from '../engine/board-layouts.js?v=game-feel-cutouts-30';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=field-route-fullscreen-31';
 import { getFieldMeta } from '../engine/field-types.js';
 import { Dice } from '../engine/dice.js';
 import { iconCoin, iconDice, iconHome, iconStar } from './icons.js';
-import { renderCharacterAvatar } from './characters.js?v=game-feel-cutouts-30';
-import { SoundManager } from './sound-manager.js?v=game-feel-cutouts-30';
+import { renderCharacterAvatar } from './characters.js?v=field-route-fullscreen-31';
+import { SoundManager } from './sound-manager.js?v=field-route-fullscreen-31';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
@@ -56,13 +56,18 @@ export class BoardRenderer {
           <div class="board-watercolor-bg" aria-hidden="true"></div>
 
           <section class="board-map-frame" aria-label="Spielbrett">
-            <div class="board-map-art board-map-art--painted" aria-hidden="true"></div>
-            <svg class="board-playfield" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Deutsch Party Brett Spielzustand">
+            <div class="board-map-art board-map-art--paper" aria-hidden="true"></div>
+            <svg class="board-playfield" viewBox="0 0 ${VIEWBOX.width} ${VIEWBOX.height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Deutsch Party Brett Spielzustand">
               <defs>
                 <linearGradient id="boardPathPremium" x1="0" x2="1" y1="0" y2="1">
                   <stop offset="0" stop-color="#ffe9a8"></stop>
                   <stop offset="0.5" stop-color="#d8a74c"></stop>
                   <stop offset="1" stop-color="#8f5b24"></stop>
+                </linearGradient>
+                <linearGradient id="boardPaperPremium" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#f7e8c2"></stop>
+                  <stop offset="0.58" stop-color="#ecd09a"></stop>
+                  <stop offset="1" stop-color="#c79758"></stop>
                 </linearGradient>
                 <linearGradient id="fieldGlaze" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0" stop-color="#ffffff" stop-opacity="0.94"></stop>
@@ -139,7 +144,7 @@ export class BoardRenderer {
   _renderBoardStatic() {
     const fields = this.game.board.getAllFields();
     return `
-      ${this._renderBoardArtwork()}
+      ${this._renderBoardArtwork(fields)}
       ${this._renderDirectionMarkers(fields)}
       <g class="board-field-layer">
         ${fields.map((field) => this._renderFieldTile(field)).join('')}
@@ -147,11 +152,52 @@ export class BoardRenderer {
     `;
   }
 
-  _renderBoardArtwork() {
-    const image = BOARD_THEME.art?.boardBackdrop || 'assets/img/premium/watercolor-premium-board.png';
+  _renderBoardArtwork(fields) {
     return `
       <g class="board-artwork-layer" aria-hidden="true">
-        <image class="board-artwork-image" href="${this._escape(image)}" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}" preserveAspectRatio="xMidYMid slice"></image>
+        <rect class="board-paper-sheet" x="0" y="0" width="${VIEWBOX.width}" height="${VIEWBOX.height}"></rect>
+        <path class="board-hill board-hill--top" d="M0 218C188 151 360 166 520 192C684 220 760 126 932 150C1080 171 1178 100 1322 127C1464 154 1558 122 1672 72V0H0Z"></path>
+        <path class="board-hill board-hill--bottom" d="M0 842C176 780 350 782 520 826C684 870 792 802 960 822C1118 841 1258 772 1408 804C1532 831 1608 801 1672 774V941H0Z"></path>
+        <ellipse class="board-pond board-pond--outer" cx="835" cy="585" rx="170" ry="58"></ellipse>
+        <ellipse class="board-pond board-pond--inner" cx="835" cy="585" rx="118" ry="34"></ellipse>
+        ${this._renderSceneryTrees()}
+        ${this._renderPath(fields)}
+        ${this._renderBoardLandmarks()}
+      </g>
+    `;
+  }
+
+  _renderSceneryTrees() {
+    const trees = [
+      { x: 92, y: 396, scale: 1.08 },
+      { x: 505, y: 156, scale: 0.82 },
+      { x: 1590, y: 410, scale: 1.06 }
+    ];
+
+    return `
+      <g class="board-scenery-trees">
+        ${trees.map((tree) => `
+          <g transform="translate(${tree.x} ${tree.y}) scale(${tree.scale})">
+            <path d="M0-126C-39-48-39 18-14 66L0 72L14 66C39 18 39-48 0-126Z"></path>
+            <path class="tree-shadow" d="M-36 73C-16 63 22 62 42 74C16 86-18 86-36 73Z"></path>
+          </g>
+        `).join('')}
+      </g>
+    `;
+  }
+
+  _renderBoardLandmarks() {
+    return `
+      <g class="board-landmarks" aria-hidden="true">
+        <g class="landmark-start" transform="translate(146 552)">
+          <path d="M-76 18H76L58-42H-56Z"></path>
+          <text y="6" text-anchor="middle">START</text>
+        </g>
+        <g class="landmark-goal" transform="translate(1135 133)">
+          <path d="M-124 58H124V2L82-14L40 2L0-30L-40 2L-82-14L-124 2Z"></path>
+          <path d="M-142 2L-82-48L-24 2ZM-50 2L0-60L52 2ZM52 2L82-48L142 2Z"></path>
+          <text y="24" text-anchor="middle">ZIEL</text>
+        </g>
       </g>
     `;
   }

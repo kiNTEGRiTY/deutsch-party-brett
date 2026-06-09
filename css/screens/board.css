@@ -32,17 +32,12 @@
 
 .board-map-frame {
   position: absolute;
-  top: 82px;
-  right: 338px;
-  bottom: auto;
-  left: 0;
+  inset: 0;
   z-index: 1;
   overflow: hidden;
-  aspect-ratio: 1672 / 941;
   background:
     radial-gradient(circle at 42% 35%, rgba(255, 249, 224, 0.65), transparent 34%),
     linear-gradient(135deg, #ead7ad, #c49a61);
-  transform-origin: top left;
 }
 
 .board-map-art {
@@ -53,12 +48,12 @@
   height: 100%;
 }
 
-.board-map-art--painted {
+.board-map-art--paper {
   background:
-    radial-gradient(circle at 14% 24%, rgba(255, 238, 154, 0.22), transparent 14%),
-    radial-gradient(circle at 86% 17%, rgba(255, 223, 100, 0.18), transparent 18%),
-    radial-gradient(circle at 58% 68%, rgba(97, 154, 91, 0.2), transparent 24%),
-    linear-gradient(135deg, #f5e6bd 0%, #ecd09a 48%, #c99656 100%);
+    radial-gradient(circle at 14% 24%, rgba(255, 242, 178, 0.2), transparent 14%),
+    radial-gradient(circle at 86% 17%, rgba(255, 226, 118, 0.18), transparent 18%),
+    radial-gradient(circle at 54% 68%, rgba(96, 149, 89, 0.16), transparent 24%),
+    linear-gradient(135deg, #f6e6bd 0%, #ecd09a 49%, #c79a5b 100%);
 }
 
 .board-playfield {
@@ -67,6 +62,34 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.board-paper-sheet {
+  fill: url(#boardPaperPremium);
+}
+
+.board-hill--top {
+  fill: rgba(186, 205, 151, 0.72);
+}
+
+.board-hill--bottom {
+  fill: rgba(139, 166, 104, 0.28);
+}
+
+.board-pond--outer {
+  fill: rgba(120, 160, 166, 0.18);
+}
+
+.board-pond--inner {
+  fill: rgba(244, 252, 249, 0.34);
+}
+
+.board-scenery-trees path {
+  fill: rgba(83, 104, 62, 0.82);
+}
+
+.board-scenery-trees .tree-shadow {
+  fill: rgba(83, 64, 38, 0.11);
 }
 
 .board-map-decor .decor-sky {
@@ -112,18 +135,18 @@
 
 .board-main-path .path-shadow {
   stroke: rgba(65, 42, 23, 0.18);
-  stroke-width: 64;
+  stroke-width: 72;
 }
 
 .board-main-path .path-earth {
-  stroke: rgba(119, 76, 36, 0.55);
-  stroke-width: 52;
+  stroke: rgba(116, 75, 39, 0.54);
+  stroke-width: 58;
 }
 
 .board-main-path .path-gold {
   stroke: url(#boardPathPremium);
-  stroke-width: 42;
-  opacity: 0.82;
+  stroke-width: 48;
+  opacity: 0.86;
 }
 
 .board-main-path .path-stitched {
@@ -245,6 +268,10 @@
   stroke-width: 6px;
   font-size: 30px;
   letter-spacing: 0;
+}
+
+.board-landmarks .landmark-goal path:nth-of-type(2) {
+  fill: #cc7740;
 }
 
 .board-landmarks .landmark-sign text {
@@ -412,11 +439,11 @@
 }
 
 .board-context-dock {
-  top: 78px;
+  top: 248px;
   right: 12px;
   display: grid;
   gap: 8px;
-  width: min(318px, 24vw);
+  width: min(286px, 22vw);
 }
 
 .board-panel {
@@ -481,7 +508,7 @@
 }
 
 .board-panel--moments {
-  display: grid;
+  display: none;
   gap: 7px;
   padding: 10px;
 }
@@ -979,7 +1006,6 @@
 
 @media (max-width: 1060px) {
   .board-map-frame {
-    right: 0;
     transform: none;
   }
 
@@ -1003,19 +1029,21 @@
 
 @media (min-width: 1100px) {
   .board-map-frame {
-    transform: scale(1.08);
-    filter: drop-shadow(0 18px 28px rgba(68, 45, 24, 0.12));
+    transform: none;
+    filter: none;
   }
 }
 
 @media (max-width: 760px) {
   .board-map-frame {
-    inset: 104px auto auto -5vw;
-    width: min(590px, 138vw);
-    max-width: none;
-    aspect-ratio: 1672 / 941;
-    transform: none;
-    filter: drop-shadow(0 16px 24px rgba(68, 45, 24, 0.18));
+    top: 148px;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: min(108vw, 820px);
+    height: min(60.8vw, 461px);
+    transform: translateX(-50%);
+    filter: none;
   }
 
   .board-token-body {
@@ -1054,8 +1082,8 @@
   .board-context-dock {
     left: 10px;
     right: 10px;
-    top: auto;
-    bottom: 240px;
+    top: calc(148px + min(60.8vw, 461px) + 12px);
+    bottom: auto;
     width: auto;
     gap: 6px;
   }
