@@ -4,7 +4,7 @@
  * Arcade style slice game. Nouns fly up, players swipe them. Avoid Verbs!
  */
 
-import { SoundManager } from '../ui/sound-manager.js?v=start-field-preview-45';
+import { SoundManager } from '../ui/sound-manager.js?v=minigame-menu-mobile-46';
 
 const MAX_TARGETS = 5;
 const FALLBACK_NOUNS = ['Hund', 'Katze', 'Baum', 'Haus', 'Ball'];

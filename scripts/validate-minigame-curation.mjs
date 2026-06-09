@@ -7,10 +7,14 @@ import {
   BOARD_QUARANTINED_MINIGAME_IDS,
   BOARD_READY_MINIGAME_IDS
 } from '../js/minigames/quality-gate.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 
 const ready = new Set(BOARD_READY_MINIGAME_IDS);
 const deferred = new Set(BOARD_DEFERRED_MINIGAME_IDS);
 const quarantined = new Set(BOARD_QUARANTINED_MINIGAME_IDS);
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
 
 function fail(message) {
@@ -74,10 +78,39 @@ if (extraDirectGames.length) {
   fail(`getDirectPlayMinigames exposes non-curated IDs: ${extraDirectGames.join(', ')}.`);
 }
 
+const menuRenderer = readFileSync(resolve(rootDir, 'js/ui/render-minigame-menu.js'), 'utf8');
+const menuCss = readFileSync(resolve(rootDir, 'css/screens/minigame.css'), 'utf8');
+
+if (!menuRenderer.includes('getCuratedDirectPlayGroups')) {
+  fail('Direct-play menu must render from getCuratedDirectPlayGroups().');
+}
+
+[
+  'getAllMinigames',
+  'getAllDirectPlayMinigames'
+].forEach((token) => {
+  if (menuRenderer.includes(token)) {
+    fail(`Direct-play menu must not use broad registry accessor "${token}".`);
+  }
+});
+
+[
+  '@media (max-width: 980px)',
+  '.minigame-settings',
+  'order: -1',
+  'max-height: min(34vh, 286px)',
+  '.minigame-list',
+  'overflow: auto'
+].forEach((token) => {
+  if (!menuCss.includes(token)) {
+    fail(`Direct-play menu mobile layout is missing guard token "${token}".`);
+  }
+});
+
 if (failures.length) {
   console.error('Minigame curation validation failed:');
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
 
-console.log(`Minigame curation validation passed: ${directGames.length} direct games in ${groups.length} groups.`);
+console.log(`Minigame curation validation passed: ${directGames.length} direct games in ${groups.length} groups with guarded mobile menu layout.`);

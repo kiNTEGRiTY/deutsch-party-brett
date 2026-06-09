@@ -71,6 +71,7 @@ For games that render an `.arcade-stage`, verify the rendered product, not only 
 - confirm the first screenshot is already playable: target, real game material, and the main answer/action controls are visible without scrolling
 - search visible German UI text for ASCII transliterations such as `waehlen`, `koennen`, `Maedchen`, or `Woerter`
 - when touching direct-play menus, scan desktop and mobile screenshots for English placeholders, ASCII transliterations, oversized first-viewport controls, and horizontal overflow
+- direct-play menus must keep the selected game, launch actions, and settings reachable in the first mobile viewport; the game list may scroll internally, but the whole page must not become a many-thousand-pixel menu
 - repeat a mobile viewport around `390x844`, checking for horizontal overflow, internally clipped controls, and HUD/input overlap
 - for arcade games, measure the mobile topbar, game HUD, playfield, and controls;
   navigation must not overlap the objective HUD, and the main playfield must

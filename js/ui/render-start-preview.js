@@ -1,7 +1,7 @@
-import { Board } from '../engine/board.js?v=start-field-preview-45';
-import { BOARD_THEME } from '../engine/board-layouts.js?v=start-field-preview-45';
+import { Board } from '../engine/board.js?v=minigame-menu-mobile-46';
+import { BOARD_THEME } from '../engine/board-layouts.js?v=minigame-menu-mobile-46';
 import { FieldType } from '../engine/field-types.js';
-import { renderCharacterAvatar } from './characters.js?v=start-field-preview-45';
+import { renderCharacterAvatar } from './characters.js?v=minigame-menu-mobile-46';
 
 const VIEWBOX = { width: 1672, height: 941 };
 
