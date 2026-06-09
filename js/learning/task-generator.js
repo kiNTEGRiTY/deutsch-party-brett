@@ -5,10 +5,10 @@
  * then generates the task content from the language module.
  */
 
-import GermanModule from './languages/de/index.js?v=arcade-stage-paper-48';
+import GermanModule from './languages/de/index.js?v=board-material-cards-49';
 import { getTimerDuration } from './difficulty.js';
 import { buildTaskPartyConfig } from '../minigames/core/party-game-core.js';
-import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=arcade-stage-paper-48';
+import { filterBoardReadyMinigames } from '../minigames/quality-gate.js?v=board-material-cards-49';
 
 // Language module registry - future: add English here
 const LANGUAGE_MODULES = {

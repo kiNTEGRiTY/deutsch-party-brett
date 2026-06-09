@@ -3,7 +3,7 @@
  */
 
 import { FieldType } from './field-types.js';
-import { getBoardLayoutForImage } from './board-layouts.js?v=arcade-stage-paper-48';
+import { getBoardLayoutForImage } from './board-layouts.js?v=board-material-cards-49';
 
 const TYPE_COUNTS = {
   [FieldType.NOMEN]: 8,

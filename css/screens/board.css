@@ -46,6 +46,7 @@
   display: block;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .board-map-art--paper {
@@ -54,6 +55,31 @@
     radial-gradient(circle at 86% 17%, rgba(255, 226, 118, 0.18), transparent 18%),
     radial-gradient(circle at 54% 68%, rgba(96, 149, 89, 0.16), transparent 24%),
     linear-gradient(135deg, #f6e6bd 0%, #ecd09a 49%, #c79a5b 100%);
+}
+
+.board-map-art--paper::before,
+.board-map-art--paper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.board-map-art--paper::before {
+  background:
+    url("../../assets/img/premium/user-reference/word-card-crops/hund.jpg") 7% 77% / 136px auto no-repeat,
+    url("../../assets/img/premium/user-reference/word-card-crops/baum.jpg") 91% 72% / 126px auto no-repeat,
+    url("../../assets/img/premium/user-reference/word-card-crops/sonne.jpg") 60% 86% / 118px auto no-repeat,
+    url("../../assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg") 52% 50% / 900px auto no-repeat;
+  mix-blend-mode: multiply;
+  opacity: 0.105;
+}
+
+.board-map-art--paper::after {
+  background:
+    radial-gradient(ellipse at 18% 78%, rgba(255, 250, 224, 0.42), transparent 24%),
+    radial-gradient(ellipse at 82% 74%, rgba(255, 242, 199, 0.34), transparent 22%),
+    linear-gradient(180deg, rgba(255, 251, 232, 0.04), rgba(82, 55, 28, 0.06));
 }
 
 .board-playfield {
@@ -1022,6 +1048,15 @@
 }
 
 @media (max-width: 760px) {
+  .board-map-art--paper::before {
+    background:
+      url("../../assets/img/premium/user-reference/word-card-crops/hund.jpg") 10% 66% / 88px auto no-repeat,
+      url("../../assets/img/premium/user-reference/word-card-crops/baum.jpg") 92% 64% / 84px auto no-repeat,
+      url("../../assets/img/premium/user-reference/word-card-crops/sonne.jpg") 58% 83% / 84px auto no-repeat,
+      url("../../assets/img/premium/user-reference/word-card-crops/contact-sheet.jpg") 50% 61% / 440px auto no-repeat;
+    opacity: 0.115;
+  }
+
   .board-map-frame {
     inset: 0;
     width: auto;

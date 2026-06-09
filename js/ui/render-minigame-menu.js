@@ -1,9 +1,9 @@
 import {
   getCuratedDirectPlayGroups,
   getMinigame
-} from '../minigames/minigame-registry.js?v=arcade-stage-paper-48';
-import { renderCharacterAvatar } from './characters.js?v=arcade-stage-paper-48';
-import { SoundManager } from './sound-manager.js?v=arcade-stage-paper-48';
+} from '../minigames/minigame-registry.js?v=board-material-cards-49';
+import { renderCharacterAvatar } from './characters.js?v=board-material-cards-49';
+import { SoundManager } from './sound-manager.js?v=board-material-cards-49';
 
 function difficultyLabelFromSettings(settings) {
   const complexity = Number(settings?.difficulty?.languageComplexity ?? 2);
