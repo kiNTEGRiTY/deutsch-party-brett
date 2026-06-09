@@ -18,7 +18,7 @@ Read these first:
 
 ## Decisions
 
-- Primary board: `assets/img/premium/watercolor-premium-board.png`
+- Primary board: `assets/img/premium/functional-field-board.svg`
 - Primary start/setup/table surfaces: the `assets/img/premium/watercolor-premium-*.png` set
 - Primary characters: transparent cutouts in `assets/img/premium/user-reference/cutouts/`
 - Word-card photos and crops are source/reference or handmade-mode material unless polished into a final card system.
@@ -27,6 +27,7 @@ Read these first:
 
 - `assets/img/premium/generated-wife-style/`
 - `assets/img/premium/characters/`
+- `assets/img/premium/watercolor-premium-board.png`
 - `assets/img/premium/start-hero-forest.png`
 - `assets/img/premium/board-enchanted-backdrop.png`
 - HEIC files and raw source photos

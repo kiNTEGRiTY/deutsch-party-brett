@@ -128,12 +128,36 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
-function complete(onComplete, correct, delay = 780) {
-  setTimeout(() => onComplete({
+function complete(onComplete, correct, delay = 780, cleanup = null) {
+  const timerId = setTimeout(() => onComplete({
     correct,
     partial: false,
     score: correct ? 100 : 0
   }), delay);
+  if (cleanup?.timer) {
+    cleanup.timer(timerId);
+  }
+}
+
+function makeInteractionCleanup() {
+  const listeners = [];
+  const timers = [];
+  return {
+    on(target, type, handler, options) {
+      target.addEventListener(type, handler, options);
+      listeners.push([target, type, handler, options]);
+    },
+    timer(id) {
+      timers.push(id);
+      return id;
+    },
+    clear() {
+      listeners.forEach(([target, type, handler, options]) => target.removeEventListener(type, handler, options));
+      timers.forEach((id) => clearTimeout(id));
+      listeners.length = 0;
+      timers.length = 0;
+    }
+  };
 }
 
 function scene(container, { tone = 'green', kicker, title, text, image = OBJECT_TABLE, body }) {
@@ -151,9 +175,9 @@ function scene(container, { tone = 'green', kicker, title, text, image = OBJECT_
   `;
 }
 
-function bindChoice(container, selector, answer, onComplete) {
+function bindChoice(container, selector, answer, onComplete, cleanup = null) {
   container.querySelectorAll(selector).forEach((button) => {
-    button.addEventListener('click', () => {
+    const handleClick = () => {
       const correct = button.dataset.answer === answer;
       container.querySelectorAll(selector).forEach((entry) => {
         entry.disabled = true;
@@ -163,8 +187,13 @@ function bindChoice(container, selector, answer, onComplete) {
       });
       button.classList.add(correct ? 'is-hit' : 'is-miss');
       SoundManager.play(correct ? 'paintBloom' : 'error');
-      complete(onComplete, correct, correct ? 760 : 1080);
-    });
+      complete(onComplete, correct, correct ? 760 : 1080, cleanup);
+    };
+    if (cleanup?.on) {
+      cleanup.on(button, 'click', handleClick);
+    } else {
+      button.addEventListener('click', handleClick);
+    }
   });
 }
 
@@ -183,6 +212,7 @@ export const BildwortGalerie = {
   defaultRounds: 5,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS);
     const options = objectOptions(target);
@@ -205,7 +235,8 @@ export const BildwortGalerie = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', target.word, onComplete);
+    bindChoice(container, '.premium-content-options button', target.word, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -219,6 +250,7 @@ export const WimmelbildDetektiv = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS);
     const image = target.image || OBJECT_TABLE;
@@ -241,18 +273,19 @@ export const WimmelbildDetektiv = {
     });
 
     container.querySelectorAll('.premium-hotspot').forEach((button) => {
-      button.addEventListener('click', () => {
+      cleanup.on(button, 'click', () => {
         const correct = button.dataset.answer === target.id;
         button.classList.add(correct ? 'is-hit' : 'is-miss');
         if (correct) {
           SoundManager.play('reward');
-          complete(onComplete, true, 760);
+          complete(onComplete, true, 760, cleanup);
           return;
         }
         SoundManager.play('failSoft');
-        setTimeout(() => button.classList.remove('is-miss'), 420);
+        cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 420));
       });
     });
+    return cleanup.clear;
   }
 };
 
@@ -266,6 +299,7 @@ export const ArtikelBildjagd = {
   defaultRounds: 5,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const target = pick(OBJECTS.filter((entry) => entry.article));
     const image = target.image || OBJECT_TABLE;
@@ -287,7 +321,8 @@ export const ArtikelBildjagd = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', target.article, onComplete);
+    bindChoice(container, '.premium-content-options button', target.article, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -301,6 +336,7 @@ export const SatzStoryboard = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const story = pick(STORY_SETS);
     const shuffled = shuffle(story.panels.map((panel, index) => ({ ...panel, index })));
@@ -327,12 +363,12 @@ export const SatzStoryboard = {
     });
 
     container.querySelectorAll('.premium-story-card').forEach((button) => {
-      button.addEventListener('click', () => {
+      cleanup.on(button, 'click', () => {
         const correct = Number(button.dataset.index) === cursor;
         if (!correct) {
           button.classList.add('is-miss');
           SoundManager.play('error');
-          setTimeout(() => button.classList.remove('is-miss'), 420);
+          cleanup.timer(setTimeout(() => button.classList.remove('is-miss'), 420));
           return;
         }
         const slot = container.querySelector(`[data-slot="${cursor}"]`);
@@ -346,10 +382,11 @@ export const SatzStoryboard = {
         cursor += 1;
         if (cursor >= story.panels.length) {
           SoundManager.play('success');
-          complete(onComplete, true, 760);
+          complete(onComplete, true, 760, cleanup);
         }
       });
     });
+    return cleanup.clear;
   }
 };
 
@@ -363,6 +400,7 @@ export const KompositumAtelier = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const item = pick(COMPOUNDS);
     const options = shuffle([item.answer, ...shuffle(COMPOUNDS.filter((entry) => entry.answer !== item.answer)).slice(0, 3).map((entry) => entry.answer)]);
@@ -385,7 +423,8 @@ export const KompositumAtelier = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', item.answer, onComplete);
+    bindChoice(container, '.premium-content-options button', item.answer, onComplete, cleanup);
+    return cleanup.clear;
   }
 };
 
@@ -399,6 +438,7 @@ export const DialogSpotlight = {
   defaultRounds: 4,
 
   setup(container, task, onComplete) {
+    const cleanup = makeInteractionCleanup();
     SoundManager.play('gameStart');
     const item = pick(DIALOGUES);
     const options = shuffle(item.options);
@@ -420,6 +460,7 @@ export const DialogSpotlight = {
       `
     });
 
-    bindChoice(container, '.premium-content-options button', item.answer, onComplete);
+    bindChoice(container, '.premium-content-options button', item.answer, onComplete, cleanup);
+    return cleanup.clear;
   }
 };

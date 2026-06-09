@@ -428,7 +428,8 @@ export class MinigameRenderer {
       '.sentence-order-game',
       '.fill-blanks-game',
       '.spelling-detective-game',
-      '.atelier-game'
+      '.atelier-game',
+      '.premium-content-game'
     ];
 
     const isModern = modernSelectors.some((selector) => root.matches(selector) || root.querySelector(selector));
